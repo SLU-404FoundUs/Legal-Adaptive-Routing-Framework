@@ -4,6 +4,8 @@
 
 A specialized framework designed for legal text inputs. It utilizes an adaptive routing system powered by OpenRouter LLMs to normalize linguistic variations (Taglish/Tagalog to English), detect language states, and prepare data for downstream legal processing.
 
+**[Read the Full Documentation](docs/DOCUMENTATION.md)**
+
 ## Project Structure
 
 ```

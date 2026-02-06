@@ -15,8 +15,14 @@ load_dotenv()
 
 class DualLogger:
     """Helper to log output to both console and file."""
-    def __init__(self, filename="run_logs.txt"):
+    def __init__(self, filename="tests/run_logs.txt"):
         self.filename = filename
+        
+        # Ensure directory exists
+        log_dir = os.path.dirname(self.filename)
+        if log_dir:
+            os.makedirs(log_dir, exist_ok=True)
+
         # Ensure log file exists or append separator
         with open(self.filename, "a", encoding="utf-8") as f:
             f.write(f"\n\n{'='*60}\n")
