@@ -1,9 +1,10 @@
-## Saint Louis University
-## Team 404FoundUs
-## @file src/adaptive_routing/core/engine.py
-## @project_ LLM Legal Adaptive Routing Framework
-## @desc_ Handler for OpenRouter API requests with robust error management.
-## @deps requests, json, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
+"""
+Saint Louis University : Team 404FoundUs
+@file src/adaptive_routing/core/engine.py
+@project_ LLM Legal Adaptive Routing Framework
+@desc_ Handler for OpenRouter API requests with robust error management.
+@deps_ requests, json, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
+"""
 
 import requests
 import json
@@ -18,7 +19,7 @@ from src.adaptive_routing.core.exceptions import (
 
 class LLMRequestEngine:
     """
-    @class LLMRequestEngine
+    @class_ LLMRequestEngine
     @desc_ Provides a unified interface for OpenRouter completions.
     @attr_ _api_key : (str) Credential for the OpenRouter API.
     @attr_ _model : (str) The specific LLM model to target.
@@ -26,14 +27,20 @@ class LLMRequestEngine:
     @attr_ _max_tokens : (int) Limit on response length.
     @attr_ _use_system_role : (bool) Toggle for system prompt support.
     """
-    def __init__(self, api_key=None, model=None, temperature=None, max_tokens=None, use_system_role=None):
+    def __init__(self, api_key=None, model=None, temperature=None, max_tokens=None, use_system_role=None, include_reasoning=None):
         self._url = "https://openrouter.ai/api/v1/chat/completions"
         
-        # Determine system role usage: Argument > Config > Default(True)
+        ## @Logic_ Determine system role usage: Argument > Config > Default(True)
         if use_system_role is not None:
             self._use_system_role = use_system_role
         else:
             self._use_system_role = getattr(FrameworkConfig, '_USE_SYSTEM_ROLE', True)
+        
+        ## @Logic_ Determine reasoning usage
+        if include_reasoning is not None:
+            self._include_reasoning = include_reasoning
+        else:
+            self._include_reasoning = getattr(FrameworkConfig, '_INCLUDE_REASONING', False)
         
         ## @logic_ API Key Validation from argument or config
         self._api_key = api_key or FrameworkConfig._API_KEY
@@ -57,9 +64,9 @@ class LLMRequestEngine:
 
     def _encode_image_(self, image_source):
         """
-        @func_ _encode_image_
-        @params image_source: Path to image file or URL.
-        @return_ dict: JSON-compatiable image payload.
+        @func_ _encode_image_ (@params image_source)
+        @params image_source : (str) Path to image file or URL.
+        @return_ dict : JSON-compatiable image payload.
         @desc_ Helper to encode image from path or return URL as is
         """
         import base64
@@ -90,11 +97,11 @@ class LLMRequestEngine:
 
     def _get_completion_(self, prompt, sys_message, images=None):
         """
-        @func_ _get_completion_
-        @params prompt: (str) The user's input prompt.
-        @params sys_message: (str) System instruction (role).
-        @params images: (list[str]) Optional list of image paths/URLs.
-        @return_ str: The AI's response text.
+        @func_ _get_completion_ (@params prompt, sys_message, images)
+        @params prompt : (str) The user's input prompt.
+        @params sys_message : (str) System instruction (role).
+        @params images : (list[str]) Optional list of image paths/URLs.
+        @return_ str : The AI's response text.
         @err_ Raises AuthenticationError, ModelNotFoundError, APIConnectionError, APIResponseError
         """
         headers = {
@@ -104,17 +111,14 @@ class LLMRequestEngine:
             "X-Title": "LLM Legal Adaptive Routing Framework" 
         }
 
-        # Construct user content payload
         user_content = prompt
 
         ## @logic_ If system role is not supported, we merge instructions into user prompt
         if not self._use_system_role:
-             # If it's just text
              user_content = f"{sys_message}\n\n{prompt}"
 
         if images:
-            # Reconstruct for Multi-modal
-            # If not using system role, the first text block contains instructions
+
             text_payload = user_content if not self._use_system_role else prompt
             
             user_content = [{"type": "text", "text": text_payload}]
@@ -123,7 +127,7 @@ class LLMRequestEngine:
                 user_content.append(self._encode_image_(img))
 
         messages = []
-        # Add system role only if enabled
+        ## @logic_ Add system role only if enabled
         if self._use_system_role:
             messages.append({"role": "system", "content": sys_message})
         
@@ -133,7 +137,8 @@ class LLMRequestEngine:
             "model": self._model,
             "messages": messages,
             "temperature": self._temperature,
-            "max_tokens": self._max_tokens
+            "max_tokens": self._max_tokens,
+            "include_reasoning": self._include_reasoning
         }
         
 
@@ -144,12 +149,18 @@ class LLMRequestEngine:
 
             response_json = response.json()
             if 'choices' in response_json and len(response_json['choices']) > 0:
-                return response_json['choices'][0]['message']['content']
+                message = response_json['choices'][0]['message']
+                content = message.get('content', '')
+                
+                reasoning = message.get('reasoning', None)
+                if self._include_reasoning and reasoning:
+                    return f"<reasoning>\n{reasoning}\n</reasoning>\n\n{content}"
+                
+                return content
             else:
                 raise APIResponseError("Invalid response format from API: 'choices' field missing or empty.", response_body=response_json)
 
         except requests.exceptions.HTTPError as e:
-            # Handle specific HTTP status codes
             error_msg = f"HTTP Error {e.response.status_code}: {e.response.text}"
             if e.response.status_code == 401:
                 raise AuthenticationError(f"Invalid API Key provided. Details: {e.response.text}") from e
@@ -167,7 +178,6 @@ class LLMRequestEngine:
              raise APIConnectionError(f"Request timed out after 30 seconds. Details: {str(e)}") from e
              
         except requests.exceptions.RequestException as e:
-            # Catch-all for other requests exceptions
             raise APIConnectionError(f"An unexpected API error occurred: {str(e)}") from e
         except json.JSONDecodeError as e:
              raise APIResponseError(f"Failed to decode API response JSON. Details: {str(e)}") from e

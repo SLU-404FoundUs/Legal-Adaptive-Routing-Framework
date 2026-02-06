@@ -43,54 +43,75 @@ LegalAdaptiveRoutingFramework/
    OPENROUTER_API_KEY=your_api_key_here
    ```
 
-## Modules & Usage
+## Developer Usage
+
+### Quick Start (Main Framework)
+Run the logical pipeline easily using the top-level exports.
+
+```python
+from src.adaptive_routing import TriageModule, SemanticRouterModule
+
+# 1. Initialize Triage (Language Processing)
+triage = TriageModule()
+input_text = "Yung ano kasi, I was terminated without notice."
+triage_result = triage._process_request_(input_text)
+normalized_text = triage_result.get('normalized_text') # "I was terminated without notice."
+
+# 2. Initialize Semantic Router (Legal Classification & Advice)
+router = SemanticRouterModule()
+if normalized_text:
+    routing_output = router._process_routing_(normalized_text)
+    print(routing_output['response_text'])
+```
+
+### Configuration (API Style)
+You can configure the framework using environment variables OR by modifying the configuration object directly in your code.
+
+**Option 1: Environment Variables (.env)**
+```env
+OPENROUTER_API_KEY=sk-or-v1-...
+TRIAGE_MODEL=qwen/qwen-2.5-7b-instruct
+TRIAGE_TEMP=0.5
+```
+
+**Option 2: Python Code Configuration**
+```python
+from src.adaptive_routing import FrameworkConfig
+
+# Update API Key
+FrameworkConfig._API_KEY = "sk-new-key-123"
+
+# Update Model Parameters
+FrameworkConfig._update_settings_(
+    triage_model="google/gemini-2.0-flash-exp:free",
+    triage_temp=0.1
+)
+```
+
+### Advanced: Dependency Injection
+The framework allows you to inject your own engines or prompts if you need deep customization.
+
+```python
+from src.adaptive_routing.modules.semantic_router.logic_classifier import RoutingClassifier
+
+# Custom System Prompt
+custom_prompt = "ROLE: Strict Judge. TASK: Classify this legally."
+
+# Inject into Router
+classifier = RoutingClassifier(system_prompt=custom_prompt)
+# router = SemanticRouterModule(classifier=classifier) 
+```
+
+## Modules Guide
 
 ### 1. Triage Module (`src.adaptive_routing.modules.triage`)
 The primary entry point for developers. It handles language detection and normalization in a single efficient step.
 
-**Usage:**
-```python
-from src.adaptive_routing.modules.triage import TriageModule
-
-# Initialize (loads API key from .env automatically)
-triage = TriageModule()
-
-input_text = "Yung ano kasi, I was terminated without notice."
-result = triage._process_request_(input_text)
-
-print(f"Language: {result['detected_language']}") # Output: Taglish
-print(f"Normalized: {result['normalized_text']}") # Output: I was terminated without notice.
-```
-
 ### 2. Linguistic Normalizer (`src.adaptive_routing.modules.linguistic`)
 Handles the transformation of raw input into standardized English, strictly following legal objectivity standards.
 
-- **Constraints**:
-    - Converts subjective ("I feel") to objective ("Alleged").
-    - Retains Latin legal terms (e.g., *void ab initio*).
-    - Removes formatting noise and emotional hyperbole.
-
-**Usage:**
-```python
-from src.adaptive_routing.core.engine import LLMRequestEngine
-from src.adaptive_routing.modules.linguistic import LinguisticNormalizer
-
-engine = LLMRequestEngine()
-normalizer = LinguisticNormalizer(engine)
-
-raw_output = normalizer._normalize_text_("Example text")
-```
-
 ### 3. LLM Request Engine (`src.adaptive_routing.core.engine`)
 The core abstraction for interacting with the OpenRouter API. Handles authentication, retries, and error mapping.
-
-**Usage:**
-```python
-from src.adaptive_routing.core.engine import LLMRequestEngine
-
-engine = LLMRequestEngine(temperature=0.3)
-response = engine._get_completion_("Explain res ipsa loquitur", "You are a legal scholar.")
-```
 
 ### 4. Language State Detector (`src.adaptive_routing.modules.detector`)
 A state container used by the Triage module to persist the processing context (Original vs Normalized vs Language).
@@ -105,11 +126,6 @@ A state container used by the Triage module to persist the processing context (O
 
 ### Documentation Tags
 - `@file`, `@desc_`, `@func_`, `@params`, `@return_`, `@logic_`.
-
-### Adding New Modules
-1. Place new logic modules in `src/adaptive_routing/modules/`.
-2. Ensure dependency on `LLMRequestEngine` for any AI operations.
-3. Update `main.py` if necessary to demonstrate capabilities.
 
 ---
 **Note**: This framework relies on `python-dotenv` for security. Never commit your `.env` file.
