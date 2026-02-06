@@ -1,133 +1,127 @@
-# LLM Legal Adaptive Routing Framework
+# Legal Adaptive Routing Framework (LARF)
 
-## Saint Louis University | Team 404FoundUs
+<div align="center">
 
-A specialized framework designed for legal text inputs. It utilizes an adaptive routing system powered by OpenRouter LLMs to normalize linguistic variations (Taglish/Tagalog to English), detect language states, and prepare data for downstream legal processing.
+### Saint Louis University | Team 404FoundUs
 
-**[Read the Full Documentation](docs/DOCUMENTATION.md)**
+**An Agentic AI Framework for Processing Philippine Legal Queries**
 
-## Project Structure
+[Documentation](docs/DOCUMENTATION.md) • [Report Bug](issues) • [Request Feature](issues)
 
-```
+</div>
+
+## 📖 Overview
+
+The **Legal Adaptive Routing Framework (LARF)** is a specialized Python framework designed to bridge the gap between informal user queries (often in Taglish) and formal legal reasoning.
+
+It uses a multi-stage **Agentic Pipeline** to:
+1.  **Normalize**: Translate linguistic variations (Taglish/Tagalog) into standard legal English.
+2.  **Classify**: Intelligently route queries to the correct domain (General Info vs. Complex Reasoning).
+3.  **Generate**: Produce legally grounded responses using specialized LLMs.
+
+---
+
+## 🏗️ Project Structure
+
+The codebase is organized into modular components for scalability.
+
+```text
 LegalAdaptiveRoutingFramework/
 ├── src/
 │   └── adaptive_routing/
-│       ├── config.py           # Centralized configuration
-│       ├── core/
-│       │   ├── engine.py       # LLM Request Engine (API Handler)
-│       │   └── exceptions.py   # Custom Exception Classes
+│       ├── config.py           # Global Configuration
+│       ├── core/               # Low-level Engine
+│       │   ├── engine.py       # OpenRouter API Handler
+│       │   └── exceptions.py   # Custom Errors
 │       └── modules/
-│           ├── linguistic.py   # Normalization Logic
-│           ├── detector.py     # State Management
-│           └── triage.py       # Orchestration Facade
+│           ├── multihead_classifier/   # Triage Components
+│           │   ├── detector.py
+│           │   └── linguistic.py
+│           ├── semantic_router/        # Routing Components
+│           │   ├── legal_generation.py
+│           │   └── logic_classifier.py
+│           ├── router.py       # Router Facade
+│           └── triage.py       # Triage Facade
 ├── tests/                      # Unit Tests
-├── main.py                     # Driver Script
-├── requirements.txt            # Dependencies
-└── .env                        # Environment Variables (Not committed)
+├── docs/                       # Documentation
+├── main.py                     # CLI Driver Script
+├── requirements.txt            # Python Dependencies
+└── .env                        # Secrets (Excluded from Git)
 ```
 
-## Setup & Installation
+---
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository_url>
-   cd LegalAdaptiveRoutingFramework
-   ```
+## ⚡ Quick Start
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+### Prerequisites
+-   Python 3.10+
+-   [OpenRouter](https://openrouter.ai/) API Key
 
-3. **Configure Environment**:
-   Create a `.env` file in the root directory:
-   ```env
-   OPENROUTER_API_KEY=your_api_key_here
-   ```
+### Installation
 
-## Developer Usage
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/SLU-404FoundUs/Legal-Adaptive-Routing-Framework.git
+    cd Legal-Adaptive-Routing-Framework
+    ```
 
-### Quick Start (Main Framework)
-Run the logical pipeline easily using the top-level exports.
+2.  **Install dependencies**
+    ```bash
+    pip install -r requirements.txt
+    ```
+
+3.  **Setup Environment**
+    Create a `.env` file in the root directory:
+    ```env
+    OPENROUTER_API_KEY=your_api_key_here
+    # Optional Overrides
+    TRIAGE_MODEL=google/gemma-3-4b-it:free
+    ```
+
+### Usage
+
+Run the main driver script to see the pipeline in action:
+
+```bash
+python main.py
+```
+
+Or import the modules into your own application:
 
 ```python
 from src.adaptive_routing import TriageModule, SemanticRouterModule
 
-# 1. Initialize Triage (Language Processing)
+# 1. Initialize Modules
 triage = TriageModule()
-input_text = "Yung ano kasi, I was terminated without notice."
-triage_result = triage._process_request_(input_text)
-normalized_text = triage_result.get('normalized_text') # "I was terminated without notice."
-
-# 2. Initialize Semantic Router (Legal Classification & Advice)
 router = SemanticRouterModule()
+
+# 2. Process Input (Taglish -> English)
+input_text = "Tinanggal ako sa trabaho ng walang notice."
+result = triage._process_request_(input_text)
+normalized_text = result['normalized_text'] 
+# Output: "I was terminated from my job without notice."
+
+# 3. Route & Generate Legal Response
 if normalized_text:
-    routing_output = router._process_routing_(normalized_text)
-    print(routing_output['response_text'])
+    response = router._process_routing_(normalized_text)
+    print(f"Advice: {response['response_text']}")
 ```
-
-### Configuration (API Style)
-You can configure the framework using environment variables OR by modifying the configuration object directly in your code.
-
-**Option 1: Environment Variables (.env)**
-```env
-OPENROUTER_API_KEY=sk-or-v1-...
-TRIAGE_MODEL=qwen/qwen-2.5-7b-instruct
-TRIAGE_TEMP=0.5
-```
-
-**Option 2: Python Code Configuration**
-```python
-from src.adaptive_routing import FrameworkConfig
-
-# Update API Key
-FrameworkConfig._API_KEY = "sk-new-key-123"
-
-# Update Model Parameters
-FrameworkConfig._update_settings_(
-    triage_model="google/gemini-2.0-flash-exp:free",
-    triage_temp=0.1
-)
-```
-
-### Advanced: Dependency Injection
-The framework allows you to inject your own engines or prompts if you need deep customization.
-
-```python
-from src.adaptive_routing.modules.semantic_router.logic_classifier import RoutingClassifier
-
-# Custom System Prompt
-custom_prompt = "ROLE: Strict Judge. TASK: Classify this legally."
-
-# Inject into Router
-classifier = RoutingClassifier(system_prompt=custom_prompt)
-# router = SemanticRouterModule(classifier=classifier) 
-```
-
-## Modules Guide
-
-### 1. Triage Module (`src.adaptive_routing.modules.triage`)
-The primary entry point for developers. It handles language detection and normalization in a single efficient step.
-
-### 2. Linguistic Normalizer (`src.adaptive_routing.modules.linguistic`)
-Handles the transformation of raw input into standardized English, strictly following legal objectivity standards.
-
-### 3. LLM Request Engine (`src.adaptive_routing.core.engine`)
-The core abstraction for interacting with the OpenRouter API. Handles authentication, retries, and error mapping.
-
-### 4. Language State Detector (`src.adaptive_routing.modules.detector`)
-A state container used by the Triage module to persist the processing context (Original vs Normalized vs Language).
-
-## Development Guidelines
-
-### Naming Conventions (PSAS Standards)
-- **Functions**: Wrapped in underscores (e.g., `_process_request_`).
-- **Global Constants**: Leading underscore + CAPS (e.g., `_DEFAULT_MODEL`).
-- **Private/Protected Variables**: Leading underscore (e.g., `_api_key`).
-- **Classes**: PascalCase (e.g., `TriageModule`).
-
-### Documentation Tags
-- `@file`, `@desc_`, `@func_`, `@params`, `@return_`, `@logic_`.
 
 ---
-**Note**: This framework relies on `python-dotenv` for security. Never commit your `.env` file.
+
+## 📚 Documentation
+
+For detailed API references, configuration options, and architectural diagrams, please refer to the **[Full Documentation](docs/DOCUMENTATION.md)**.
+
+---
+
+## 🤝 Contribution
+
+Contributions are welcome! Please ensure that you follow the **Technical Documentation Standards** when adding new modules.
+
+1.  Fork the Project
+2.  Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3.  Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4.  Push to the Branch (`git push origin feature/AmazingFeature`)
+5.  Open a Pull Request
+
