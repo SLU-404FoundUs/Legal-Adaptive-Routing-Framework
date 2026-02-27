@@ -4,7 +4,7 @@
 
 ### Saint Louis University | Team 404FoundUs
 
-**An Agentic AI Framework for Processing Philippine Legal Queries**
+**An Agentic AI Framework for Processing Philippine-Hong Kong Migrant Workers Legal Queries**
 
 [Documentation](docs/DOCUMENTATION.md) • [Report Bug](issues) • [Request Feature](issues)
 
