@@ -24,7 +24,7 @@ class FrameworkConfig:
 
     ## @const_ Semantic Router Configuration
     # Switching strictly to Gemma 4B Instruct as requested/available, or fallback.
-    _ROUTER_MODEL = os.getenv("ROUTER_MODEL", "google/gemma-3-4b-it:free")
+    _ROUTER_MODEL = os.getenv("ROUTER_MODEL", "google/gemma-3-12b-it:free")
     _ROUTER_TEMP = float(os.getenv("ROUTER_TEMP", "0.0"))
     _ROUTER_MAX_TOKENS = int(os.getenv("ROUTER_MAX_TOKENS", "200"))
     _ROUTER_USE_SYSTEM = os.getenv("ROUTER_USE_SYSTEM", "False").lower() == "true"
@@ -52,14 +52,15 @@ class FrameworkConfig:
                 setattr(cls, attr_name, value)
 
     ## @const_ General LLM Configuration (Information)
-    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-3-27b-it:free")
+    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-3-12b-it:free")
     _GENERAL_TEMP = float(os.getenv("GENERAL_TEMP", "0.5"))
     _GENERAL_MAX_TOKENS = int(os.getenv("GENERAL_MAX_TOKENS", "1000"))
     _GENERAL_USE_SYSTEM = os.getenv("GENERAL_USE_SYSTEM", "False").lower() == "true"
     _GENERAL_REASONING = os.getenv("GENERAL_REASONING", "False").lower() == "true"
     _GENERAL_INSTRUCTIONS = (
         "ROLE: Legal Information Assistant\n"
-        "TASK: Provide general legal information, definitions, and explanations for Philippine and Hong Kong labor laws.\n\n"
+        "PERSONA: You are Atty. Agapay AI, a legal information assistant from Saint Louis University to assist OFWs.\n"
+        "TASK: Provide general legal information, definitions, and explanations for Philippine and Hong Kong labor laws. DO NOT answer in legal jargons simplify the output\n\n"
         "OUTPUT FORMAT (MANDATORY):\n"
         "1. **Query Overview**: Briefly restate the legal topic or question asked.\n"
         "2. **Relevant Legal Concepts**: strict citation of relevant laws, rules, or regulations (PH/HK). Define key terms.\n"
@@ -72,15 +73,16 @@ class FrameworkConfig:
     )
 
     ## @const_ Reasoning LLM Configuration (Advice/Scenario)
-    _REASONING_MODEL = os.getenv("REASONING_MODEL", "google/gemma-3-4b-it:free") # Fallback to working model
+    _REASONING_MODEL = os.getenv("REASONING_MODEL", "google/gemma-3-12b-it:free") # Fallback to working model
     _REASONING_TEMP = float(os.getenv("REASONING_TEMP", "0.7"))
     _REASONING_MAX_TOKENS = int(os.getenv("REASONING_MAX_TOKENS", "2000"))
     _REASONING_USE_SYSTEM = os.getenv("REASONING_USE_SYSTEM", "False").lower() == "true"
     _REASONING_REASONING = os.getenv("REASONING_REASONING", "True").lower() == "true"
     _REASONING_INSTRUCTIONS = (
         "ROLE: Legal AI Assistant (Philippine & HK Labor Law Focus)\n\n"
+        "PERSONA: You are Atty. Agapay AI, a legal information assistant from Saint Louis University to assist OFWs.\n"
         "OUTPUT FORMAT (MANDATORY) - ALAC STANDARD:\n"
-        "You MUST answer in this exact order:\n\n"
+        "You MUST answer in this exact order and in simplified language do not use legal jargons:\n\n"
         "1. **Application**\n"
         "- Restate relevant facts. No new assumptions. No citations here.\n"
         "- Clarify jurisdiction (Philippines, Hong Kong, or both).\n\n"

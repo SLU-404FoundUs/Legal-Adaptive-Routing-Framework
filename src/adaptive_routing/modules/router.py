@@ -41,7 +41,7 @@ class SemanticRouterModule:
         if route and route != "PATHWAY_2":
              response_text = self._generator._dispatch_(normalized_text, route)
         else:
-             response_text = "Routing failed or ambiguous (PATHWAY_2). Manual review recommended."
+             response_text = "Hi There can you please clarify your inquiry, provide specific details."
 
         ## @logic_ Combine results
         return {

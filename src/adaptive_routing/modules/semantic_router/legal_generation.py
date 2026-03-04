@@ -51,3 +51,15 @@ class LegalGenerator:
             ## @logic_ Default to General for "General-LLM" or fallback
             system_prompt = FrameworkConfig._GENERAL_INSTRUCTIONS
             return self._general_engine._get_completion_(query, system_prompt)
+
+    def _dispatch_conversation_(self, messages: list, route: str) -> str:
+        """
+        @func_ _dispatch_conversation_ (@params messages, route)
+        @params messages : (list[dict]) Full conversation history.
+        @params route : (str) "General-LLM" or "Reasoning-LLM".
+        @return_ str : The LLM response.
+        """
+        if route == "Reasoning-LLM":
+            return self._reasoning_engine._get_chat_completion_(messages)
+        else:
+            return self._general_engine._get_chat_completion_(messages)

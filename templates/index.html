@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legal Adaptive Routing Framework</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+    <!-- Optional for icons -->
+</head>
+
+<body>
+    <div class="app-container">
+        <!-- Sidebar / Process Panel -->
+        <aside class="process-panel">
+            <div class="panel-header">
+                <h2><i class="fas fa-network-wired"></i> System Ops</h2>
+                <div class="status-indicator" id="status-indicator">
+                    <span class="status-dot"></span> Ready
+                </div>
+            </div>
+            <div class="process-log-container">
+                <div class="process-log" id="process-log">
+                    <!-- Process steps will be injected here -->
+                    <div class="empty-state">
+                        <p>System operational.</p>
+                        <p>Listening for input...</p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Chat Area -->
+        <main class="chat-container">
+            <header class="chat-header">
+                <div class="header-content">
+                    <h1>Agapay AI <span class="version-tag">Dev 1.0</span></h1>
+                    <p class="subtitle">Saint Louis University Adaptive Legal Routing Framework</p>
+                </div>
+            </header>
+
+            <div class="chat-history-container">
+                <div class="chat-history" id="chat-history">
+                    <div class="message system welcome-message">
+                        <div class="avatar system-avatar">AI</div>
+                        <div class="bubble">
+                            <h3>Welcome to Agapay AI</h3>
+                            <p>Andito si Atty. Agapay AI, para magbigay ng legal na kaalaman.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="input-area-wrapper">
+                <div class="input-area">
+                    <form id="chat-form">
+                        <input type="text" id="user-input" placeholder="Describe your legal situation..."
+                            autocomplete="off">
+                        <button type="submit" id="send-btn" aria-label="Send message">
+                            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+                            </svg>
+                        </button>
+                    </form>
+                    <div class="disclaimer">AI responses are for informational purposes only and do not constitute legal
+                        advice.</div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
+</body>
+
+</html>
