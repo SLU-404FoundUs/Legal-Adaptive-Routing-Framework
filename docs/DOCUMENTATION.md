@@ -35,6 +35,7 @@ The framework is configured via `src/adaptive_routing/config.py`. It prioritizes
 | **Router** | Classification | `default` | Determines if the query needs general info or deep legal reasoning. |
 | **General** | Generation | `google/gemma-3-27b-it:free` | Handles standard definition and process questions. |
 | **Reasoning** | Generation | `deepseek/deepseek-r1:free` | Handles complex case analysis and application of law. |
+| **Retrieval** | RAG Searching | `sentence-transformers/all-minilm-l6-v2` | Responsible for document embeddings and semantic vector search via FAISS. |
 
 ---
 
@@ -105,6 +106,32 @@ The low-level networking layer that communicates with OpenRouter. Handles:
 -   Payload construction (Messages, Temperature, Max Tokens)
 -   Error handling (Retries, Timeouts)
 
+### 4. Legal Retrieval Module (RAG)
+**Import**: `src.adaptive_routing.modules.retrieval`
+**Class**: `LegalRetrievalModule`
+
+Facade orchestrator handling the Retrieval-Augmented Generation pipeline. Provides programmatic methods to ingest semantic chunks, persist them in FAISS, and query them seamlessly using standard legal text logic.
+
+#### Key Components
+-   **EmbeddingManager** (`src/adaptive_routing/modules/legal_retrieval/embedding.py`):
+    -   Handles text chunking, embedding using local or remote models, and stores binary context natively via `faiss`.
+-   **LegalRetriever** (`src/adaptive_routing/modules/legal_retrieval/retriever.py`):
+    -   Handles specific similarity search parameters and context resolution context limits (`top_k`).
+
+#### API
+```python
+def _process_retrieval_(self, query: str, top_k: int = None) -> dict:
+    """
+    Returns:
+        {
+            "query": str,
+            "retrieved_chunks": [
+                {"chunk": str}, ...
+            ]
+        }
+    """
+```
+
 ---
 
 ## Directory Structure
@@ -124,7 +151,66 @@ src/
         ├── semantic_router/            <-- Router Components
         │   ├── legal_generation.py
         │   └── logic_classifier.py
+        ├── legal_retrieval/            <-- RAG Components
+        │   ├── embedding.py
+        │   └── retriever.py
         ├── router.py                   <-- Router Facade
-        └── triage.py                   <-- Triage Facade
+        ├── triage.py                   <-- Triage Facade
+        └── retrieval.py                <-- Legal Retrieval Facade
 ```
+
+---
+
+## RAG Usage Guide
+
+The framework ships with an example implementation in `use-cases.py`, covering the three primary ways to leverage the RAG system depending on your architectural complexity constraint.
+
+### 1. Simple Use Case (Pure Retrieval)
+The most basic ingestion/retrieval setup to fetch similar legal context strings. It avoids utilizing Generation or Triage pathways.
+
+```python
+from src.adaptive_routing import LegalRetrievalModule
+
+retriever = LegalRetrievalModule()
+
+# 1. Provide context texts
+docs = ["Rule #1: Tenants must pay rent.", "Rule #2: Leases can be 1-year terms."]
+retriever._ingest_documents_(docs)
+
+# 2. Retrieve answers via semantic FAISS
+results = retriever._process_retrieval_("What is the penalty for not paying rent?", top_k=2)
+# returns "retrieved_chunks"
+```
+
+### 2. Intermediate Use Case (Single-Index RAG)
+Retrieves semantic chunks directly and manually forwards them to the LLM backend for grounded synthesis—bypassing the `SemanticRouter` triage phase.
+
+```python
+from src.adaptive_routing import LegalRetrievalModule
+from src.adaptive_routing.modules.semantic_router.legal_generation import LegalGenerator
+
+retriever = LegalRetrievalModule()
+generator = LegalGenerator()
+
+# 1. Fetch chunks natively
+retrieval_data = retriever._process_retrieval_("Eviction protocols", top_k=3)
+chunks = retrieval_data.get("retrieved_chunks", [])
+
+# 2. Re-combine strings logically
+context_str = "\n".join([f"- {c['chunk']}" for c in chunks])
+augmented_query = f"CONTEXT:\n{context_str}\n\nUSER QUERY:\nEviction protocols"
+
+# 3. Direct response via General-LLM
+response = generator._dispatch_(augmented_query, "General-LLM")
+```
+
+### 3. Complex Use Case (Multi-Index RAG with Adaptive Routing)
+For enterprise multi-jurisdictional use cases (e.g., separating HK law from PH law), representing the full end-to-end framework stack.
+
+1. **User Query Normalization**: `TriageModule` normalizes mixed Taglish into legal English.
+2. **Intent Routing**: `RoutingClassifier` defines if it strictly requires Legal Reasoning (`Reasoning-LLM`) or simple procedural questions (`General-LLM`).
+3. **Multi-Index Targeting**: The normalized text performs `_process_retrieval_` separately against `hk_index.faiss` and `ph_index.faiss`.
+4. **Partitioned Sourcing**: `LegalGenerator` triggers against a concatenated `augmented_query` containing strictly segregated regional laws.
+
+*Refer to `use-cases.py` for the complete `complex_use_case` script snippet tying these architectures together concurrently.*
 

@@ -103,3 +103,9 @@ class FrameworkConfig:
         "- Do NOT predict court outcomes.\n"
         "- Use simple, clear language for non-lawyers."
     )
+
+    ## @const_ Legal Retrieval (RAG) Module Configuration
+    _RETRIEVAL_MODEL = os.getenv("RETRIEVAL_MODEL", "sentence-transformers/all-minilm-l6-v2")
+    _RETRIEVAL_TOP_K = int(os.getenv("RETRIEVAL_TOP_K", "5"))
+    _RETRIEVAL_CHUNK_SIZE = int(os.getenv("RETRIEVAL_CHUNK_SIZE", "512"))
+    _RETRIEVAL_CHUNK_OVERLAP = int(os.getenv("RETRIEVAL_CHUNK_OVERLAP", "64"))

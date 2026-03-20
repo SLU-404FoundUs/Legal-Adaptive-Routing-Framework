@@ -1,0 +1,73 @@
+"""
+Saint Louis University : Team 404FoundUs
+@file src/adaptive_routing/modules/retrieval.py
+@project_ LLM Legal Adaptive Routing Framework
+@desc_ Orchestrator module that coordinates Legal RAG retrieval: embed documents and search.
+@deps_ src.adaptive_routing.modules.legal_retrieval.embedding, src.adaptive_routing.modules.legal_retrieval.retriever, src.adaptive_routing.config
+"""
+
+from src.adaptive_routing.modules.legal_retrieval.embedding import EmbeddingManager
+from src.adaptive_routing.modules.legal_retrieval.retriever import LegalRetriever
+from src.adaptive_routing.config import FrameworkConfig
+
+
+class LegalRetrievalModule:
+    """
+    @class_ LegalRetrievalModule
+    @desc_ Facade/Orchestrator that manages the RAG pipeline: Ingest -> Search.
+    @attr_ _embedding_manager : (EmbeddingManager) Component for document indexing and vector search.
+    @attr_ _retriever : (LegalRetriever) Component that queries the index for relevant context.
+    """
+
+    def __init__(self, api_key=None, embedding_manager=None, retriever=None):
+        ## @logic_ Initialize embedding manager with Retrieval-specific configuration if not provided
+        self._embedding_manager = embedding_manager or EmbeddingManager(
+            api_key=api_key,
+            model=FrameworkConfig._RETRIEVAL_MODEL,
+            chunk_size=FrameworkConfig._RETRIEVAL_CHUNK_SIZE,
+            chunk_overlap=FrameworkConfig._RETRIEVAL_CHUNK_OVERLAP
+        )
+
+        ## @logic_ Initialize simple retriever
+        self._retriever = retriever or LegalRetriever(self._embedding_manager)
+
+    def _ingest_documents_(self, documents: list):
+        """
+        @func_ _ingest_documents_ (@params documents)
+        @params documents : (list[str]) Raw legal document texts to add to the knowledge base.
+        @return_ None
+        @desc_ Chunks, embeds, and indexes the provided documents into the FAISS vector store.
+        """
+        self._embedding_manager._add_documents_(documents)
+
+    def _process_retrieval_(self, query: str, top_k: int = None) -> dict:
+        """
+        @func_ _process_retrieval_ (@params query, top_k)
+        @params query : (str) The user's legal question.
+        @params top_k : (int) Optional override for the number of context chunks to retrieve.
+        @return_ dict : Contains 'query' and 'retrieved_chunks'.
+        @desc_ Main entry point — retrieves relevant context chunks from the index.
+        """
+        retrieved_chunks = self._retriever._retrieve_context_(query, top_k=top_k)
+        return {
+            "query": query,
+            "retrieved_chunks": retrieved_chunks
+        }
+
+    def _save_index_(self, index_path: str, chunks_path: str):
+        """
+        @func_ _save_index_ (@params index_path, chunks_path)
+        @params index_path : (str) File path for the FAISS index binary.
+        @params chunks_path : (str) File path for the chunk metadata JSON.
+        @desc_ Persists the current FAISS index and text chunks to disk.
+        """
+        self._embedding_manager._save_index_(index_path, chunks_path)
+
+    def _load_index_(self, index_path: str, chunks_path: str):
+        """
+        @func_ _load_index_ (@params index_path, chunks_path)
+        @params index_path : (str) File path of the saved FAISS index.
+        @params chunks_path : (str) File path of the saved chunk metadata JSON.
+        @desc_ Loads a previously persisted index and chunks from disk.
+        """
+        self._embedding_manager._load_index_(index_path, chunks_path)
