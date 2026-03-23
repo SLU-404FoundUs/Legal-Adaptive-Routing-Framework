@@ -109,3 +109,7 @@ class FrameworkConfig:
     _RETRIEVAL_TOP_K = int(os.getenv("RETRIEVAL_TOP_K", "5"))
     _RETRIEVAL_CHUNK_SIZE = int(os.getenv("RETRIEVAL_CHUNK_SIZE", "512"))
     _RETRIEVAL_CHUNK_OVERLAP = int(os.getenv("RETRIEVAL_CHUNK_OVERLAP", "64"))
+    
+    ## @const_ Pre-built Index Paths (Optional)
+    _RETRIEVAL_INDEX_PATH = os.getenv("RETRIEVAL_INDEX_PATH", None)
+    _RETRIEVAL_CHUNKS_PATH = os.getenv("RETRIEVAL_CHUNKS_PATH", None)

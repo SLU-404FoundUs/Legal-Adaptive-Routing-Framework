@@ -1,222 +1,259 @@
-# Legal Adaptive Routing Framework Documentation
+# Legal Adaptive Routing Framework — Documentation
 
-## Overview
-The **LLM Legal Adaptive Routing Framework** is a specialized system designed to process Philippine legal queries. It employs a multi-stage pipeline powered by OpenRouter LLMs to:
-1.  **Normalize** linguistic variations (Taglish/Tagalog to English).
-2.  **Detect** language states (Taglish, Tagalog, English).
-3.  **Route** queries to the most appropriate processing pathway (General Information vs. Legal Reasoning).
-4.  **Generate** legally grounded responses.
-
-## Architecture
-
-```mermaid
-graph TD
-    UserInput[User Input] --> Triage[Triage Module]
-    Triage --> |Normalize & Detect| Normalized[Normalized English Text]
-    Normalized --> Router[Semantic Router]
-    Router --> |Classify| RouteDecision{Route Decision}
-    
-    RouteDecision -->|General or Reasoning| RAG[Legal Retrieval Module]
-    RouteDecision -->|Ambiguous| Pathway2[Manual Review/Clarification]
-    
-    RAG --> |HK & PH FAISS Indices| Context[Augmented Query + Context]
-    
-    Context -->|Route: General Info| Pathway1[General Legal LLM]
-    Context -->|Route: Legal Reasoning| Pathway3[Reasoning LLM]
-    
-    Pathway1 --> Response
-    Pathway2 --> Response
-    Pathway3 --> Response
-```
-
-## Configuration
-The framework is configured via `src/adaptive_routing/config.py`. It prioritizes environment variables (`.env`) but falls back to safe defaults.
-
-### FrameworkConfig
-**File**: `src/adaptive_routing/config.py`
-
-| Setting | Module | Default Model | Description |
-| :--- | :--- | :--- | :--- |
-| **Triage** | Normalization | `google/gemma-3-4b-it:free` | Responsible for translating Taglish/Tagalog to formal English without losing legal context. |
-| **Router** | Classification | `default` | Determines if the query needs general info or deep legal reasoning. |
-| **General** | Generation | `google/gemma-3-27b-it:free` | Handles standard definition and process questions. |
-| **Reasoning** | Generation | `deepseek/deepseek-r1:free` | Handles complex case analysis and application of law. |
-| **Retrieval** | RAG Searching | `sentence-transformers/all-minilm-l6-v2` | Responsible for document embeddings and semantic vector search via FAISS. |
+> **Saint Louis University — Team 404FoundUs**  
+> **Project**: LLM Legal Adaptive Routing Framework  
+> **Purpose**: An AI-powered multi-stage pipeline for processing OFW legal queries across Philippine and Hong Kong jurisdictions.
 
 ---
 
-## Module Reference
+## Overview
 
-### 1. Triage Module
-**Import**: `src.adaptive_routing.modules.triage`
-**Class**: `TriageModule`
+The **Legal Adaptive Routing Framework** is a modular system that processes legal queries through three intelligent stages:
 
-The entry point for all raw user input. It handles the "garbled" nature of informal communication.
+1. **Linguistic Normalization** — Converts multilingual input (Tagalog, Taglish, Cantonese, etc.) into standardized legal English
+2. **Semantic Routing** — Classifies queries by complexity and intent, routing to the appropriate LLM
+3. **Legal Retrieval (RAG)** — Retrieves relevant legal provisions from a FAISS vector store to ground LLM responses in actual law
 
-#### Key Components
--   **LinguisticNormalizer** (`src/adaptive_routing/modules/multihead_classifier/linguistic.py`):
-    -   Uses an LLM to translate input while preserving legal intent.
-    -   Extracts detected language tags (e.g., `<Detected Raw Language: Taglish>`).
--   **LanguageStateDetector** (`src/adaptive_routing/modules/multihead_classifier/detector.py`):
-    -   Maintains the state of the transformation (Original Text -> Normalized Text).
+The framework communicates with LLMs through the **OpenRouter API** and uses **FAISS** for efficient vector similarity search.
 
-#### API
-```python
-def _process_request_(self, input_text: str, image_path: str = None) -> dict:
-    """
-    Returns:
-        {
-            "input_text": str,
-            "normalized_text": str,
-            "detected_language": str,
-            "timestamp": datetime
-        }
-    """
+---
+
+## Architecture Diagram
+
+```mermaid
+flowchart TD
+    subgraph Input
+        User["👤 User Input<br/>(Tagalog / Taglish / English / Cantonese)"]
+    end
+
+    subgraph Triage["🔤 Triage Module"]
+        direction TB
+        LN["LinguisticNormalizer<br/><i>Multilingual → English</i>"]
+        LD["LanguageStateDetector<br/><i>Stores state</i>"]
+        LN --> LD
+    end
+
+    subgraph Router["🔀 Semantic Router Module"]
+        direction TB
+        RC["RoutingClassifier<br/><i>Intent classification</i>"]
+        LG["LegalGenerator<br/><i>Dual-engine dispatch</i>"]
+        RC --> LG
+    end
+
+    subgraph RAG["📚 Legal Retrieval Module"]
+        direction TB
+        EM["EmbeddingManager<br/><i>Chunk + Embed + Index</i>"]
+        LR["LegalRetriever<br/><i>Similarity search</i>"]
+        FAISS["FAISS Vector Store<br/><i>HK & PH indices</i>"]
+        EM --> FAISS
+        LR --> FAISS
+    end
+
+    subgraph Generation["⚖️ Response Generation"]
+        GEN["General-LLM<br/><i>Info / Definitions</i>"]
+        REAS["Reasoning-LLM<br/><i>Case Analysis (ALAC)</i>"]
+    end
+
+    subgraph Core["⚙️ Core Engine"]
+        ENGINE["LLMRequestEngine<br/><i>OpenRouter API</i>"]
+        CONFIG["FrameworkConfig<br/><i>Centralized Settings</i>"]
+    end
+
+    User --> Triage
+    Triage -->|Normalized English| Router
+    Router -->|Route + Query| RAG
+    RAG -->|Augmented Context| Generation
+    GEN --> Response["📄 Legal Response"]
+    REAS --> Response
+
+    ENGINE -.->|Powers| LN
+    ENGINE -.->|Powers| RC
+    ENGINE -.->|Powers| GEN
+    ENGINE -.->|Powers| REAS
+    CONFIG -.->|Configures| ENGINE
 ```
 
-### 2. Semantic Router
-**Import**: `src.adaptive_routing.modules.router`
-**Class**: `SemanticRouterModule`
+---
 
-Decides *how* the query should be answered based on its complexity and intent.
+## Pipeline Flow
 
-#### Key Components
--   **RoutingClassifier** (`src/adaptive_routing/modules/semantic_router/logic_classifier.py`):
-    -   Analyzes the *normalized* text.
-    -   Outputs a route: `PATHWAY_1` (General), `PATHWAY_2` (Ambiguous), or `PATHWAY_3` (Reasoning).
--   **LegalGenerator** (`src/adaptive_routing/modules/semantic_router/legal_generation.py`):
-    -   Dispatches the prompt to the specific LLM model assigned to the chosen route.
-
-#### API
-```python
-def _process_routing_(self, normalized_text: str) -> dict:
-    """
-    Returns:
-        {
-            "classification": {
-                "route": str,
-                "confidence": float,
-                "reasoning": str
-            },
-            "response_text": str
-        }
-    """
+```
+User Input (any language)
+    │
+    ▼
+┌──────────────────────────────────────────┐
+│  Stage 1: TRIAGE MODULE                  │
+│  • LinguisticNormalizer normalizes text   │
+│  • LanguageStateDetector stores state     │
+│  Output: {normalized_text, language}      │
+└──────────────┬───────────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────────┐
+│  Stage 2: SEMANTIC ROUTER MODULE         │
+│  • RoutingClassifier classifies intent   │
+│  • Routes to General-LLM or Reasoning   │
+│  Output: {route, confidence, signals}    │
+└──────────────┬───────────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────────┐
+│  Stage 3: LEGAL RETRIEVAL (RAG)          │
+│  • Retrieves relevant law provisions     │
+│  • FAISS vector similarity search        │
+│  Output: {retrieved_chunks + scores}     │
+└──────────────┬───────────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────────┐
+│  Stage 4: RESPONSE GENERATION            │
+│  • General-LLM → Info format             │
+│  • Reasoning-LLM → ALAC format           │
+│  Output: Grounded legal response         │
+└──────────────────────────────────────────┘
 ```
 
-### 3. Core Engine
-**Import**: `src.adaptive_routing.core.engine`
-**Class**: `LLMRequestEngine`
+---
 
-The low-level networking layer that communicates with OpenRouter. Handles:
--   Authentication (Bearer Token)
--   Payload construction (Messages, Temperature, Max Tokens)
--   Error handling (Retries, Timeouts)
+## Quick Start
 
-### 4. Legal Retrieval Module (RAG)
-**Import**: `src.adaptive_routing.modules.retrieval`
-**Class**: `LegalRetrievalModule`
+### 1. Install Dependencies
 
-Facade orchestrator handling the Retrieval-Augmented Generation pipeline. Provides programmatic methods to ingest semantic chunks, persist them in FAISS, and query them seamlessly using standard legal text logic.
-
-#### Key Components
--   **EmbeddingManager** (`src/adaptive_routing/modules/legal_retrieval/embedding.py`):
-    -   Handles text chunking, embedding using local or remote models, and stores binary context natively via `faiss`.
--   **LegalRetriever** (`src/adaptive_routing/modules/legal_retrieval/retriever.py`):
-    -   Handles specific similarity search parameters and context resolution context limits (`top_k`).
-
-#### API
-```python
-def _process_retrieval_(self, query: str, top_k: int = None) -> dict:
-    """
-    Returns:
-        {
-            "query": str,
-            "retrieved_chunks": [
-                {"chunk": str}, ...
-            ]
-        }
-    """
+```bash
+pip install -r requirements.txt
 ```
+
+**Required packages:**
+- `requests` — HTTP client for OpenRouter API
+- `python-dotenv` — Environment variable management
+- `faiss-cpu==1.7.4` — Vector similarity search
+- `numpy<2` — Numerical operations
+
+### 2. Set Up Environment
+
+Create a `.env` file at the project root:
+
+```env
+OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
+```
+
+### 3. Basic Usage
+
+```python
+from src.adaptive_routing import TriageModule, SemanticRouterModule, LegalRetrievalModule
+
+# Initialize modules
+triage = TriageModule()
+router = SemanticRouterModule()
+
+# Process a query through the full pipeline
+triage_result = triage._process_request_("Pwede ba akong mag-file ng case?")
+normalized = triage_result["normalized_text"]
+
+router_result = router._process_routing_(normalized)
+print(router_result["response_text"])
+```
+
+---
+
+## Module Documentation
+
+Each module has its own comprehensive documentation with API reference, usage examples, and customization guides:
+
+| # | Module | Documentation | Description |
+|:---|:---|:---|:---|
+| 1 | **Configuration** | [configuration.md](configuration.md) | `FrameworkConfig` — all settings, env variables, runtime overrides |
+| 2 | **Core Engine** | [core_engine.md](core_engine.md) | `LLMRequestEngine` — API interface, multimodal support, exception hierarchy |
+| 3 | **Triage Module** | [triage_module.md](triage_module.md) | `TriageModule` — linguistic normalization, language detection, state management |
+| 4 | **Semantic Router** | [semantic_router_module.md](semantic_router_module.md) | `SemanticRouterModule` — intent classification, dual-engine response generation |
+| 5 | **Legal Retrieval (RAG)** | [legal_retrieval_module.md](legal_retrieval_module.md) | `LegalRetrievalModule` — document ingestion, FAISS indexing, context retrieval |
 
 ---
 
 ## Directory Structure
-The following structure reflects the actual codebase layout:
 
-```text
+```
 src/
 └── adaptive_routing/
-    ├── config.py
-    ├── core/
-    │   ├── engine.py
-    │   └── exceptions.py
-    └── modules/
-        ├── multihead_classifier/       <-- Triage Components
-        │   ├── detector.py
-        │   └── linguistic.py
-        ├── semantic_router/            <-- Router Components
-        │   ├── legal_generation.py
-        │   └── logic_classifier.py
-        ├── legal_retrieval/            <-- RAG Components
-        │   ├── embedding.py
-        │   └── retriever.py
-        ├── router.py                   <-- Router Facade
-        ├── triage.py                   <-- Triage Facade
-        └── retrieval.py                <-- Legal Retrieval Facade
+    ├── __init__.py                          # Public exports: TriageModule, SemanticRouterModule,
+    │                                        #   LegalRetrievalModule, FrameworkConfig
+    ├── config.py                            # Centralized configuration hub
+    │                                        #   → docs/configuration.md
+    │
+    ├── core/                                # Foundation layer
+    │   ├── engine.py                        # LLMRequestEngine: OpenRouter API interface
+    │   └── exceptions.py                    # Custom exception hierarchy
+    │                                        #   → docs/core_engine.md
+    │
+    └── modules/                             # Feature modules
+        │
+        ├── triage.py                        # TriageModule (Orchestrator)
+        ├── multihead_classifier/            # Triage sub-components
+        │   ├── linguistic.py                #   LinguisticNormalizer
+        │   └── detector.py                  #   LanguageStateDetector
+        │                                    #   → docs/triage_module.md
+        │
+        ├── router.py                        # SemanticRouterModule (Orchestrator)
+        ├── semantic_router/                 # Router sub-components
+        │   ├── logic_classifier.py          #   RoutingClassifier
+        │   └── legal_generation.py          #   LegalGenerator
+        │                                    #   → docs/semantic_router_module.md
+        │
+        ├── retrieval.py                     # LegalRetrievalModule (Orchestrator)
+        └── legal_retrieval/                 # RAG sub-components
+            ├── embedding.py                 #   EmbeddingManager (chunking + FAISS)
+            └── retriever.py                 #   LegalRetriever (context search)
+                                             #   → docs/legal_retrieval_module.md
 ```
 
 ---
 
-## RAG Usage Guide
+## Public API Summary
 
-The framework ships with an example implementation in `use-cases.py`, covering the three primary ways to leverage the RAG system depending on your architectural complexity constraint.
-
-### 1. Simple Use Case (Pure Retrieval)
-The most basic ingestion/retrieval setup to fetch similar legal context strings. It avoids utilizing Generation or Triage pathways.
+The framework exports **4 main classes** from `src.adaptive_routing`:
 
 ```python
-from src.adaptive_routing import LegalRetrievalModule
-
-retriever = LegalRetrievalModule()
-
-# 1. Provide context texts
-docs = ["Rule #1: Tenants must pay rent.", "Rule #2: Leases can be 1-year terms."]
-retriever._ingest_documents_(docs)
-
-# 2. Retrieve answers via semantic FAISS
-results = retriever._process_retrieval_("What is the penalty for not paying rent?", top_k=2)
-# returns "retrieved_chunks"
+from src.adaptive_routing import (
+    TriageModule,           # Stage 1: Linguistic normalization
+    SemanticRouterModule,   # Stage 2: Intent classification + generation
+    LegalRetrievalModule,   # Stage 3: RAG retrieval
+    FrameworkConfig          # Configuration management
+)
 ```
 
-### 2. Intermediate Use Case (Single-Index RAG)
-Retrieves semantic chunks directly and manually forwards them to the LLM backend for grounded synthesis—bypassing the `SemanticRouter` triage phase.
+### Key Methods at a Glance
 
-```python
-from src.adaptive_routing import LegalRetrievalModule
-from src.adaptive_routing.modules.semantic_router.legal_generation import LegalGenerator
+| Module | Method | Purpose |
+|:---|:---|:---|
+| `TriageModule` | `_process_request_(text, image?)` | Normalize multilingual input → English |
+| `SemanticRouterModule` | `_process_routing_(text)` | Classify and generate legal response |
+| `LegalRetrievalModule` | `_process_retrieval_(query, top_k?)` | Retrieve relevant legal text chunks |
+| `LegalRetrievalModule` | `_ingest_documents_(docs)` | Add documents to the vector store |
+| `LegalRetrievalModule` | `build_and_save_index(dir, out, prefix)` | Build FAISS index from JSON corpus |
+| `LegalRetrievalModule` | `_save_index_(index, chunks)` | Persist index to disk |
+| `LegalRetrievalModule` | `_load_index_(index, chunks)` | Load saved index |
+| `FrameworkConfig` | `_update_settings_(**kwargs)` | Runtime configuration override |
 
-retriever = LegalRetrievalModule()
-generator = LegalGenerator()
+---
 
-# 1. Fetch chunks natively
-retrieval_data = retriever._process_retrieval_("Eviction protocols", top_k=3)
-chunks = retrieval_data.get("retrieved_chunks", [])
+## Environment Variables Reference
 
-# 2. Re-combine strings logically
-context_str = "\n".join([f"- {c['chunk']}" for c in chunks])
-augmented_query = f"CONTEXT:\n{context_str}\n\nUSER QUERY:\nEviction protocols"
+| Variable | Module | Default | Description |
+|:---|:---|:---|:---|
+| `OPENROUTER_API_KEY` | All | *(required)* | OpenRouter API credential |
+| `TRIAGE_MODEL` | Triage | `qwen/qwen3-4b:free` | Normalization LLM |
+| `TRIAGE_TEMP` | Triage | `0.6` | Temperature |
+| `TRIAGE_MAX_TOKENS` | Triage | `1500` | Max tokens |
+| `ROUTER_MODEL` | Router | `google/gemma-3-12b-it:free` | Classification LLM |
+| `ROUTER_TEMP` | Router | `0.0` | Temperature |
+| `GENERAL_MODEL` | Generation | `google/gemma-3-12b-it:free` | General info LLM |
+| `GENERAL_TEMP` | Generation | `0.5` | Temperature |
+| `REASONING_MODEL` | Generation | `google/gemma-3-12b-it:free` | Reasoning LLM |
+| `REASONING_TEMP` | Generation | `0.7` | Temperature |
+| `RETRIEVAL_MODEL` | RAG | `sentence-transformers/all-minilm-l6-v2` | Embedding model |
+| `RETRIEVAL_TOP_K` | RAG | `5` | Chunks to retrieve |
+| `RETRIEVAL_CHUNK_SIZE` | RAG | `512` | Characters per chunk |
+| `RETRIEVAL_INDEX_PATH` | RAG | `None` | Pre-built FAISS index path |
+| `RETRIEVAL_CHUNKS_PATH` | RAG | `None` | Pre-built chunks JSON path |
 
-# 3. Direct response via General-LLM
-response = generator._dispatch_(augmented_query, "General-LLM")
-```
-
-### 3. Complex Use Case (Multi-Index RAG with Adaptive Routing)
-For enterprise multi-jurisdictional use cases (e.g., separating HK law from PH law), representing the full end-to-end framework stack.
-
-1. **User Query Normalization**: `TriageModule` normalizes mixed Taglish into legal English.
-2. **Intent Routing**: `RoutingClassifier` defines if it strictly requires Legal Reasoning (`Reasoning-LLM`) or simple procedural questions (`General-LLM`).
-3. **Multi-Index Targeting**: The normalized text performs `_process_retrieval_` separately against `hk_index.faiss` and `ph_index.faiss`.
-4. **Partitioned Sourcing**: `LegalGenerator` triggers against a concatenated `augmented_query` containing strictly segregated regional laws.
-
-*Refer to `use-cases.py` for the complete `complex_use_case` script snippet tying these architectures together concurrently.*
-
+> For the complete configuration reference with all parameters, see [configuration.md](configuration.md).
