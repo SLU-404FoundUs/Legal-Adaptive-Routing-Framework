@@ -3,13 +3,15 @@ Saint Louis University : Team 404FoundUs
 @file_ embedding.py
 @project_ LLM Legal Adaptive Routing Framework
 @desc_ Manages document embeddings via OpenRouter and FAISS vector index for legal RAG retrieval.
-@deps_ requests, json, numpy, faiss, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
+@deps_ requests, json, numpy, faiss, re, logging, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
 """
 
-import requests
 import json
+import re
+from src.adaptive_routing.core.engine import LLMRequestEngine
 import numpy as np
 import faiss
+import logging
 from src.adaptive_routing.config import FrameworkConfig
 from src.adaptive_routing.core.exceptions import (
     AuthenticationError,
@@ -17,6 +19,8 @@ from src.adaptive_routing.core.exceptions import (
     APIResponseError,
     InvalidInputError
 )
+
+logger = logging.getLogger(__name__)
 
 
 class EmbeddingManager:
@@ -43,7 +47,10 @@ class EmbeddingManager:
         self._model = model or FrameworkConfig._RETRIEVAL_MODEL
         self._chunk_size = chunk_size if chunk_size is not None else FrameworkConfig._RETRIEVAL_CHUNK_SIZE
         self._chunk_overlap = chunk_overlap if chunk_overlap is not None else FrameworkConfig._RETRIEVAL_CHUNK_OVERLAP
-        self._url = "https://openrouter.ai/api/v1/embeddings"
+        
+        ## @logic_ Core Engine for API Access
+        self._engine = LLMRequestEngine(api_key=self._api_key, model=self._model)
+        self._engine._url = "https://openrouter.ai/api/v1/embeddings"
 
         ## @logic_ Index and metadata storage
         self._index = None
@@ -51,29 +58,49 @@ class EmbeddingManager:
         self._dimension = None
 
     # ------------------------------------------------------------------
-    # Chunking
+    # Chunking (Sentence-Boundary Aware)
     # ------------------------------------------------------------------
     def _chunk_text_(self, text: str) -> list:
         """
         @func_ _chunk_text_ (@params text)
         @params text : (str) Raw document text.
-        @return_ list[str] : List of text chunks.
-        @desc_ Splits a document into overlapping character-level chunks.
+        @return_ list[str] : List of text chunks split at sentence boundaries.
+        @desc_ Splits a document into overlapping chunks at sentence boundaries,
+               preserving semantic coherence. Falls back to character-level splitting
+               for text without clear sentence delimiters.
         """
         if not text or not text.strip():
             raise InvalidInputError("Cannot chunk empty text.")
 
-        chunks = []
-        start = 0
-        text_len = len(text)
+        ## @logic_ Split text into sentences at sentence-ending punctuation
+        sentences = re.split(r'(?<=[.!?;])\s+', text)
+        
+        ## @logic_ If the text has no sentence boundaries, fall back to paragraph/newline splitting
+        if len(sentences) <= 1 and len(text) > self._chunk_size:
+            sentences = re.split(r'\n\s*\n', text)
+        
+        ## @logic_ If still a single massive block, use character-level splitting as last resort
+        if len(sentences) <= 1 and len(text) > self._chunk_size:
+            sentences = [text[i:i+500] for i in range(0, len(text), 500)]
 
-        while start < text_len:
-            end = min(start + self._chunk_size, text_len)
-            chunks.append(text[start:end])
-            ## @logic_ Advance by (chunk_size - overlap) to create overlap window
-            start += self._chunk_size - self._chunk_overlap
-            if start >= text_len:
-                break
+        chunks = []
+        current_chunk = ""
+
+        for sentence in sentences:
+            ## @logic_ If adding this sentence exceeds chunk_size, finalize current chunk
+            if len(current_chunk) + len(sentence) > self._chunk_size and current_chunk:
+                chunks.append(current_chunk.strip())
+                ## @logic_ Overlap: keep the last N chars of the previous chunk for continuity
+                if self._chunk_overlap > 0:
+                    current_chunk = current_chunk[-self._chunk_overlap:] + " " + sentence
+                else:
+                    current_chunk = sentence
+            else:
+                current_chunk = (current_chunk + " " + sentence) if current_chunk else sentence
+
+        ## @logic_ Don't forget the remaining text
+        if current_chunk.strip():
+            chunks.append(current_chunk.strip())
 
         return chunks
 
@@ -85,58 +112,38 @@ class EmbeddingManager:
         @func_ _get_embeddings_ (@params texts)
         @params texts : (list[str]) List of text strings to embed.
         @return_ np.ndarray : Matrix of shape (len(texts), dimension).
-        @desc_ Calls the OpenRouter /embeddings endpoint for the configured model.
+        @desc_ Calls the OpenRouter /embeddings endpoint for the configured model using the core engine.
         """
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/404FoundUs",
-            "X-Title": "LLM Legal Adaptive Routing Framework"
-        }
-
         payload = {
             "model": self._model,
             "input": texts
         }
 
-        try:
-            response = requests.post(self._url, headers=headers, json=payload, timeout=60)
-            response.raise_for_status()
+        response_json = self._engine._call_api_(
+            payload=payload, 
+            timeout=FrameworkConfig._EMBEDDING_TIMEOUT
+        )
 
-            response_json = response.json()
-            if "data" not in response_json or len(response_json["data"]) == 0:
-                raise APIResponseError(
-                    "Invalid embedding response: 'data' field missing or empty.",
-                    response_body=response_json
-                )
-
-            ## @logic_ Sort by index to preserve order, then stack into numpy array
-            sorted_data = sorted(response_json["data"], key=lambda x: x["index"])
-            embeddings = np.array([item["embedding"] for item in sorted_data], dtype=np.float32)
-            return embeddings
-
-        except requests.exceptions.HTTPError as e:
-            if e.response.status_code == 401:
-                raise AuthenticationError(
-                    f"Invalid API Key. Details: {e.response.text}"
-                ) from e
+        if "data" not in response_json or len(response_json["data"]) == 0:
             raise APIResponseError(
-                f"Embedding request failed ({e.response.status_code}): {e.response.text}",
-                status_code=e.response.status_code
-            ) from e
-        except requests.exceptions.RequestException as e:
-            raise APIConnectionError(
-                f"Failed to connect to OpenRouter embeddings API: {str(e)}"
-            ) from e
+                "Invalid embedding response: 'data' field missing or empty.",
+                response_body=response_json
+            )
+
+        ## @logic_ Sort by index to preserve order, then stack into numpy array
+        sorted_data = sorted(response_json["data"], key=lambda x: x["index"])
+        embeddings = np.array([item["embedding"] for item in sorted_data], dtype=np.float32)
+        return embeddings
 
     # ------------------------------------------------------------------
     # Index Management
     # ------------------------------------------------------------------
-    def _add_documents_(self, documents: list):
+    def _add_documents_(self, documents: list, bypass_chunking: bool = False):
         """
-        @func_ _add_documents_ (@params documents)
+        @func_ _add_documents_ (@params documents, bypass_chunking)
         @params documents : (list[str]) Raw document texts to chunk, embed, and index.
-        @desc_ Chunks each document, generates embeddings, and adds them to the FAISS index.
+        @params bypass_chunking : (bool) If True, treats the input text as a single cohesive chunk without splitting.
+        @desc_ Embeds text and adds them to the FAISS index. Skips chunking if bypassed.
         """
         all_chunks = []
         chunk_metadatas = []
@@ -148,12 +155,18 @@ class EmbeddingManager:
                 text = doc
                 meta = {}
                 
-            chunks = self._chunk_text_(text)
+            if bypass_chunking:
+                chunks = [text]
+            else:
+                chunks = self._chunk_text_(text)
+                
             all_chunks.extend(chunks)
             chunk_metadatas.extend([meta] * len(chunks))
 
         if not all_chunks:
             raise InvalidInputError("No chunks generated from provided documents.")
+
+        logger.info(f"Embedding {len(all_chunks)} chunks from {len(documents)} documents...")
 
         # Batch requests to support large corpora and avoid API limits
         batch_size = 100
@@ -172,14 +185,16 @@ class EmbeddingManager:
 
         self._index.add(embeddings)
         self._chunks.extend([{"text": c, "metadata": m} for c, m in zip(all_chunks, chunk_metadatas)])
+        logger.info(f"Index now contains {self._index.ntotal} vectors.")
 
     def _search_(self, query: str, top_k: int = None) -> list:
         """
         @func_ _search_ (@params query, top_k)
         @params query : (str) The search query.
         @params top_k : (int) Number of results to return (defaults to config).
-        @return_ list[dict] : List of {chunk, score} dicts ranked by relevance.
+        @return_ list[dict] : List of {chunk, score, metadata} dicts ranked by relevance.
         @desc_ Embeds the query and retrieves the nearest chunks from the FAISS index.
+                Scores are normalized to 0-1 similarity (higher = more relevant).
         """
         if self._index is None or self._index.ntotal == 0:
             return []
@@ -194,18 +209,24 @@ class EmbeddingManager:
         results = []
         for i, idx in enumerate(indices[0]):
             if idx < len(self._chunks):
+                ## @logic_ Convert L2 distance to similarity score (higher = better)
+                ## Formula: similarity = 1 / (1 + distance)
+                ## Range: (0, 1] where 1.0 = exact match
+                raw_distance = float(distances[0][i])
+                similarity_score = 1.0 / (1.0 + raw_distance)
+                
                 chunk_data = self._chunks[idx]
                 if isinstance(chunk_data, dict):
                     results.append({
                         "chunk": chunk_data["text"],
                         "metadata": chunk_data["metadata"],
-                        "score": float(distances[0][i])
+                        "score": similarity_score
                     })
                 else:
                     results.append({
                         "chunk": chunk_data,
                         "metadata": {},
-                        "score": float(distances[0][i])
+                        "score": similarity_score
                     })
 
         return results
@@ -223,6 +244,7 @@ class EmbeddingManager:
         faiss.write_index(self._index, index_path)
         with open(chunks_path, "w", encoding="utf-8") as f:
             json.dump(self._chunks, f, ensure_ascii=False)
+        logger.info(f"Saved FAISS index ({self._index.ntotal} vectors) to {index_path}")
 
     def _load_index_(self, index_path: str, chunks_path: str):
         """
@@ -236,3 +258,4 @@ class EmbeddingManager:
 
         with open(chunks_path, "r", encoding="utf-8") as f:
             self._chunks = json.load(f)
+        logger.info(f"Loaded FAISS index ({self._index.ntotal} vectors) from {index_path}")

@@ -60,8 +60,8 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 
 **Data flow — Ingestion:**
 1. Raw documents → `_ingest_documents_()` → `EmbeddingManager._add_documents_()`
-2. Documents split into overlapping chunks → `_chunk_text_()`
-3. Chunks sent to OpenRouter `/embeddings` endpoint → `_get_embeddings_()`
+2. (Optional) Documents bypass chunk fragmentation entirely to preserve JSON integrity, or are split via `_chunk_text_()`
+3. Content is sent to OpenRouter `/embeddings` endpoint → `_get_embeddings_()`
 4. Embeddings added to FAISS `IndexFlatL2` index
 
 **Data flow — Retrieval:**
@@ -248,8 +248,8 @@ A **utility method** that crawls a directory of JSON corpus files, ingests all d
 **Behavior:**
 1. Recursively finds all `.json` files in `corpus_dir`
 2. Skips documents where `is_repealed` is `True`
-3. Formats each document as `"Jurisdiction: {jurisdiction}\nTitle: {title}\n\n{content}"`
-4. Ingests all formatted documents
+3. Extracts and formats the complete dictionary using `json.dumps(data, ensure_ascii=False, indent=2)`
+4. Ingests all documents with `bypass_chunking=True` to retain their JSON structure
 5. Saves the index to `output_dir`
 
 **Raises**: `ValueError` if no valid JSON documents are found in the corpus directory.
@@ -364,14 +364,15 @@ Calls the OpenRouter `/embeddings` endpoint to generate vector embeddings.
 ### `_add_documents_()`
 
 ```python
-def _add_documents_(self, documents: list[str])
+def _add_documents_(self, documents: list[str], bypass_chunking: bool = False)
 ```
 
-Chunks each document, generates embeddings, and adds them to the FAISS index.
+Chunks each document (or bypasses chunking), generates embeddings, and adds them to the FAISS index.
 
 | Parameter | Type | Description |
 |:---|:---|:---|
 | `documents` | `list[dict]` / `list[str]` | Documents (dicts containing content and metadata, or plain strings) |
+| `bypass_chunking` | `bool` | If True, preserves each document individually rather than fragmentation |
 
 **Behavior:**
 - On first call, initializes the FAISS `IndexFlatL2` using the embedding dimension
@@ -469,13 +470,15 @@ The `build_and_save_index()` method expects JSON files with this structure:
 | `content` | `str` | Yes | Full text content of the legal document |
 | `is_repealed` | `bool` | No | If `true`, the document is skipped during indexing |
 
-**Formatted output**: Documents are indexed as:
+**Formatted output**: Rather than text concatenation, documents are retained natively via JSON serialization:
 
-```
-Jurisdiction: Philippines
-Title: Labor Code - Article 279: Security of Tenure
-
-In cases of regular employment, the employer shall not terminate...
+```json
+{
+  "jurisdiction": "Philippines",
+  "title": "Labor Code - Article 279: Security of Tenure",
+  "content": "In cases of regular employment...",
+  "is_repealed": false
+}
 ```
 
 **Directory structure supported:**

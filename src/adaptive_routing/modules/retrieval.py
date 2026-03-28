@@ -3,7 +3,7 @@ Saint Louis University : Team 404FoundUs
 @file src/adaptive_routing/modules/retrieval.py
 @project_ LLM Legal Adaptive Routing Framework
 @desc_ Orchestrator module that coordinates Legal RAG retrieval: embed documents and search.
-@deps_ src.adaptive_routing.modules.legal_retrieval.embedding, src.adaptive_routing.modules.legal_retrieval.retriever, src.adaptive_routing.config
+@deps_ src.adaptive_routing.modules.legal_retrieval.embedding, src.adaptive_routing.modules.legal_retrieval.retriever, src.adaptive_routing.config, logging
 """
 
 from src.adaptive_routing.modules.legal_retrieval.embedding import EmbeddingManager
@@ -12,6 +12,9 @@ from src.adaptive_routing.config import FrameworkConfig
 import os
 import glob
 import json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class LegalRetrievalModule:
@@ -31,7 +34,7 @@ class LegalRetrievalModule:
             chunk_overlap=FrameworkConfig._RETRIEVAL_CHUNK_OVERLAP
         )
 
-        ## @logic_ Initialize simple retriever
+        ## @logic_ Initialize retriever with filtering capabilities
         self._retriever = retriever or LegalRetriever(self._embedding_manager)
         
         ## @logic_ Auto-load FAISS index if specified in arguments or FrameworkConfig
@@ -42,16 +45,16 @@ class LegalRetrievalModule:
             if os.path.exists(target_index) and os.path.exists(target_chunks):
                 self._load_index_(target_index, target_chunks)
             else:
-                print(f"Warning: Index or chunk file not found at {target_index} / {target_chunks}. Proceeding with empty index.")
+                logger.warning(f"Index or chunk file not found at {target_index} / {target_chunks}. Proceeding with empty index.")
 
     def _ingest_documents_(self, documents: list):
         """
         @func_ _ingest_documents_ (@params documents)
         @params documents : (list[str]) Raw legal document texts to add to the knowledge base.
         @return_ None
-        @desc_ Chunks, embeds, and indexes the provided documents into the FAISS vector store.
+        @desc_ Embeds and indexes the provided documents into the FAISS vector store, bypassing text fragmentation rules.
         """
-        self._embedding_manager._add_documents_(documents)
+        self._embedding_manager._add_documents_(documents, bypass_chunking=True)
 
     def _process_retrieval_(self, query: str, top_k: int = None) -> dict:
         """
@@ -113,10 +116,10 @@ class LegalRetrievalModule:
                 title = data.get("title", "No Title")
                 content = data.get("content", "")
                 
-                formatted_text = f"Jurisdiction: {jurisdiction}\nTitle: {title}\n\n{content}"
                 if content.strip():
+                    json_str = json.dumps(data, ensure_ascii=False, indent=2)
                     docs.append({
-                        "content": formatted_text,
+                        "content": json_str,
                         "metadata": {
                             "jurisdiction": jurisdiction,
                             "title": title,
@@ -125,9 +128,10 @@ class LegalRetrievalModule:
                         }
                     })
             except Exception as e:
-                print(f"Error reading {file_path}: {e}")
+                logger.error(f"Error reading {file_path}: {e}")
                 
         if docs:
+            logger.info(f"Ingesting {len(docs)} documents from {corpus_dir}")
             self._ingest_documents_(docs)
             
             faiss_path = os.path.join(output_dir, f"{index_prefix}.faiss")

@@ -7,6 +7,15 @@ from dotenv import load_dotenv
 from src.adaptive_routing import FrameworkConfig, TriageModule, SemanticRouterModule, LegalRetrievalModule
 load_dotenv()
 
+# --- Retry Configuration ---
+MAX_RETRIES = 5
+BASE_DELAY = 2  # seconds
+
+def _is_rate_limited_(error):
+    """Check if an exception is a 429 rate-limit error."""
+    err_str = str(error).lower()
+    return "429" in err_str or "rate" in err_str or "rate-limited" in err_str or "too many requests" in err_str
+
 
 
 app = Flask(__name__)
@@ -38,11 +47,18 @@ FrameworkConfig._update_settings_(
         general_reasoning=False,
 
         # --- Legal Generator: Reasoning/Advice ---
-        reasoning_model="z-ai/glm-4.5-air:free",
+        reasoning_model="nvidia/nemotron-3-nano-30b-a3b:free",
         reasoning_temp=0.7,
         reasoning_max_tokens=2000,
         reasoning_use_system=True,
         reasoning_reasoning=False,
+
+        # --- Casual Conversation (Greetings, Thanks, Small Talk) ---
+        casual_model="liquid/lfm-2.5-1.2b-instruct:free",
+        casual_temp=0.8,
+        casual_max_tokens=200,
+        casual_use_system=True,
+        casual_reasoning=False,
     )
 
 # Initialize Modules
@@ -96,69 +112,99 @@ def chat():
     def generate():
         nonlocal session_id
         
-        if session_id and session_id in SESSIONS:
-            session = SESSIONS[session_id]
-            route = session["route"]
-            history = session["history"]
+        try:
+            # 1. Session Retrieval
+            is_new_session = False
+            if not session_id or session_id not in SESSIONS:
+                session_id = str(uuid.uuid4())
+                SESSIONS[session_id] = {"history": []}
+                is_new_session = True
+                
+            history = SESSIONS[session_id]["history"]
             
             yield json.dumps({"type": "meta", "sessionId": session_id}) + "\n"
-            yield json.dumps({"type": "step", "content": f"Resuming session ({route})..."}) + "\n"
+            if not is_new_session:
+                yield json.dumps({"type": "step", "content": "Resuming session..."}) + "\n"
+
+            # 2. Triage Step (with persistence for rate-limits)
+            yield json.dumps({"type": "step", "content": "Normalizing input and detecting language..."}) + "\n"
+            normalized_text = user_input
+            detected_language = "Unknown"
             
-            try:
-                history.append({"role": "user", "content": user_input})
-                yield json.dumps({"type": "step", "content": "Generating response..."}) + "\n"
-                response_text = router_module._generator._dispatch_conversation_(history, route)
-                history.append({"role": "assistant", "content": response_text})
-                yield json.dumps({"type": "result", "content": response_text}) + "\n"
-                
-            except Exception as e:
-                yield json.dumps({"type": "error", "content": f"Session Error: {str(e)}"}) + "\n"
-                print(f"Error processing session request: {e}")
-                
-        else:
-            new_session_id = str(uuid.uuid4())
-            yield json.dumps({"type": "meta", "sessionId": new_session_id}) + "\n"
-            
-            # 1. Start Triage
-            yield json.dumps({"type": "step", "content": "Initializing Triage..."}) + "\n"
-            
-            try:
-                # --- Triage Step ---
-                yield json.dumps({"type": "step", "content": "Normalizing input and detecting language..."}) + "\n"
-                
-                normalized_text = user_input
-                detected_language = "Unknown"
-                
-                if triage_module:
+            if triage_module:
+                for attempt in range(1, MAX_RETRIES + 1):
                     try:
                         triaged_data = triage_module._process_request_(user_input)
                         if triaged_data and triaged_data.get("normalized_text"):
                             normalized_text = triaged_data.get("normalized_text", user_input)
                         detected_language = triaged_data.get("detected_language", "Unknown")
+                        break
                     except Exception as triage_err:
-                        print(f"Triage fallback used due to error: {triage_err}")
-                        yield json.dumps({"type": "step", "content": "Triage omitted (fallback applied)..."}) + "\n"
-                
-                yield json.dumps({
-                    "type": "data", 
-                    "title": "Triage Result",
-                    "data": {
-                        "Language": detected_language,
-                        "Normalized Text": normalized_text
-                    }
-                }) + "\n"
+                        if _is_rate_limited_(triage_err) and attempt < MAX_RETRIES:
+                            delay = BASE_DELAY * attempt
+                            print(f"Triage rate-limited (attempt {attempt}/{MAX_RETRIES}), retrying in {delay}s...")
+                            yield json.dumps({"type": "step", "content": f"Rate-limited — retrying triage ({attempt}/{MAX_RETRIES})..."}) + "\n"
+                            time.sleep(delay)
+                        else:
+                            print(f"Triage failed after {attempt} attempt(s): {triage_err}")
+                            yield json.dumps({"type": "step", "content": "Triage failed — using raw input as fallback..."}) + "\n"
+                            break
+            
+            yield json.dumps({
+                "type": "data", 
+                "title": "Triage Result",
+                "data": {
+                    "Language": detected_language,
+                    "Normalized Text": normalized_text
+                }
+            }) + "\n"
 
-                # --- Retrieval Step (RAG) ---
+            if not normalized_text:
+                yield json.dumps({"type": "error", "content": "Normalization failed. Input text unclear."}) + "\n"
+                return
+
+            # 3. Classification Step (with persistence for rate-limits)
+            yield json.dumps({"type": "step", "content": "Routing query to appropriate model..."}) + "\n"
+            classification = {"route": "General-LLM", "confidence": 0.0, "trigger_signals": []}
+            
+            if router_module:
+                for attempt in range(1, MAX_RETRIES + 1):
+                    try:
+                        classification = router_module._process_routing_(normalized_text)
+                        break
+                    except Exception as classify_err:
+                        if _is_rate_limited_(classify_err) and attempt < MAX_RETRIES:
+                            delay = BASE_DELAY * attempt
+                            print(f"Classification rate-limited (attempt {attempt}/{MAX_RETRIES}), retrying in {delay}s...")
+                            yield json.dumps({"type": "step", "content": f"Rate-limited — retrying classification ({attempt}/{MAX_RETRIES})..."}) + "\n"
+                            time.sleep(delay)
+                        else:
+                            print(f"Classification failed after {attempt} attempt(s): {classify_err}")
+                            break
+            
+            route = classification.get("route") or "General-LLM"
+            confidence = classification.get("confidence", 0.0)
+            
+            yield json.dumps({
+                "type": "data",
+                "title": "Routing Result",
+                "data": {
+                    "Route": route,
+                    "Confidence": confidence
+                }
+            }) + "\n"
+
+            # 4. RAG Retrieval (skip for Casual routes)
+            context_str = None
+            if route != "Casual-LLM":
                 yield json.dumps({"type": "step", "content": "Retrieving relevant legal context..."}) + "\n"
                 
-                context_str = ""
                 if retrieval_module:
                     try:
                         retrieval_output = retrieval_module._process_retrieval_(normalized_text)
                         retrieved_chunks = retrieval_output.get("retrieved_chunks", [])
                         
                         if retrieved_chunks:
-                            # Send data to frontend
                             yield json.dumps({
                                 "type": "rag_context",
                                 "title": "Legal Sources Retrieved",
@@ -168,71 +214,61 @@ def chat():
                                     "score": float(chunk.get("score", 0.0))
                                 } for chunk in retrieved_chunks[:3]]
                             }) + "\n"
-                            
-                            # Construct context string
                             context_str = "\n".join([c.get("chunk", "") for c in retrieved_chunks])
                         else:
                             yield json.dumps({"type": "step", "content": "No relevant context found..."}) + "\n"
                     except Exception as rag_err:
                         print(f"RAG retrieval error: {rag_err}")
                         yield json.dumps({"type": "step", "content": "Retrieval omitted (fallback applied)..."}) + "\n"
+            else:
+                yield json.dumps({"type": "step", "content": "Casual conversation detected — skipping legal retrieval..."}) + "\n"
 
-                # --- Routing Step ---
-                if normalized_text:
-                    yield json.dumps({"type": "step", "content": "Routing query to appropriate model..."}) + "\n"
-                    
-                    route = "Unknown"
-                    confidence = 0.0
-                    response_text = None
-                    
-                    if router_module:
-                        try:
-                            routing_output = router_module._process_routing_(normalized_text, context=context_str)
-                            classification = routing_output.get("classification", {})
-                            route = classification.get("route", "Unknown")
-                            confidence = classification.get("confidence", 0.0)
-                            response_text = routing_output.get("response_text")
-                        except Exception as route_err:
-                            print(f"Routing error: {route_err}")
-                            response_text = "I am currently unable to route your query successfully due to a technical error."
-                    
-                    yield json.dumps({
-                        "type": "data",
-                        "title": "Routing Result",
-                        "data": {
-                            "Route": route,
-                            "Confidence": confidence
-                        }
-                    }) + "\n"
-
-                    # --- Session Initialization & Generation ---
-                    if response_text:
-                        system_prompt = FrameworkConfig._GENERAL_INSTRUCTIONS
-                        if route == "Reasoning-LLM":
-                            system_prompt = FrameworkConfig._REASONING_INSTRUCTIONS
-                        history = [
-                            {"role": "system", "content": system_prompt},
-                            {"role": "user", "content": normalized_text}
-                        ]
+            # 5. Generation Step (with persistence for rate-limits)
+            yield json.dumps({"type": "step", "content": "Generating response..."}) + "\n"
+            
+            # Add the user's clean message to history before generation
+            history.append({"role": "user", "content": normalized_text})
+            
+            response_text = ""
+            if router_module:
+                for attempt in range(1, MAX_RETRIES + 1):
+                    try:
+                        result = router_module._generate_conversation_(
+                            classification=classification,
+                            messages=history,
+                            context=context_str,
+                            limits=0.6
+                        )
+                        response_text = result.get("response_text", "")
+                        accepted = result.get("accepted", False)
                         
-                        history.append({"role": "assistant", "content": response_text})
-                        
-                        # Save Session
-                        SESSIONS[new_session_id] = {
-                            "route": route,
-                            "history": history
-                        }
+                        if not accepted:
+                            yield json.dumps({"type": "step", "content": "Confidence below threshold — requesting clarification..."}) + "\n"
+                        break
+                    except Exception as gen_err:
+                        if _is_rate_limited_(gen_err) and attempt < MAX_RETRIES:
+                            delay = BASE_DELAY * attempt
+                            print(f"Generation rate-limited (attempt {attempt}/{MAX_RETRIES}), retrying in {delay}s...")
+                            yield json.dumps({"type": "step", "content": f"Rate-limited — retrying generation ({attempt}/{MAX_RETRIES})..."}) + "\n"
+                            time.sleep(delay)
+                        else:
+                            print(f"Generation failed after {attempt} attempt(s): {gen_err}")
+                            response_text = "I am currently unable to process your query due to a technical error. Please try again."
+                            break
+            else:
+                response_text = "I am currently unable to process your query due to a technical error."
 
-                        yield json.dumps({"type": "step", "content": "Generating response..."}) + "\n"
-                        yield json.dumps({"type": "result", "content": response_text}) + "\n"
-                    else:
-                         yield json.dumps({"type": "error", "content": "No response generated."}) + "\n"
-                else:
-                    yield json.dumps({"type": "error", "content": "Normalization failed. Input text unclear."}) + "\n"
+            # 6. Finalize response
+            if response_text:
+                history.append({"role": "assistant", "content": response_text})
+                SESSIONS[session_id]["route"] = route
+                yield json.dumps({"type": "result", "content": response_text}) + "\n"
+            else:
+                yield json.dumps({"type": "error", "content": "No response generated."}) + "\n"
 
-            except Exception as e:
-                yield json.dumps({"type": "error", "content": f"Server Error: {str(e)}"}) + "\n"
-                print(f"Error processing request: {e}")
+        except Exception as e:
+            yield json.dumps({"type": "error", "content": f"Server Error: {str(e)}"}) + "\n"
+            print(f"Error processing request: {e}")
 
     return Response(stream_with_context(generate()), mimetype='application/x-ndjson')
 

@@ -3,11 +3,13 @@ Saint Louis University : Team 404FoundUs
 @file src/adaptive_routing/core/engine.py
 @project_ LLM Legal Adaptive Routing Framework
 @desc_ Handler for OpenRouter API requests with robust error management.
-@deps_ requests, json, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
+@deps_ requests, json, time, logging, src.adaptive_routing.config, src.adaptive_routing.core.exceptions
 """
 
 import requests
 import json
+import time
+import logging
 from src.adaptive_routing.config import FrameworkConfig
 from src.adaptive_routing.core.exceptions import (
     AuthenticationError,
@@ -16,6 +18,8 @@ from src.adaptive_routing.core.exceptions import (
     InvalidInputError,
     APIResponseError
 )
+
+logger = logging.getLogger(__name__)
 
 class LLMRequestEngine:
     """
@@ -61,6 +65,129 @@ class LLMRequestEngine:
         if self._max_tokens <= 0:
             raise InvalidInputError(f"max_tokens must be positive, got {self._max_tokens}")
 
+    # ------------------------------------------------------------------
+    # Shared Internal Helpers
+    # ------------------------------------------------------------------
+    def _build_headers_(self):
+        """
+        @func_ _build_headers_
+        @return_ dict : HTTP headers for OpenRouter API requests.
+        @desc_ Centralized header construction used by all API methods.
+        """
+        return {
+            "Authorization": f"Bearer {self._api_key}",
+            "Content-Type": "application/json",
+            "HTTP-Referer": "https://github.com/404FoundUs", 
+            "X-Title": "LLM Legal Adaptive Routing Framework" 
+        }
+
+    def _parse_response_(self, response_json):
+        """
+        @func_ _parse_response_ (@params response_json)
+        @params response_json : (dict) The parsed JSON from the API response.
+        @return_ str : The AI's response text, with optional reasoning prefix.
+        @desc_ Unified response parsing for both completion and chat completion methods.
+        """
+        if 'choices' in response_json and len(response_json['choices']) > 0:
+            message = response_json['choices'][0]['message']
+            content = message.get('content', '')
+            
+            reasoning = message.get('reasoning', None)
+            if self._include_reasoning and reasoning:
+                return f"<reasoning>\n{reasoning}\n</reasoning>\n\n{content}"
+            
+            return content
+        else:
+            raise APIResponseError(
+                "Invalid response format from API: 'choices' field missing or empty.", 
+                response_body=response_json
+            )
+
+    def _handle_request_error_(self, error, context="API request"):
+        """
+        @func_ _handle_request_error_ (@params error, context)
+        @params error : (Exception) The caught exception.
+        @params context : (str) Description of the operation for error messages.
+        @desc_ Unified error handler that maps HTTP status codes to framework exceptions.
+        """
+        if isinstance(error, requests.exceptions.HTTPError):
+            status_code = error.response.status_code
+            detail = error.response.text
+            if status_code == 401:
+                raise AuthenticationError(
+                    f"Invalid API Key provided. Details: {detail}"
+                ) from error
+            elif status_code == 404:
+                raise ModelNotFoundError(
+                    f"Model '{self._model}' not found or API endpoint invalid. Details: {detail}"
+                ) from error
+            elif status_code == 402:
+                raise APIResponseError(
+                    f"Insufficient credits. Details: {detail}", 
+                    status_code=402
+                ) from error
+            else:
+                raise APIResponseError(
+                    f"HTTP Error {status_code}: {detail}", 
+                    status_code=status_code, 
+                    response_body=detail
+                ) from error
+        
+        elif isinstance(error, requests.exceptions.ConnectionError):
+            raise APIConnectionError(
+                f"{context} failed: Could not connect to OpenRouter API. Check your internet connection. Details: {str(error)}"
+            ) from error
+        
+        elif isinstance(error, requests.exceptions.Timeout):
+            raise APIConnectionError(
+                f"{context} timed out after {FrameworkConfig._REQUEST_TIMEOUT} seconds. Details: {str(error)}"
+            ) from error
+             
+        elif isinstance(error, requests.exceptions.RequestException):
+            raise APIConnectionError(
+                f"{context} failed unexpectedly: {str(error)}"
+            ) from error
+
+        elif isinstance(error, json.JSONDecodeError):
+            raise APIResponseError(
+                f"Failed to decode API response JSON. Details: {str(error)}"
+            ) from error
+
+    def _call_api_(self, payload, timeout=None):
+        """
+        @func_ _call_api_ (@params payload, timeout)
+        @params payload : (dict) The JSON request payload.
+        @params timeout : (int, optional) Request timeout in seconds.
+        @return_ dict : Parsed JSON response from the API.
+        @desc_ Executes an API call with retry logic and unified error handling.
+        """
+        headers = self._build_headers_()
+        timeout = timeout or FrameworkConfig._REQUEST_TIMEOUT
+        retries = FrameworkConfig._RETRY_COUNT
+        backoff = FrameworkConfig._RETRY_BACKOFF
+
+        last_error = None
+        for attempt in range(1 + retries):
+            try:
+                response = requests.post(self._url, headers=headers, json=payload, timeout=timeout)
+                response.raise_for_status()
+                return response.json()
+            except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as e:
+                last_error = e
+                if attempt < retries:
+                    wait_time = backoff * (2 ** attempt)
+                    logger.warning(f"API request attempt {attempt + 1} failed ({type(e).__name__}). Retrying in {wait_time:.1f}s...")
+                    time.sleep(wait_time)
+                    continue
+                self._handle_request_error_(e, context="Completion")
+            except (requests.exceptions.HTTPError, requests.exceptions.RequestException, json.JSONDecodeError) as e:
+                ## @logic_ Non-retryable errors (auth, model not found, etc.) — fail immediately
+                self._handle_request_error_(e, context="Completion")
+
+        ## @logic_ Should not reach here, but safety net
+        if last_error:
+            self._handle_request_error_(last_error, context="Completion")
+
 
     def _encode_image_(self, image_source):
         """
@@ -104,13 +231,6 @@ class LLMRequestEngine:
         @return_ str : The AI's response text.
         @err_ Raises AuthenticationError, ModelNotFoundError, APIConnectionError, APIResponseError
         """
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/404FoundUs", 
-            "X-Title": "LLM Legal Adaptive Routing Framework" 
-        }
-
         user_content = prompt
 
         ## @logic_ If system role is not supported, we merge instructions into user prompt
@@ -118,7 +238,6 @@ class LLMRequestEngine:
              user_content = f"{sys_message}\n\n{prompt}"
 
         if images:
-
             text_payload = user_content if not self._use_system_role else prompt
             
             user_content = [{"type": "text", "text": text_payload}]
@@ -140,47 +259,9 @@ class LLMRequestEngine:
             "max_tokens": self._max_tokens,
             "include_reasoning": self._include_reasoning
         }
-        
 
-        try:
-            response = requests.post(self._url, headers=headers, json=payload, timeout=30)
-            response.raise_for_status()
-            
-
-            response_json = response.json()
-            if 'choices' in response_json and len(response_json['choices']) > 0:
-                message = response_json['choices'][0]['message']
-                content = message.get('content', '')
-                
-                reasoning = message.get('reasoning', None)
-                if self._include_reasoning and reasoning:
-                    return f"<reasoning>\n{reasoning}\n</reasoning>\n\n{content}"
-                
-                return content
-            else:
-                raise APIResponseError("Invalid response format from API: 'choices' field missing or empty.", response_body=response_json)
-
-        except requests.exceptions.HTTPError as e:
-            error_msg = f"HTTP Error {e.response.status_code}: {e.response.text}"
-            if e.response.status_code == 401:
-                raise AuthenticationError(f"Invalid API Key provided. Details: {e.response.text}") from e
-            elif e.response.status_code == 404:
-                raise ModelNotFoundError(f"Model '{self._model}' not found or API endpoint invalid. Details: {e.response.text}") from e
-            elif e.response.status_code == 402: # Payment required
-                 raise APIResponseError(f"Insufficient credits. Details: {e.response.text}", status_code=402) from e
-            else:
-                raise APIResponseError(error_msg, status_code=e.response.status_code, response_body=e.response.text) from e
-        
-        except requests.exceptions.ConnectionError as e:
-            raise APIConnectionError(f"Failed to connect to OpenRouter API. Check your internet connection. Details: {str(e)}") from e
-        
-        except requests.exceptions.Timeout as e:
-             raise APIConnectionError(f"Request timed out after 30 seconds. Details: {str(e)}") from e
-             
-        except requests.exceptions.RequestException as e:
-            raise APIConnectionError(f"An unexpected API error occurred: {str(e)}") from e
-        except json.JSONDecodeError as e:
-             raise APIResponseError(f"Failed to decode API response JSON. Details: {str(e)}") from e
+        response_json = self._call_api_(payload)
+        return self._parse_response_(response_json)
 
     def _get_chat_completion_(self, messages: list) -> str:
         """
@@ -189,13 +270,6 @@ class LLMRequestEngine:
         @return_ str : The AI's response text.
         @desc_ Direct interface for passing full conversation history.
         """
-        headers = {
-            "Authorization": f"Bearer {self._api_key}",
-            "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/404FoundUs", 
-            "X-Title": "LLM Legal Adaptive Routing Framework" 
-        }
-
         # Prepare messages based on system role support
         final_messages = []
         if not self._use_system_role:
@@ -226,25 +300,5 @@ class LLMRequestEngine:
             "include_reasoning": self._include_reasoning
         }
 
-        try:
-            response = requests.post(self._url, headers=headers, json=payload, timeout=30)
-            response.raise_for_status()
-            
-            response_json = response.json()
-            if 'choices' in response_json and len(response_json['choices']) > 0:
-                message = response_json['choices'][0]['message']
-                content = message.get('content', '')
-                
-                reasoning = message.get('reasoning', None)
-                if self._include_reasoning and reasoning:
-                    return f"<reasoning>\n{reasoning}\n</reasoning>\n\n{content}"
-                
-                return content
-            else:
-                raise APIResponseError("Invalid response format from API: 'choices' field missing or empty.", response_body=response_json)
-
-        except requests.exceptions.RequestException as e:
-             # Re-use existing error handling logic or simplify primarily for brevity in this add-on method
-             # For consistency, we should probably map errors similar to _get_completion_ 
-             # but to save space we'll just raise the connection error for now or generic
-             raise APIConnectionError(f"Chat completion failed: {str(e)}") from e
+        response_json = self._call_api_(payload)
+        return self._parse_response_(response_json)

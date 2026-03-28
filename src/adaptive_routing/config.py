@@ -6,11 +6,18 @@
 ## @deps os, dotenv
 
 import os
+import logging
+
+logger = logging.getLogger(__name__)
 
 class FrameworkConfig:
     """
     @class FrameworkConfig
     @desc_ Manages global AI hyperparameters in different modules.
+
+    IMPORTANT: Configuration values are read at engine initialization time (snapshot).
+    Call _update_settings_() BEFORE creating module instances (TriageModule, SemanticRouterModule, etc.).
+    Updating settings after modules are initialized will NOT affect existing engine instances.
     """
     ## @const_ Global Defaults
     _API_KEY = os.getenv("OPENROUTER_API_KEY", "")
@@ -37,19 +44,36 @@ class FrameworkConfig:
     _USE_SYSTEM_ROLE = True
     _INCLUDE_REASONING = False
 
+    ## @const_ Network Resilience Configuration
+    _REQUEST_TIMEOUT = int(os.getenv("REQUEST_TIMEOUT", "30"))
+    _EMBEDDING_TIMEOUT = int(os.getenv("EMBEDDING_TIMEOUT", "60"))
+    _RETRY_COUNT = int(os.getenv("RETRY_COUNT", "2"))
+    _RETRY_BACKOFF = float(os.getenv("RETRY_BACKOFF", "1.0"))
+
     @classmethod
     def _update_settings_(cls, **kwargs):
         """
         @func_ _update_settings_
         @params kwargs: Dict of hyperparameter overrides.
         @logic_ Dynamically updates class attributes if they exist.
+        @raises ConfigurationError: If an unrecognized key is passed (prevents silent misconfiguration).
+
+        IMPORTANT: Must be called BEFORE module initialization. Existing engine instances
+        will NOT pick up changes made after their creation.
         """
+        from src.adaptive_routing.core.exceptions import ConfigurationError
+        
         ## @iter_ kwargs: iterating over provided settings to update config
         for key, value in kwargs.items():
             # Support both direct casing and underscored casing
             attr_name = f"_{key.upper()}" if not key.startswith("_") else key.upper()
             if hasattr(cls, attr_name):
                 setattr(cls, attr_name, value)
+            else:
+                raise ConfigurationError(
+                    f"Unknown config key: '{key}' (resolved to '{attr_name}'). "
+                    f"Valid keys include: {[a for a in dir(cls) if a.startswith('_') and a[1:2].isupper()]}"
+                )
 
     ## @const_ General LLM Configuration (Information)
     _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-3-12b-it:free")
@@ -106,11 +130,31 @@ class FrameworkConfig:
         "- Use simple, clear language for non-lawyers."
     )
 
+    ## @const_ Casual LLM Configuration (Greetings, Thanks, Small Talk)
+    _CASUAL_MODEL = os.getenv("CASUAL_MODEL", "google/gemma-3-12b-it:free")
+    _CASUAL_TEMP = float(os.getenv("CASUAL_TEMP", "0.8"))
+    _CASUAL_MAX_TOKENS = int(os.getenv("CASUAL_MAX_TOKENS", "200"))
+    _CASUAL_USE_SYSTEM = os.getenv("CASUAL_USE_SYSTEM", "True").lower() == "true"
+    _CASUAL_REASONING = os.getenv("CASUAL_REASONING", "False").lower() == "true"
+    _CASUAL_INSTRUCTIONS = (
+        "ROLE: Friendly Legal Assistant Greeter\n"
+        "PERSONA: You are Atty. Agapay AI, a warm and approachable legal information assistant from Saint Louis University.\n"
+        "TASK: Respond casually and warmly to greetings, expressions of gratitude, farewells, and small talk.\n\n"
+        "CONSTRAINTS:\n"
+        "- Keep responses short, friendly, and natural (1-3 sentences max).\n"
+        "- If the user says thank you, acknowledge warmly and offer further help.\n"
+        "- If the user greets you, greet back and ask how you can assist with legal questions.\n"
+        "- Do NOT provide any legal information or advice in casual responses. if they ask legal assistance clarify them instead\n"
+        "- Maintain your persona as Atty. Agapay AI throughout.\n"
+        "- You may respond in the same language the user uses (English, Tagalog, etc.)."
+    )
+
     ## @const_ Legal Retrieval (RAG) Module Configuration
     _RETRIEVAL_MODEL = os.getenv("RETRIEVAL_MODEL", "sentence-transformers/all-minilm-l6-v2")
     _RETRIEVAL_TOP_K = int(os.getenv("RETRIEVAL_TOP_K", "5"))
-    _RETRIEVAL_CHUNK_SIZE = int(os.getenv("RETRIEVAL_CHUNK_SIZE", "15000"))
-    _RETRIEVAL_CHUNK_OVERLAP = int(os.getenv("RETRIEVAL_CHUNK_OVERLAP", "0"))
+    _RETRIEVAL_CHUNK_SIZE = int(os.getenv("RETRIEVAL_CHUNK_SIZE", "5000"))
+    _RETRIEVAL_CHUNK_OVERLAP = int(os.getenv("RETRIEVAL_CHUNK_OVERLAP", "200"))
+    _RETRIEVAL_SCORE_THRESHOLD = float(os.getenv("RETRIEVAL_SCORE_THRESHOLD", "0.0"))
     
     ## @const_ Pre-built Index Paths (Optional)
     _RETRIEVAL_INDEX_PATH = os.getenv("RETRIEVAL_INDEX_PATH", None)

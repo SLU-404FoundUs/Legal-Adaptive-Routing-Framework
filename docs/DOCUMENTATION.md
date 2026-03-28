@@ -42,7 +42,7 @@ flowchart TD
 
     subgraph RAG["📚 Legal Retrieval Module"]
         direction TB
-        EM["EmbeddingManager<br/><i>Chunk + Embed + Index</i>"]
+        EM["EmbeddingManager<br/><i>Embed + Index (JSON bypass)</i>"]
         LR["LegalRetriever<br/><i>Similarity search</i>"]
         FAISS["FAISS Vector Store<br/><i>HK & PH indices</i>"]
         EM --> FAISS
@@ -50,6 +50,7 @@ flowchart TD
     end
 
     subgraph Generation["⚖️ Response Generation"]
+        CASUAL["Casual-LLM<br/><i>Greetings / Small Talk</i>"]
         GEN["General-LLM<br/><i>Info / Definitions</i>"]
         REAS["Reasoning-LLM<br/><i>Case Analysis (ALAC)</i>"]
     end
@@ -63,7 +64,8 @@ flowchart TD
     Triage -->|Normalized English| Router
     Router -->|Route + Query| RAG
     RAG -->|Augmented Context| Generation
-    GEN --> Response["📄 Legal Response"]
+    CASUAL --> Response["📄 Legal Response"]
+    GEN --> Response
     REAS --> Response
 
     ENGINE -.->|Powers| LN
@@ -226,7 +228,9 @@ from src.adaptive_routing import (
 | Module | Method | Purpose |
 |:---|:---|:---|
 | `TriageModule` | `_process_request_(text, image?)` | Normalize multilingual input → English |
-| `SemanticRouterModule` | `_process_routing_(text)` | Classify and generate legal response |
+| `SemanticRouterModule` | `_process_routing_(text)` | Classify intent → returns `{route, confidence, trigger_signals}` |
+| `SemanticRouterModule` | `_generate_response_(classification, text, context?, limits?)` | Single-turn generation with confidence gate |
+| `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?, limits?)` | Multi-turn generation with confidence gate |
 | `LegalRetrievalModule` | `_process_retrieval_(query, top_k?)` | Retrieve relevant legal text chunks |
 | `LegalRetrievalModule` | `_ingest_documents_(docs)` | Add documents to the vector store |
 | `LegalRetrievalModule` | `build_and_save_index(dir, out, prefix)` | Build FAISS index from JSON corpus |
@@ -250,9 +254,12 @@ from src.adaptive_routing import (
 | `GENERAL_TEMP` | Generation | `0.5` | Temperature |
 | `REASONING_MODEL` | Generation | `google/gemma-3-12b-it:free` | Reasoning LLM |
 | `REASONING_TEMP` | Generation | `0.7` | Temperature |
+| `CASUAL_MODEL` | Generation | `google/gemma-3-12b-it:free` | Casual / small-talk LLM |
+| `CASUAL_TEMP` | Generation | `0.8` | Temperature |
+| `CASUAL_MAX_TOKENS` | Generation | `200` | Max tokens |
 | `RETRIEVAL_MODEL` | RAG | `sentence-transformers/all-minilm-l6-v2` | Embedding model |
 | `RETRIEVAL_TOP_K` | RAG | `5` | Chunks to retrieve |
-| `RETRIEVAL_CHUNK_SIZE` | RAG | `512` | Characters per chunk |
+| `RETRIEVAL_CHUNK_SIZE` | RAG | `5000` | Characters per chunk |
 | `RETRIEVAL_INDEX_PATH` | RAG | `None` | Pre-built FAISS index path |
 | `RETRIEVAL_CHUNKS_PATH` | RAG | `None` | Pre-built chunks JSON path |
 

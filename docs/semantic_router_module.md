@@ -15,6 +15,8 @@ The **Semantic Router Module** is the **second stage** of the Adaptive Routing p
 - [SemanticRouterModule (Orchestrator)](#semanticroutermodule-orchestrator)
   - [Constructor](#constructor)
   - [_process_routing_()](#_process_routing_)
+  - [_generate_response_()](#_generate_response_)
+  - [_generate_conversation_()](#_generate_conversation_)
   - [Return Schema](#return-schema)
 - [RoutingClassifier (Sub-component)](#routingclassifier-sub-component)
   - [Constructor](#routingclassifier-constructor)
@@ -36,16 +38,19 @@ The **Semantic Router Module** is the **second stage** of the Adaptive Routing p
 
 ```
 ┌─────────────────────────────────────────────────────────┐
-│              SemanticRouterModule                        │
-│                 (Orchestrator)                           │
+│              SemanticRouterModule (Facade)               │
+│                                                         │
+│  _process_routing_(text)          → classification dict │
+│  _generate_response_(cls, text, …)→ single-turn result  │
+│  _generate_conversation_(cls, …)  → multi-turn result   │
 │                                                         │
 │  ┌───────────────────┐      ┌────────────────────────┐  │
 │  │ RoutingClassifier │─────▶│   LegalGenerator       │  │
 │  │                   │      │                        │  │
-│  │  Outputs:         │      │  Dual Engine:          │  │
-│  │  - route          │      │  - General-LLM engine  │  │
-│  │  - confidence     │      │  - Reasoning-LLM engine│  │
-│  │  - trigger_signals│      │                        │  │
+│  │  Outputs:         │      │  Three Engines:        │  │
+│  │  - route          │      │  - Casual-LLM engine   │  │
+│  │  - confidence     │      │  - General-LLM engine  │  │
+│  │  - trigger_signals│      │  - Reasoning-LLM engine│  │
 │  └───────────────────┘      └────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
@@ -96,11 +101,49 @@ router = SemanticRouterModule()
 def _process_routing_(self, normalized_text: str) -> dict
 ```
 
-The **main entry point** for semantic routing and response generation.
+**Classification-only** entry point. Returns the raw classification without generating any LLM response.
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `normalized_text` | `str` | Yes | Standardized English query (typically output from `TriageModule`) |
+
+**Returns**: `dict` — See [Classification Output Schema](#classification-output-schema)
+
+---
+
+### `_generate_response_()`
+
+```python
+def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, limits: float = 0.6) -> dict
+```
+
+**Single-turn generation** with a configurable confidence threshold gate.
+
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `classification` | `dict` | Yes | Output from `_process_routing_()` |
+| `normalized_text` | `str` | Yes | The user's normalized query |
+| `context` | `str` | No | RAG-retrieved legal context to augment the query |
+| `limits` | `float` | No | Minimum confidence to accept the route. Default: `0.6` (60%) |
+
+**Returns**: `dict` — See [Return Schema](#return-schema)
+
+---
+
+### `_generate_conversation_()`
+
+```python
+def _generate_conversation_(self, classification: dict, messages: list, context: str = None, limits: float = 0.6) -> dict
+```
+
+**Multi-turn generation** using the classified route. Injects RAG context into the latest user message before dispatching the full conversation history.
+
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `classification` | `dict` | Yes | Output from `_process_routing_()` |
+| `messages` | `list[dict]` | Yes | Full conversation history `[{role, content}, ...]` |
+| `context` | `str` | No | RAG-retrieved legal context to inject into the last user message |
+| `limits` | `float` | No | Minimum confidence to accept the route. Default: `0.6` (60%) |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -108,27 +151,27 @@ The **main entry point** for semantic routing and response generation.
 
 ### Return Schema
 
+Both `_generate_response_()` and `_generate_conversation_()` return:
+
 ```python
 {
     "classification": {
-        "route": str,             # "General-LLM", "Reasoning-LLM", or "PATHWAY_2"
+        "route": str,             # "Casual-LLM", "General-LLM", "Reasoning-LLM", or None on error
         "confidence": float,      # 0.0 to 1.0
-        "trigger_signals": list   # List of short strings explaining the classification
+        "trigger_signals": list   # Short strings explaining the classification
     },
-    "response_text": str          # The LLM-generated legal response (or clarification prompt)
+    "accepted": bool,             # True if confidence >= limits threshold
+    "response_text": str          # LLM response, or clarification/error message if rejected
 }
 ```
 
-**Example — General Information route:**
+**Example — Confidence rejected (below threshold):**
 
 ```python
 {
-    "classification": {
-        "route": "General-LLM",
-        "confidence": 0.92,
-        "trigger_signals": ["definition request", "legal concept explanation"]
-    },
-    "response_text": "**Query Overview**: The user is asking about the concept of illegal dismissal...\n..."
+    "classification": {"route": "General-LLM", "confidence": 0.35, "trigger_signals": [...]},
+    "accepted": False,
+    "response_text": "I'm not confident enough in my understanding of your query. Could you please clarify?"
 }
 ```
 
@@ -224,6 +267,7 @@ The classifier instructs the LLM to return structured JSON:
 
 | Route | When Used |
 |:---|:---|
+| `Casual-LLM` | Greetings, gratitude, farewells, small talk, single-word affirmations. |
 | `General-LLM` | General legal information, definitions, explanations, rights overview, simple Q&A, no personalized advice needed |
 | `Reasoning-LLM` | Real or hypothetical situations, asks what action to take, involves disputes/violations/contracts/termination/abuse/legal risk, requires legal interpretation |
 
@@ -259,15 +303,16 @@ If routing fails for **any reason** (API error, JSON parsing failure, etc.), the
 
 ```python
 {
-    "route": "PATHWAY_2",
+    "route": None,
     "confidence": 0.0,
-    "trigger_signals": ["Routing Error", "<error details>"]
+    "trigger_signals": ["Routing Error", "<error details>"],
+    "error": "str error description"
 }
 ```
 
-When `SemanticRouterModule` receives `PATHWAY_2`, it returns a clarification prompt instead of generating a response:
+When `SemanticRouterModule` receives an error classification, it replies with a fallback technical apology instead of generating a response. If the LLM generates a route output omitting the primary routes, it returns an ambiguous clarification prompt:
 
-> *"Hi There can you please clarify your inquiry, provide specific details."*
+> *"Hi There, can you please clarify your inquiry and provide specific details."*
 
 **JSON parsing robustness**: The `_parse_json_()` method strips markdown code blocks (` ```json ... ``` `) before parsing, handling cases where the LLM wraps its JSON output.
 
@@ -294,6 +339,16 @@ LegalGenerator(
 | `api_key` | `str` | `FrameworkConfig._API_KEY` | API key for both engines |
 | `general_engine` | `LLMRequestEngine` | Auto-created with General config | Custom engine for `General-LLM` route |
 | `reasoning_engine` | `LLMRequestEngine` | Auto-created with Reasoning config | Custom engine for `Reasoning-LLM` route |
+
+**Default Casual engine config:**
+
+| Parameter | Config Source | Default Value |
+|:---|:---|:---|
+| Model | `_CASUAL_MODEL` | `"google/gemma-3-12b-it:free"` |
+| Temperature | `_CASUAL_TEMP` | `0.8` |
+| Max Tokens | `_CASUAL_MAX_TOKENS` | `200` |
+| System Role | `_CASUAL_USE_SYSTEM` | `True` |
+| Reasoning | `_CASUAL_REASONING` | `False` |
 
 **Default General engine config:**
 

@@ -4,50 +4,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Legal Adaptive Routing Framework</title>
+    <title>Agapay AI — Legal Adaptive Routing Framework</title>
+    <meta name="description" content="AI-powered legal information assistant for OFWs, built by Saint Louis University Team 404FoundUs">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-    <!-- Optional for icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 </head>
 
 <body>
     <div class="app-container">
-        <!-- Sidebar / Process Panel -->
-        <aside class="process-panel">
+        <!-- Sidebar / Pipeline Panel -->
+        <aside class="process-panel" id="process-panel">
             <div class="panel-header">
-                <h2><i class="fas fa-network-wired"></i> System Ops</h2>
+                <div class="panel-title">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                    <span>Pipeline Monitor</span>
+                </div>
                 <div class="status-indicator" id="status-indicator">
-                    <span class="status-dot"></span> Ready
+                    <span class="status-dot"></span>
+                    <span class="status-text">Ready</span>
                 </div>
             </div>
+
+            <!-- Route Badge (shown after classification) -->
+            <div class="route-badge-container" id="route-badge-container" style="display:none;">
+                <div class="route-badge" id="route-badge">
+                    <span class="route-badge-label">Route</span>
+                    <span class="route-badge-value" id="route-badge-value">—</span>
+                    <span class="route-badge-confidence" id="route-badge-confidence"></span>
+                </div>
+            </div>
+
             <div class="process-log-container">
                 <div class="process-log" id="process-log">
-                    <!-- Process steps will be injected here -->
-                    <div class="empty-state">
-                        <p>System operational.</p>
-                        <p>Listening for input...</p>
+                    <div class="empty-state" id="empty-state">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.4">
+                            <circle cx="12" cy="12" r="10"/>
+                            <path d="M12 16v-4M12 8h.01"/>
+                        </svg>
+                        <p>System operational</p>
+                        <p class="empty-sub">Pipeline steps will appear here</p>
                     </div>
                 </div>
             </div>
+
+            <!-- Toggle button for mobile -->
+            <button class="panel-toggle" id="panel-toggle" aria-label="Toggle pipeline panel">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M15 18l-6-6 6-6"/>
+                </svg>
+            </button>
         </aside>
 
         <!-- Main Chat Area -->
         <main class="chat-container">
             <header class="chat-header">
                 <div class="header-content">
-                    <h1>Agapay AI <span class="version-tag">Dev 1.0</span></h1>
-                    <p class="subtitle">Saint Louis University Adaptive Legal Routing Framework</p>
+                    <div class="header-top">
+                        <h1>Agapay AI</h1>
+                        <span class="version-tag">v2.0</span>
+                    </div>
+                    <p class="subtitle">SLU Legal Adaptive Routing Framework</p>
                 </div>
+                <button class="mobile-panel-btn" id="mobile-panel-btn" aria-label="Show pipeline">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+                    </svg>
+                </button>
             </header>
 
             <div class="chat-history-container">
                 <div class="chat-history" id="chat-history">
                     <div class="message system welcome-message">
-                        <div class="avatar system-avatar">AI</div>
+                        <div class="avatar system-avatar">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                            </svg>
+                        </div>
                         <div class="bubble">
                             <h3>Welcome to Agapay AI</h3>
-                            <p>Andito si Atty. Agapay AI, para magbigay ng legal na kaalaman.</p>
+                            <p>Andito si Atty. Agapay AI para magbigay ng legal na kaalaman para sa mga OFWs.</p>
+                            <div class="welcome-hints">
+                                <button class="hint-chip" onclick="sendPreset('What are my rights as an OFW in Hong Kong?')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+                                    OFW Rights in HK
+                                </button>
+                                <button class="hint-chip" onclick="sendPreset('What is the minimum wage for domestic helpers?')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                                    Minimum Wage
+                                </button>
+                                <button class="hint-chip" onclick="sendPreset('My employer did not pay me for 2 months, what should I do?')">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0zM12 9v4M12 17h.01"/></svg>
+                                    Unpaid Wages
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -56,28 +107,36 @@
             <div class="input-area-wrapper">
                 <div class="input-area">
                     <form id="chat-form">
-                        <input type="text" id="user-input" placeholder="Describe your legal situation..."
+                        <input type="text" id="user-input" placeholder="Describe your legal situation or ask a question..."
                             autocomplete="off">
                         <button type="submit" id="send-btn" aria-label="Send message">
                             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor" />
+                                <path d="M22 2L11 13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </button>
                     </form>
-                    <div class="disclaimer">AI responses are for informational purposes only and do not constitute legal
-                        advice.</div>
+                    <div class="disclaimer">AI responses are for informational purposes only and do not constitute legal advice.</div>
                 </div>
             </div>
         </main>
     </div>
 
-    <!-- RAG Modal Overlay -->
+    <!-- RAG Detail Modal -->
     <div id="rag-modal" class="modal-overlay hidden">
         <div class="modal-container">
             <div class="modal-header">
-                <h2><i class="fas fa-balance-scale"></i> Legal Basis</h2>
+                <div class="modal-title-group">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
+                        <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
+                    </svg>
+                    <h2>Retrieved Legal Sources</h2>
+                </div>
                 <button id="close-modal-btn" class="close-btn" aria-label="Close modal">
-                    <i class="fas fa-times"></i>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
                 </button>
             </div>
             <div class="modal-body" id="modal-rag-content">

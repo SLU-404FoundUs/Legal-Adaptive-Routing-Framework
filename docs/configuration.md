@@ -15,6 +15,7 @@ The `FrameworkConfig` class is the **centralized configuration hub** for every m
 - [Semantic Router Settings](#semantic-router-settings)
 - [General LLM Settings](#general-llm-settings)
 - [Reasoning LLM Settings](#reasoning-llm-settings)
+- [Casual LLM Settings](#casual-llm-settings)
 - [Legal Retrieval (RAG) Settings](#legal-retrieval-rag-settings)
 - [Fallback / Legacy Settings](#fallback--legacy-settings)
 - [Runtime Configuration Override](#runtime-configuration-override)
@@ -144,6 +145,27 @@ Controls the **Reasoning-LLM** — used for complex legal analysis, scenario-bas
 
 ---
 
+## Casual LLM Settings
+
+Controls the **Casual-LLM** engine — used for greetings, expressions of gratitude, farewells, and small talk.
+
+| Attribute | Env Variable | Type | Default | Description |
+|:---|:---|:---|:---|:---|
+| `_CASUAL_MODEL` | `CASUAL_MODEL` | `str` | `"google/gemma-3-12b-it:free"` | LLM for small-talk responses |
+| `_CASUAL_TEMP` | `CASUAL_TEMP` | `float` | `0.8` | Higher temperature for natural, varied replies |
+| `_CASUAL_MAX_TOKENS` | `CASUAL_MAX_TOKENS` | `int` | `200` | Short responses — 1–3 sentences max |
+| `_CASUAL_USE_SYSTEM` | `CASUAL_USE_SYSTEM` | `bool` | `True` | System role support |
+| `_CASUAL_REASONING` | `CASUAL_REASONING` | `bool` | `False` | Chain-of-thought disabled |
+| `_CASUAL_INSTRUCTIONS` | — | `str` | *(see below)* | Persona prompt for the Casual-LLM |
+
+**Default `_CASUAL_INSTRUCTIONS` behavior:**
+- Persona: "Atty. Agapay AI" — warm and approachable greeter
+- Keeps responses to 1–3 sentences
+- Does NOT provide any legal information; redirects to ask how it can assist
+- May respond in the same language the user uses (English, Tagalog, etc.)
+
+---
+
 ## Legal Retrieval (RAG) Settings
 
 Controls the **EmbeddingManager** and **LegalRetriever** — the document embedding and FAISS vector search pipeline.
@@ -152,8 +174,8 @@ Controls the **EmbeddingManager** and **LegalRetriever** — the document embedd
 |:---|:---|:---|:---|:---|
 | `_RETRIEVAL_MODEL` | `RETRIEVAL_MODEL` | `str` | `"sentence-transformers/all-minilm-l6-v2"` | Embedding model for vector generation |
 | `_RETRIEVAL_TOP_K` | `RETRIEVAL_TOP_K` | `int` | `5` | Number of nearest chunks to retrieve |
-| `_RETRIEVAL_CHUNK_SIZE` | `RETRIEVAL_CHUNK_SIZE` | `int` | `512` | Maximum characters per document chunk |
-| `_RETRIEVAL_CHUNK_OVERLAP` | `RETRIEVAL_CHUNK_OVERLAP` | `int` | `64` | Character overlap between adjacent chunks |
+| `_RETRIEVAL_CHUNK_SIZE` | `RETRIEVAL_CHUNK_SIZE` | `int` | `5000` | Maximum characters per document chunk |
+| `_RETRIEVAL_CHUNK_OVERLAP` | `RETRIEVAL_CHUNK_OVERLAP` | `int` | `200` | Character overlap between adjacent chunks |
 | `_RETRIEVAL_INDEX_PATH` | `RETRIEVAL_INDEX_PATH` | `str` | `None` | Path to a pre-built FAISS `.faiss` file |
 | `_RETRIEVAL_CHUNKS_PATH` | `RETRIEVAL_CHUNKS_PATH` | `str` | `None` | Path to a pre-built chunks `.json` file |
 
