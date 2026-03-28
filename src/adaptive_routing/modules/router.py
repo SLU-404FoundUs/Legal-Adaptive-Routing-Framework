@@ -29,54 +29,58 @@ class SemanticRouterModule:
 
     ## ── Method 1: Classification ──────────────────────────────────────────
 
-    def _process_routing_(self, normalized_text: str) -> dict:
+    def _process_routing_(self, normalized_text: str, threshold: float = None, persistence_level: int = 3) -> dict:
         """
-        @func_ _process_routing_ (@params normalized_text)
+        @func_ _process_routing_ (@params normalized_text, threshold, persistence_level)
         @params normalized_text : (str) Standardized user query from TirageModule.
+        @params threshold : (float, optional) Confidence threshold (0.0 to 1.0) to accept a route. If None, ignored.
+        @params persistence_level : (int) Number of attempts to reach acceptable confidence threshold. Default: 3.
         @return_ dict : Classification result containing route, confidence, and trigger_signals.
         @logic_
-            Delegates to RoutingClassifier._route_query_() and returns the raw
-            classification dictionary. Does NOT generate a response.
+            Delegates to RoutingClassifier._route_query_(). If threshold is provided and confidence is below it,
+            retries up to persistence_level times. If still below, returns an error. Does NOT generate a response.
         """
-        return self._classifier._route_query_(normalized_text)
+        if threshold is None:
+            return self._classifier._route_query_(normalized_text)
+            
+        for attempt in range(persistence_level):
+            classification = self._classifier._route_query_(normalized_text)
+            confidence = classification.get("confidence", 0.0)
+            
+            if confidence >= threshold:
+                return classification
+                
+            logger.info(f"Attempt {attempt + 1}: Confidence {confidence:.2f} below threshold {threshold} for route '{classification.get('route')}'. Retrying.")
+            
+        return {
+            "error": "LLMEngine failed to acknowledge the input.",
+            "route": None,
+            "confidence": 0.0
+        }
 
     ## ── Method 2: Single-Turn Generation ──────────────────────────────────
 
-    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, limits: float = 0.6) -> dict:
+    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None) -> dict:
         """
-        @func_ _generate_response_ (@params classification, normalized_text, context, limits)
+        @func_ _generate_response_ (@params classification, normalized_text, context)
         @params classification  : (dict) Output from _process_routing_ containing route and confidence.
         @params normalized_text : (str) The user's normalized query.
         @params context         : (str, optional) RAG-retrieved legal context to augment the query.
-        @params limits          : (float) Minimum acceptable confidence level (0.0–1.0). Default: 0.6 (60%).
-                                  If the classifier's confidence falls below this threshold, the route
-                                  is rejected and a clarification prompt is returned instead.
         @return_ dict : Contains 'classification', 'accepted' (bool), and 'response_text'.
         @logic_
-            1. Validates the classification confidence against the developer-defined limits.
-            2. If rejected, returns a clarification prompt without calling the LLM.
-            3. If accepted, constructs the augmented query (with context if provided) and
-               dispatches to the appropriate engine via LegalGenerator._dispatch_().
+            1. Constructs the augmented query (with context if provided).
+            2. Dispatches to the appropriate engine via LegalGenerator._dispatch_().
         """
         route = classification.get("route")
-        confidence = classification.get("confidence", 0.0)
 
         ## @logic_ Reject if classification itself had an error
         if classification.get("error"):
             logger.warning(f"Classification error detected: {classification['error']}")
+            response_msg = classification["error"] if classification["error"] == "LLMEngine failed to acknowledge the input." else "I encountered a technical issue while processing your query. Please try again."
             return {
                 "classification": classification,
                 "accepted": False,
-                "response_text": "I encountered a technical issue while processing your query. Please try again."
-            }
-
-        ## @logic_ Reject if confidence is below the developer-defined threshold
-        if confidence < limits:
-            logger.info(f"Confidence {confidence:.2f} below threshold {limits:.2f} for route '{route}'. Rejecting.")
-            return {
-                "classification": classification,
-                "accepted": False,
-                "response_text": "I'm not confident enough in my understanding of your query. Could you please clarify or provide more details?"
+                "response_text": response_msg
             }
 
         ## @logic_ Build the query payload
@@ -93,40 +97,28 @@ class SemanticRouterModule:
 
     ## ── Method 3: Multi-Turn Generation ───────────────────────────────────
 
-    def _generate_conversation_(self, classification: dict, messages: list, context: str = None, limits: float = 0.6) -> dict:
+    def _generate_conversation_(self, classification: dict, messages: list, context: str = None) -> dict:
         """
-        @func_ _generate_conversation_ (@params classification, messages, context, limits)
+        @func_ _generate_conversation_ (@params classification, messages, context)
         @params classification : (dict) Output from _process_routing_ containing route and confidence.
         @params messages       : (list[dict]) Full conversation history [{role, content}, ...].
         @params context        : (str, optional) RAG-retrieved legal context to inject into the latest user message.
-        @params limits         : (float) Minimum acceptable confidence level (0.0–1.0). Default: 0.6 (60%).
         @return_ dict : Contains 'classification', 'accepted' (bool), and 'response_text'.
         @logic_
-            1. Validates the classification confidence against the developer-defined limits.
-            2. If rejected, returns a clarification prompt without calling the LLM.
-            3. If accepted, injects context into the last user message (if provided),
+            1. Injects context into the last user message (if provided),
                sets the correct system prompt, and dispatches the full conversation
                history via LegalGenerator._dispatch_conversation_().
         """
         route = classification.get("route")
-        confidence = classification.get("confidence", 0.0)
 
         ## @logic_ Reject if classification itself had an error
         if classification.get("error"):
             logger.warning(f"Classification error detected: {classification['error']}")
+            response_msg = classification["error"] if classification["error"] == "LLMEngine failed to acknowledge the input." else "I encountered a technical issue while processing your query. Please try again."
             return {
                 "classification": classification,
                 "accepted": False,
-                "response_text": "I encountered a technical issue while processing your query. Please try again."
-            }
-
-        ## @logic_ Reject if confidence is below the developer-defined threshold
-        if confidence < limits:
-            logger.info(f"Confidence {confidence:.2f} below threshold {limits:.2f} for route '{route}'. Rejecting.")
-            return {
-                "classification": classification,
-                "accepted": False,
-                "response_text": "I'm not confident enough in my understanding of your query. Could you please clarify or provide more details?"
+                "response_text": response_msg
             }
 
         ## @logic_ Inject context into the conversation if provided and route is not Casual

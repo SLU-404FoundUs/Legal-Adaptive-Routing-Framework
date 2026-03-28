@@ -228,9 +228,9 @@ from src.adaptive_routing import (
 | Module | Method | Purpose |
 |:---|:---|:---|
 | `TriageModule` | `_process_request_(text, image?)` | Normalize multilingual input → English |
-| `SemanticRouterModule` | `_process_routing_(text)` | Classify intent → returns `{route, confidence, trigger_signals}` |
-| `SemanticRouterModule` | `_generate_response_(classification, text, context?, limits?)` | Single-turn generation with confidence gate |
-| `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?, limits?)` | Multi-turn generation with confidence gate |
+| `SemanticRouterModule` | `_process_routing_(text, threshold?, persistence_level?)` | Classify intent → returns `{route, confidence, trigger_signals}` |
+| `SemanticRouterModule` | `_generate_response_(classification, text, context?)` | Single-turn generation with confidence gate |
+| `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?)` | Multi-turn generation with confidence gate |
 | `LegalRetrievalModule` | `_process_retrieval_(query, top_k?)` | Retrieve relevant legal text chunks |
 | `LegalRetrievalModule` | `_ingest_documents_(docs)` | Add documents to the vector store |
 | `LegalRetrievalModule` | `build_and_save_index(dir, out, prefix)` | Build FAISS index from JSON corpus |

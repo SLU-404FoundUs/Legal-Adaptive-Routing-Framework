@@ -170,7 +170,14 @@ def chat():
             if router_module:
                 for attempt in range(1, MAX_RETRIES + 1):
                     try:
-                        classification = router_module._process_routing_(normalized_text)
+                        classification = router_module._process_routing_(normalized_text, threshold=0.1)
+                        if classification.get("error") == "LLMEngine failed to acknowledge the input.":
+                            yield json.dumps({"type": "step", "content": "Confidence below threshold — falling back to Casual conversation..."}) + "\n"
+                            classification = {
+                                "route": "Casual-LLM",
+                                "confidence": 1.0,
+                                "trigger_signals": ["Fallback due to threshold failure"]
+                            }
                         break
                     except Exception as classify_err:
                         if _is_rate_limited_(classify_err) and attempt < MAX_RETRIES:
@@ -236,8 +243,7 @@ def chat():
                         result = router_module._generate_conversation_(
                             classification=classification,
                             messages=history,
-                            context=context_str,
-                            limits=0.6
+                            context=context_str
                         )
                         response_text = result.get("response_text", "")
                         accepted = result.get("accepted", False)

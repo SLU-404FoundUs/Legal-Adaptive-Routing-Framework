@@ -44,7 +44,7 @@ while True:
     print(f"[Triage] Language: {triage_result['detected_language']} | Normalized: {normalized_text}")
 
     # Stage 2: Classification Only
-    classification = router._process_routing_(normalized_text)
+    classification = router._process_routing_(normalized_text, threshold=0.6)
     route = classification.get("route", "General-LLM")
     print(f"[Router] Route: {route} | Confidence: {classification.get('confidence', 0.0)}")
 
@@ -61,8 +61,7 @@ while True:
     result = router._generate_conversation_(
         classification=classification,
         messages=history,
-        context=context_str,
-        limits=0.6
+        context=context_str
     )
 
     response = result["response_text"]

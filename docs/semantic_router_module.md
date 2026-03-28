@@ -40,7 +40,7 @@ The **Semantic Router Module** is the **second stage** of the Adaptive Routing p
 ┌─────────────────────────────────────────────────────────┐
 │              SemanticRouterModule (Facade)               │
 │                                                         │
-│  _process_routing_(text)          → classification dict │
+│  _process_routing_(text, …)       → classification dict │
 │  _generate_response_(cls, text, …)→ single-turn result  │
 │  _generate_conversation_(cls, …)  → multi-turn result   │
 │                                                         │
@@ -98,14 +98,16 @@ router = SemanticRouterModule()
 ### `_process_routing_()`
 
 ```python
-def _process_routing_(self, normalized_text: str) -> dict
+def _process_routing_(self, normalized_text: str, threshold: float = None, persistence_level: int = 3) -> dict
 ```
 
-**Classification-only** entry point. Returns the raw classification without generating any LLM response.
+**Classification-only** entry point. Evaluates the confidence threshold and loops `persistence_level` times. Does NOT generate any LLM response.
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `normalized_text` | `str` | Yes | Standardized English query (typically output from `TriageModule`) |
+| `threshold` | `float` | No | Confidence threshold (0.0 to 1.0) to accept a route. Default: `None` |
+| `persistence_level`| `int` | No | Retries to reach acceptable confidence. Default: `3` |
 
 **Returns**: `dict` — See [Classification Output Schema](#classification-output-schema)
 
@@ -114,17 +116,16 @@ def _process_routing_(self, normalized_text: str) -> dict
 ### `_generate_response_()`
 
 ```python
-def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, limits: float = 0.6) -> dict
+def _generate_response_(self, classification: dict, normalized_text: str, context: str = None) -> dict
 ```
 
-**Single-turn generation** with a configurable confidence threshold gate.
+**Single-turn generation** using the classified route.
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `classification` | `dict` | Yes | Output from `_process_routing_()` |
 | `normalized_text` | `str` | Yes | The user's normalized query |
 | `context` | `str` | No | RAG-retrieved legal context to augment the query |
-| `limits` | `float` | No | Minimum confidence to accept the route. Default: `0.6` (60%) |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -133,7 +134,7 @@ def _generate_response_(self, classification: dict, normalized_text: str, contex
 ### `_generate_conversation_()`
 
 ```python
-def _generate_conversation_(self, classification: dict, messages: list, context: str = None, limits: float = 0.6) -> dict
+def _generate_conversation_(self, classification: dict, messages: list, context: str = None) -> dict
 ```
 
 **Multi-turn generation** using the classified route. Injects RAG context into the latest user message before dispatching the full conversation history.
@@ -143,7 +144,6 @@ def _generate_conversation_(self, classification: dict, messages: list, context:
 | `classification` | `dict` | Yes | Output from `_process_routing_()` |
 | `messages` | `list[dict]` | Yes | Full conversation history `[{role, content}, ...]` |
 | `context` | `str` | No | RAG-retrieved legal context to inject into the last user message |
-| `limits` | `float` | No | Minimum confidence to accept the route. Default: `0.6` (60%) |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -160,7 +160,7 @@ Both `_generate_response_()` and `_generate_conversation_()` return:
         "confidence": float,      # 0.0 to 1.0
         "trigger_signals": list   # Short strings explaining the classification
     },
-    "accepted": bool,             # True if confidence >= limits threshold
+    "accepted": bool,             # True if confidence >= threshold or no error occurred
     "response_text": str          # LLM response, or clarification/error message if rejected
 }
 ```
