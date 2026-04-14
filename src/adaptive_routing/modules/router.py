@@ -7,6 +7,7 @@ Saint Louis University : Team 404FoundUs
 """
 
 import logging
+import time
 from src.adaptive_routing.modules.semantic_router.logic_classifier import RoutingClassifier
 from src.adaptive_routing.modules.semantic_router.legal_generation import LegalGenerator
 
@@ -49,8 +50,12 @@ class SemanticRouterModule:
             
             if confidence >= threshold:
                 return classification
-                
-            logger.info(f"Attempt {attempt + 1}: Confidence {confidence:.2f} below threshold {threshold} for route '{classification.get('route')}'. Retrying.")
+
+            logger.info(f"Persistence attempt {attempt + 1}/{persistence_level}: Confidence {confidence:.2f} below threshold {threshold} for route '{classification.get('route')}'. Retrying.")
+            
+            ## @logic_ Backoff between persistence retries to avoid hammering the API
+            if attempt < persistence_level - 1:
+                time.sleep(1)
             
         return {
             "error": "LLMEngine failed to acknowledge the input.",

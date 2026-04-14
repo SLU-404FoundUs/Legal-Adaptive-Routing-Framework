@@ -81,19 +81,56 @@ class RoutingClassifier:
         @func_ _route_query_ (@params query)
         @params query : (str) The user's input query (normalized text).
         @return_ dict : The structured routing decision. Contains 'error' key if classification failed.
-        @logic_ Calls the LLM and parses the JSON response.
+        @logic_ Calls the LLM and parses the JSON response. Returns config diagnostics on failure.
         """
+        ## @logic_ Snapshot current config for diagnostics
+        _cfg = (
+            f"[Router Config] model={FrameworkConfig._ROUTER_MODEL}, "
+            f"USE_SYSTEM={FrameworkConfig._ROUTER_USE_SYSTEM}, "
+            f"REASONING={FrameworkConfig._ROUTER_REASONING}, "
+            f"temp={FrameworkConfig._ROUTER_TEMP}, "
+            f"max_tokens={FrameworkConfig._ROUTER_MAX_TOKENS}"
+        )
+
         try:
             raw_response = self._handler._get_completion_(query, self._system_prompt)
+
+            ## @logic_ Guard: Detect empty/null responses before attempting JSON parse
+            if not raw_response or not str(raw_response).strip():
+                error_msg = (
+                    f"Router LLM returned an empty response. {_cfg}\n"
+                    f"  Possible fixes:\n"
+                    f"  - If USE_SYSTEM=False, the system prompt is merged into the user message. "
+                    f"Some models cannot parse combined instructions. Set ROUTER_USE_SYSTEM=True.\n"
+                    f"  - If REASONING=True but the model has no reasoning support, the response content "
+                    f"may land in an unsupported field and return empty. Set ROUTER_REASONING=False.\n"
+                    f"  - Free-tier models (:free) may silently return empty under rate limits."
+                )
+                logger.error(error_msg)
+                return {
+                    "route": None,
+                    "confidence": 0.0,
+                    "trigger_signals": ["Empty LLM Response"],
+                    "error": error_msg
+                }
+
             return self._parse_json_(raw_response)
         except Exception as e:
-            ## @logic_ Return explicit error indicator instead of a fake route sentinel
-            logger.error(f"Routing classification failed: {e}")
+            ## @logic_ Return explicit error indicator with config snapshot for debugging
+            error_msg = (
+                f"Routing classification failed: {e}. {_cfg}\n"
+                f"  Possible fixes:\n"
+                f"  - If the error mentions 'choices' missing: the API returned an unexpected format. "
+                f"Check if the model name is valid and accessible.\n"
+                f"  - If HTTP 429: free-tier rate limit hit. Wait or switch to a paid model.\n"
+                f"  - If USE_SYSTEM or REASONING settings are wrong for this model, update config.py or .env."
+            )
+            logger.error(error_msg)
             return {
                 "route": None,
                 "confidence": 0.0,
                 "trigger_signals": ["Routing Error", str(e)],
-                "error": str(e)
+                "error": error_msg
             }
 
     def _parse_json_(self, text: str) -> dict:
@@ -114,10 +151,26 @@ class RoutingClassifier:
         try:
             return json.loads(cleaned_text)
         except json.JSONDecodeError:
-            logger.warning(f"JSON parsing failed for router output: {text[:100]}")
+            _cfg = (
+                f"[Router Config] model={FrameworkConfig._ROUTER_MODEL}, "
+                f"USE_SYSTEM={FrameworkConfig._ROUTER_USE_SYSTEM}, "
+                f"REASONING={FrameworkConfig._ROUTER_REASONING}"
+            )
+            preview = repr(text[:200]) if text else "(empty)"
+            error_msg = (
+                f"Failed to parse router output as JSON. {_cfg}\n"
+                f"  Raw output: {preview}\n"
+                f"  Possible fixes:\n"
+                f"  - If raw output is empty: the model produced no content. Check USE_SYSTEM and REASONING settings above.\n"
+                f"  - If raw output has <think> or <reasoning> tags: the model wrapped JSON inside reasoning tags. "
+                f"Set ROUTER_REASONING=False or strip tags before parsing.\n"
+                f"  - If raw output is natural language: the model ignored JSON instructions. "
+                f"Try a different model or ensure USE_SYSTEM=True so instructions are sent as a system role."
+            )
+            logger.warning(error_msg)
             return {
                 "route": None,
                 "confidence": 0.0,
-                "trigger_signals": ["JSON Parsing Failed", text[:50]],
-                "error": "Failed to parse LLM routing output as JSON"
+                "trigger_signals": ["JSON Parsing Failed", text[:50] if text else "empty"],
+                "error": error_msg
             }
