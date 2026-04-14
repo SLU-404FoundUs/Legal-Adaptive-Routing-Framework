@@ -180,6 +180,25 @@ For detailed API references, configuration options, and architectural diagrams, 
 
 ---
 
+## ⚠️ AI Disclaimer
+
+> Portions of the code in this framework were generated with the assistance of an agentic AI. However, all components have been thoroughly tested, reviewed, and validated by the developers to ensure safety, correctness, and adherence to legal logic standards.
+
+---
+
+## 👥 Meet the Team (404FoundUs)
+
+- **Deleon, Earl Macy** — `2221816@slu.edu.ph`
+- **Diola, Josh Mckenzie** — `2225962@slu.edu.ph`
+- **Lachica, Rafael** — `2195465@slu.edu.ph`
+- **Lucban, Prince John Louie** — `2225254@slu.edu.ph`
+- **Navarro, Josiah Ezra** — `2233059@slu.edu.ph`
+- **Ramos, Albert Jannsen** — `2221023@slu.edu.ph`
+- **Retuta, Ian Benedick** — `2223041@slu.edu.ph`
+- **Yuen, Ka Hang Christian** — `2214959@slu.edu.ph`
+
+---
+
 ## 🤝 Contribution
 
 Contributions are welcome! Please ensure that you follow the **Technical Documentation Standards** when adding new modules.
@@ -189,6 +208,12 @@ Contributions are welcome! Please ensure that you follow the **Technical Documen
 3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
 4. Push to the Branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
+
+---
+
+## 📜 License
+
+Distributed under the MIT License. See `LICENSE` for more information.
 
 <div align="center">
   <br/>
