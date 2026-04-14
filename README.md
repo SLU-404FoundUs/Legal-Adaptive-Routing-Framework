@@ -192,5 +192,5 @@ Contributions are welcome! Please ensure that you follow the **Technical Documen
 
 <div align="center">
   <br/>
-  <sub>Built with ❤️ by Team 404FoundUs</sub>
+  <sub>Thesis Study by Team 404FoundUs</sub>
 </div>

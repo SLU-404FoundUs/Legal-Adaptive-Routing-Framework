@@ -107,7 +107,7 @@ def _process_routing_(self, normalized_text: str, threshold: float = None, persi
 |:---|:---|:---|:---|
 | `normalized_text` | `str` | Yes | Standardized English query (typically output from `TriageModule`) |
 | `threshold` | `float` | No | Confidence threshold (0.0 to 1.0) to accept a route. Default: `None` |
-| `persistence_level`| `int` | No | Retries to reach acceptable confidence. Default: `3` |
+| `persistence_level`| `int` | No | Retries to reach acceptable confidence. Includes a 1-second backoff delay between retries to avoid API rate limits. Default: `3` |
 
 **Returns**: `dict` — See [Classification Output Schema](#classification-output-schema)
 
@@ -299,20 +299,23 @@ The built-in system prompt defines two LLM pathways:
 
 ### Fail-Safe Behavior
 
-If routing fails for **any reason** (API error, JSON parsing failure, etc.), the classifier returns a safe fallback:
+If routing fails for **any reason** (API error, JSON parsing failure, or an empty response due to rate-limiting/model confusion), the classifier returns a safe fallback and **provides actionable diagnostic hints**:
 
 ```python
 {
     "route": None,
     "confidence": 0.0,
-    "trigger_signals": ["Routing Error", "<error details>"],
-    "error": "str error description"
+    "trigger_signals": ["JSON Parsing Failed", "empty"],
+    "error": "Failed to parse router output as JSON. [Router Config] model=... USE_SYSTEM=...\n  Possible fixes:..."
 }
 ```
 
-When `SemanticRouterModule` receives an error classification, it replies with a fallback technical apology instead of generating a response. If the LLM generates a route output omitting the primary routes, it returns an ambiguous clarification prompt:
+**Diagnostic Error Features:**
+- **Empty Response Guard:** Detects when the model responds successfully but with empty content (common when `ROUTER_USE_SYSTEM=False` merges instructions into the user prompt for models that don't support it well).
+- **Config Snapshot:** Includes current Model, `USE_SYSTEM`, and `REASONING` tokens directly in the error message log.
+- **Actionable Hints:** Suggests setting `ROUTER_USE_SYSTEM=True` or `ROUTER_REASONING=False` depending on the failure mode, or warns about rate limits for `:free` tier models.
 
-> *"Hi There, can you please clarify your inquiry and provide specific details."*
+When `SemanticRouterModule` receives an error classification, it replies with a fallback technical apology instead of generating a response. If the LLM generates a route output omitting the primary routes, it returns an ambiguous clarification prompt.
 
 **JSON parsing robustness**: The `_parse_json_()` method strips markdown code blocks (` ```json ... ``` `) before parsing, handling cases where the LLM wraps its JSON output.
 
