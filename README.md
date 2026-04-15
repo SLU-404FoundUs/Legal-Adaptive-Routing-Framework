@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚖️ Legal Adaptive Routing Framework (LARF)
+# Legal Adaptive Routing Framework (LARF)
 
 **An Agentic AI Framework for Processing Philippine-Hong Kong Migrant Workers Legal Queries**
 
@@ -10,17 +10,17 @@
 
 *Saint Louis University | Team 404FoundUs*
 
-[📖 Documentation](docs/DOCUMENTATION.md) • [🐛 Report Bug](issues) • [✨ Request Feature](issues)
+[Documentation](docs/DOCUMENTATION.md) • [Report Bug](issues) • [Request Feature](issues)
 
 </div>
 
 ---
 
-## 📖 Overview
+## Overview
 
 The **Legal Adaptive Routing Framework (LARF)** is a specialized Python framework designed to bridge the gap between informal user queries (often in Taglish) and formal legal reasoning. It employs a multi-stage **Agentic Pipeline** to intelligently process, route, and resolve legal queries with high accuracy.
 
-### 🔄 The Agentic Pipeline
+### The Agentic Pipeline
 
 ```mermaid
 graph LR
@@ -37,15 +37,15 @@ graph LR
     style G fill:#e8f5e9,stroke:#388e3c,stroke-width:2px
 ```
 
-1. 🗣️ **Normalize**: Translate linguistic variations (Taglish/Tagalog) into standard legal English.
-2. 🧠 **Classify**: Intelligently route queries to the correct domain (e.g., General Information vs. Complex Reasoning).
-3. 🔎 **Retrieve**: Advanced RAG (Retrieval-Augmented Generation) search mechanism focused on semantic querying of specific jurisdictional indices (e.g., Philippine and Hong Kong Legal Statutes).
-4. 📝 **Generate**: Produce legally grounded responses using specialized LLMs.
-5. 🛡️ **Audit**: Validate generated output for safety and minimize hallucinations.
+1. **Normalize**: Translate linguistic variations (Taglish/Tagalog) into standard legal English.
+2. **Classify**: Intelligently route queries to the correct domain (e.g., General Information vs. Complex Reasoning).
+3. **Retrieve**: Advanced RAG (Retrieval-Augmented Generation) search mechanism focused on semantic querying of specific jurisdictional indices (e.g., Philippine and Hong Kong Legal Statutes).
+4. **Generate**: Produce legally grounded responses using specialized LLMs.
+5. **Audit**: Validate generated output for safety and minimize hallucinations.
 
 ---
 
-## ✨ Features
+## Features
 
 - **Multi-lingual Support**: Native handling of Tagalog and Taglish inputs.
 - **Smart Routing**: Directs queries to the most appropriate legal index or reasoning engine.
@@ -54,7 +54,7 @@ graph LR
 
 ---
 
-## 🏗️ Project Structure
+## Project Structure
 
 <details>
 <summary><b>Click to expand the directory structure</b></summary>
@@ -92,12 +92,12 @@ LegalAdaptiveRoutingFramework/
 
 ## ⚡ Quick Start
 
-### 📋 Prerequisites
+### Prerequisites
 
 - **Python**: `3.10` or higher
 - **API Key**: [OpenRouter API Key](https://openrouter.ai/) for LLM access
 
-### 💻 Installation
+### Installation
 
 1. **Clone the repository**
    ```bash
@@ -132,9 +132,9 @@ LegalAdaptiveRoutingFramework/
 
 ---
 
-## 🚀 Usage
+## Usage
 
-### 🖥️ CLI Version
+### CLI Version
 Launch the interactive command-line interface with customizable settings and an isolated terminal popup:
 
 ```bash
@@ -142,7 +142,7 @@ python CLI.py
 ```
 *Note: A discrete popup terminal will launch to run the assistant clearly on both Windows and macOS.*
 
-### 🌐 GUI Version
+### GUI Version
 To use the Web-based Graphical User Interface, start the Flask web server:
 
 ```bash
@@ -174,7 +174,7 @@ if normalized_text:
 
 ---
 
-## 📚 Documentation
+## Documentation
 
 For detailed API references, configuration options, and architectural diagrams, please refer to the **[Full Documentation](docs/DOCUMENTATION.md)**.
 
@@ -186,7 +186,7 @@ For detailed API references, configuration options, and architectural diagrams, 
 
 ---
 
-## 👥 Meet the Team (404FoundUs)
+## Meet the Team (404FoundUs)
 
 - **Deleon, Earl Macy** — `2221816@slu.edu.ph`
 - **Diola, Josh Mckenzie** — `2225962@slu.edu.ph`
@@ -199,7 +199,7 @@ For detailed API references, configuration options, and architectural diagrams, 
 
 ---
 
-## 🤝 Contribution
+## Contribution
 
 Contributions are welcome! Please ensure that you follow the **Technical Documentation Standards** when adding new modules.
 
