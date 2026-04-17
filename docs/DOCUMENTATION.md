@@ -21,58 +21,64 @@ The framework communicates with LLMs through the **OpenRouter API** and supports
 ## Architecture Diagram
 
 ```mermaid
-flowchart TD
-    subgraph Input
-        User["👤 User Input<br/>(Tagalog / Taglish / English / Cantonese)"]
-    end
+flowchart LR
+    %% ===== INPUT =====
+    User["User Input"]
 
-    subgraph Triage["🔤 Triage Module"]
-        direction TB
-        LN["LinguisticNormalizer<br/><i>Multilingual → English</i>"]
-        LD["LanguageStateDetector<br/><i>Stores state</i>"]
+    %% ===== TRIAGE =====
+    subgraph Triage
+        LN["Linguistic Normalizer"]
+        LD["Language State"]
         LN --> LD
     end
 
-    subgraph Router["🔀 Semantic Router Module"]
-        direction TB
-        RC["RoutingClassifier<br/><i>Intent classification</i>"]
-        LG["LegalGenerator<br/><i>Dual-engine dispatch</i>"]
+    %% ===== ROUTER =====
+    subgraph Routing
+        RC["Intent Classifier"]
+        LG["Legal Generator"]
         RC --> LG
     end
 
-    subgraph RAG["📚 Legal Retrieval Module"]
-        direction TB
-        EM["EmbeddingManager<br/><i>Hybrid Indexing (FAISS + BM25)</i>"]
-        LR["LegalRetriever<br/><i>Hybrid Search & RRF Scoring</i>"]
-        STORE["Hybrid Vector & Keyword Store<br/><i>HK & PH legal indices</i>"]
+    %% ===== RETRIEVAL =====
+    subgraph Retrieval
+        LR["Legal Retriever"]
+        EM["Embedding Manager"]
+        STORE["Legal Knowledge Store"]
         EM --> STORE
         LR --> STORE
     end
 
-    subgraph Generation["⚖️ Response Generation"]
-        CASUAL["Casual-LLM<br/><i>Greetings / Small Talk</i>"]
-        GEN["General-LLM<br/><i>Info / Definitions</i>"]
-        REAS["Reasoning-LLM<br/><i>Case Analysis (ALAC)</i>"]
+    %% ===== GENERATION =====
+    subgraph Generation
+        CASUAL["Casual LLM"]
+        GEN["General LLM"]
+        REAS["Reasoning LLM"]
     end
 
-    subgraph Core["⚙️ Core Engine"]
-        ENGINE["LLMRequestEngine<br/><i>OpenRouter API</i>"]
-        CONFIG["FrameworkConfig<br/><i>Centralized Settings</i>"]
+    %% ===== CORE =====
+    subgraph Core Engine
+        ENGINE["LLM Engine"]
+        CONFIG["Config"]
     end
 
-    User --> Triage
-    Triage -->|Normalized English| Router
-    Router -->|Search Signals| RAG
-    RAG -->|Augmented Context<br/>(Signals + Context Reuse)| Generation
-    CASUAL --> Response["📄 Legal Response"]
+    %% ===== FLOW =====
+    User --> LN
+    LD --> RC
+    LG --> LR
+    LR --> CASUAL
+    LR --> GEN
+    LR --> REAS
+
+    CASUAL --> Response["Final Response"]
     GEN --> Response
     REAS --> Response
 
-    ENGINE -.->|Powers| LN
-    ENGINE -.->|Powers| RC
-    ENGINE -.->|Powers| GEN
-    ENGINE -.->|Powers| REAS
-    CONFIG -.->|Configures| ENGINE
+    %% ===== CONTROL FLOW =====
+    ENGINE -.-> LN
+    ENGINE -.-> RC
+    ENGINE -.-> GEN
+    ENGINE -.-> REAS
+    CONFIG -.-> ENGINE
 ```
 
 ---
