@@ -9,26 +9,38 @@ class LanguageStateDetector:
     """
     @class_ LanguageStateDetector
     @desc_ Stores the state of the linguistic processing: original input, detected language, and final normalized output.
+           Also persists RAG context and intent for context reuse across turns.
     @attr_ _original_prompt : (str) The raw input from the user.
     @attr_ _detected_language : (str) The identified language of the input (Tagalog, English, Taglish).
     @attr_ _normalized_text : (str) The sanitized English text.
+    @attr_ _intent : (str) The classified intent/route of the query.
+    @attr_ _last_rag_context : (list) The raw chunks retrieved from the last RAG call.
     """
     def __init__(self):
         self._original_prompt = None
         self._detected_language = None
         self._normalized_text = None
+        self._intent = None
+        self._last_rag_context = []
 
-    def _update_state_(self, original: str, normalized: str, language: str):
+    def _update_state_(self, original: str, normalized: str, language: str, intent: str = None, context: list = None):
         """
-        @func_ _update_state_ (@params original, normalized, language)
-        @params original : The raw input.
+        @func_ _update_state_ (@params original, normalized, language, intent, context)
+        @params original   : The raw input.
         @params normalized : The processed English text.
-        @params language : The detected language tag.
-        @desc_ Updates the internal state with the results of a triage cycle.
+        @params language   : The detected language tag.
+        @params intent     : The classified route/intent.
+        @params context    : The list of retrieved RAG chunks.
+        @desc_ Updates the internal state with the results of a triage/routing cycle.
         """
         self._original_prompt = original
         self._normalized_text = normalized
         self._detected_language = language
+        
+        if intent is not None:
+            self._intent = intent
+        if context is not None:
+            self._last_rag_context = context
 
     def _get_state_(self):
         """
@@ -38,5 +50,7 @@ class LanguageStateDetector:
         return {
             "original_prompt": self._original_prompt,
             "detected_language": self._detected_language,
-            "normalized_text": self._normalized_text
+            "normalized_text": self._normalized_text,
+            "intent": self._intent,
+            "last_rag_context": self._last_rag_context
         }

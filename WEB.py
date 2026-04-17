@@ -108,7 +108,10 @@ def chat():
             is_new_session = False
             if not session_id or session_id not in SESSIONS:
                 session_id = str(uuid.uuid4())
-                SESSIONS[session_id] = {"history": []}
+                SESSIONS[session_id] = {
+                    "history": [],
+                    "last_rag_context": None
+                }
                 is_new_session = True
                 
             history = SESSIONS[session_id]["history"]
@@ -145,8 +148,9 @@ def chat():
                 "type": "data", 
                 "title": "Triage Result",
                 "data": {
-                    "Language": detected_language,
-                    "Normalized Text": normalized_text
+                    "Original Input": user_input,
+                    "Detected Language": detected_language,
+                    "Normalized English": normalized_text
                 }
             }) + "\n"
 
@@ -156,7 +160,7 @@ def chat():
 
             # 3. Classification Step (with persistence for rate-limits)
             yield json.dumps({"type": "step", "content": "Routing query to appropriate model..."}) + "\n"
-            classification = {"route": "General-LLM", "confidence": 0.0, "trigger_signals": []}
+            classification = {"route": "General-LLM", "confidence": 0.0, "search_signals": None}
             
             if router_module:
                 for attempt in range(1, MAX_RETRIES + 1):
@@ -167,7 +171,7 @@ def chat():
                             classification = {
                                 "route": "Casual-LLM",
                                 "confidence": 1.0,
-                                "trigger_signals": ["Fallback due to threshold failure"]
+                                "search_signals": None
                             }
                         break
                     except Exception as classify_err:
@@ -182,44 +186,57 @@ def chat():
             
             route = classification.get("route") or "General-LLM"
             confidence = classification.get("confidence", 0.0)
+            signals = classification.get("search_signals")
             
             yield json.dumps({
                 "type": "data",
                 "title": "Routing Result",
                 "data": {
-                    "Route": route,
-                    "Confidence": confidence
+                    "Selected Route": route,
+                    "Confidence Score": confidence,
+                    "Search Signals": signals
                 }
             }) + "\n"
 
             # 4. RAG Retrieval (skip for Casual routes)
-            context_str = None
+            context_str = SESSIONS[session_id].get("last_rag_context")
+
             if route != "Casual-LLM":
-                yield json.dumps({"type": "step", "content": "Retrieving context via Hybrid Search (BM25 + Semantic)..."}) + "\n"
-                
-                if retrieval_module:
-                    try:
-                        retrieval_output = retrieval_module._process_retrieval_(normalized_text)
-                        retrieved_chunks = retrieval_output.get("retrieved_chunks", [])
-                        
-                        if retrieved_chunks:
-                            yield json.dumps({
-                                "type": "rag_context",
-                                "title": "Legal Sources Retrieved",
-                                "chunks": [{
-                                    "text": chunk.get("chunk", ""), 
-                                    "metadata": chunk.get("metadata", {}), 
-                                    "score": float(chunk.get("score", 0.0))
-                                } for chunk in retrieved_chunks[:5]]
-                            }) + "\n"
-                            context_str = "\n".join([c.get("chunk", "") for c in retrieved_chunks])
-                        else:
-                            yield json.dumps({"type": "step", "content": "No relevant context found..."}) + "\n"
-                    except Exception as rag_err:
-                        print(f"RAG retrieval error: {rag_err}")
-                        yield json.dumps({"type": "step", "content": "Retrieval omitted (fallback applied)..."}) + "\n"
+                if signals is not None:
+                    yield json.dumps({"type": "step", "content": "Retrieving context via Hybrid Search (BM25 + Semantic)..."}) + "\n"
+                    
+                    if retrieval_module:
+                        try:
+                            retrieval_output = retrieval_module._process_retrieval_(normalized_text, signals=signals)
+                            retrieved_chunks = retrieval_output.get("retrieved_chunks", [])
+                            
+                            if retrieved_chunks:
+                                yield json.dumps({
+                                    "type": "rag_context",
+                                    "title": "Legal Sources Retrieved",
+                                    "chunks": [{
+                                        "text": chunk.get("chunk", ""), 
+                                        "metadata": chunk.get("metadata", {}), 
+                                        "score": float(chunk.get("score", 0.0))
+                                    } for chunk in retrieved_chunks[:5]]
+                                }) + "\n"
+                                context_str = "\n".join([c.get("chunk", "") for c in retrieved_chunks])
+                                SESSIONS[session_id]["last_rag_context"] = context_str
+                            else:
+                                yield json.dumps({"type": "step", "content": "No relevant context found..."}) + "\n"
+                                SESSIONS[session_id]["last_rag_context"] = None
+                                context_str = None
+                        except Exception as rag_err:
+                            print(f"RAG retrieval error: {rag_err}")
+                            yield json.dumps({"type": "step", "content": "Retrieval omitted (fallback applied)..."}) + "\n"
+                else:
+                    if context_str:
+                        yield json.dumps({"type": "step", "content": "Follow-up detected — Reusing previous legal context."}) + "\n"
+                    else:
+                        yield json.dumps({"type": "step", "content": "Follow-up detected — No previous context available."}) + "\n"
             else:
                 yield json.dumps({"type": "step", "content": "Casual conversation detected — skipping legal retrieval..."}) + "\n"
+                context_str = None
 
             # 5. Generation Step (with persistence for rate-limits)
             yield json.dumps({"type": "step", "content": "Generating response..."}) + "\n"
@@ -234,7 +251,8 @@ def chat():
                         result = router_module._generate_conversation_(
                             classification=classification,
                             messages=history,
-                            context=context_str
+                            context=context_str,
+                            is_follow_up=(signals is None and route != "Casual-LLM")
                         )
                         response_text = result.get("response_text", "")
                         accepted = result.get("accepted", False)

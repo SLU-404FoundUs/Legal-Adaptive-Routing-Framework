@@ -56,17 +56,29 @@ class LegalRetrievalModule:
         """
         self._embedding_manager._add_documents_(documents, bypass_chunking=True)
 
-    def _process_retrieval_(self, query: str, top_k: int = None) -> dict:
+    def _process_retrieval_(self, query: str, signals: list = None, top_k: int = None) -> dict:
         """
-        @func_ _process_retrieval_ (@params query, top_k)
-        @params query : (str) The user's legal question.
-        @params top_k : (int) Optional override for the number of context chunks to retrieve.
-        @return_ dict : Contains 'query' and 'retrieved_chunks'.
+        @func_ _process_retrieval_ (@params query, signals, top_k)
+        @params query   : (str) The user's legal question.
+        @params signals : (list, optional) A list of keyword phrases from the Semantic Router.
+        @params top_k   : (int) Optional override for the number of context chunks to retrieve.
+        @return_ dict : Contains 'query', 'retrieved_chunks', and 'combined_query'.
         @desc_ Main entry point — retrieves relevant context chunks from the index.
+               If signals are provided, they are appended to the query for better RAG grounding.
         """
-        retrieved_chunks = self._retriever._retrieve_context_(query, top_k=top_k)
+        ## @logic_ Combine original query with search signals for enhanced retrieval
+        search_query = query
+        if signals and isinstance(signals, list):
+            # filter out any non-string or empty signals
+            valid_signals = [str(s).strip() for s in signals if s]
+            if valid_signals:
+                search_query = f"{query} {' '.join(valid_signals)}"
+        
+        retrieved_chunks = self._retriever._retrieve_context_(search_query, top_k=top_k)
+        
         return {
             "query": query,
+            "combined_query": search_query,
             "retrieved_chunks": retrieved_chunks
         }
 

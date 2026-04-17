@@ -11,8 +11,8 @@
 The **Legal Adaptive Routing Framework** is a modular system that processes legal queries through three intelligent stages:
 
 1. **Linguistic Normalization** — Converts multilingual input (Tagalog, Taglish, Cantonese, etc.) into standardized legal English.
-2. **Semantic Routing** — Classifies queries by intent and routing to the appropriate reasoning LLM.
-3. **Legal Retrieval (RAG)** — Uses a **Hybrid Search Engine** (FAISS Vector Store + BM25 Lexical Keyword Store) combined via Reciprocal Rank Fusion (RRF) to retrieve the most relevant legal provisions, grounding AI responses in actual law.
+2. **Semantic Routing** — Classifies queries by intent and generates **Search Signals** (keywords) to guide retrieval.
+3. **Legal Retrieval (RAG)** — Performs **Signal-Guided Retrieval** using a Hybrid Search Engine (FAISS + BM25). For follow-up queries, the system intelligently reuses previous legal context.
 
 The framework communicates with LLMs through the **OpenRouter API** and supports scalable multi-step query processing.
 
@@ -62,8 +62,8 @@ flowchart TD
 
     User --> Triage
     Triage -->|Normalized English| Router
-    Router -->|Route + Query| RAG
-    RAG -->|Augmented Context<br/>(Deduplicated/Parent/Hybird)| Generation
+    Router -->|Search Signals| RAG
+    RAG -->|Augmented Context<br/>(Signals + Context Reuse)| Generation
     CASUAL --> Response["📄 Legal Response"]
     GEN --> Response
     REAS --> Response
@@ -93,18 +93,18 @@ User Input (any language)
                ▼
 ┌──────────────────────────────────────────┐
 │  Stage 2: SEMANTIC ROUTER MODULE         │
-│  • RoutingClassifier classifies intent   │
-│  • Routes to General-LLM or Reasoning   │
-│  Output: {route, confidence, signals}    │
+│  • Classification + Signal Generation    │
+│  • Routes to General or Reasoning LLM    │
+│  Output: {route, confidence, search_signals}│
 └──────────────┬───────────────────────────┘
                │
                ▼
 ┌──────────────────────────────────────────┐
 │  Stage 3: LEGAL RETRIEVAL (RAG)          │
-│  • Hybrid Search (FAISS + BM25)          │
-│  • Retrieve law provisions, deduplicate, │
-│    and inject parent context.            │
-│  Output: {retrieved_chunks + RRF scores} │
+│  • Signal-Guided Hybrid Search           │
+│  • Context Reuse for Follow-up Queries   │
+│    (recycles last_rag_context)           │
+│  Output: {retrieved_chunks}              │
 └──────────────┬───────────────────────────┘
                │
                ▼
@@ -233,10 +233,10 @@ from src.adaptive_routing import (
 | Module | Method | Purpose |
 |:---|:---|:---|
 | `TriageModule` | `_process_request_(text, image?)` | Normalize multilingual input → English |
-| `SemanticRouterModule` | `_process_routing_(text, threshold?, persistence_level?)` | Classify intent → returns `{route, confidence, trigger_signals}` |
-| `SemanticRouterModule` | `_generate_response_(classification, text, context?)` | Single-turn generation with confidence gate |
-| `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?)` | Multi-turn generation with confidence gate |
-| `LegalRetrievalModule` | `_process_retrieval_(query, top_k?)` | Retrieve relevant legal text chunks |
+| `SemanticRouterModule` | `_process_routing_(text, threshold?, persistence_level?)` | Classify intent → returns `{route, confidence, search_signals}` |
+| `SemanticRouterModule` | `_generate_response_(classification, text, context?, is_follow_up?)` | Generation with follow-up awareness |
+| `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?, is_follow_up?)` | Multi-turn generation with follow-up awareness |
+| `LegalRetrievalModule` | `_process_retrieval_(query, signals?, top_k?)` | Retrieve legal chunks (supports signal-guided keywords) |
 | `LegalRetrievalModule` | `_ingest_documents_(docs)` | Add documents to the vector store |
 | `LegalRetrievalModule` | `build_and_save_index(dir, out, prefix)` | Build FAISS index from JSON corpus |
 | `LegalRetrievalModule` | `_save_index_(index, chunks)` | Persist index to disk |

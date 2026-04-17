@@ -46,7 +46,7 @@ class RoutingClassifier:
             "- Unrelated inquiries towards migrant worker rights and legal assistance\n"
             "\n"
             "General-LLM:\n"
-            "- General legal information\n"
+            "- General legal information and Government DMW/OWWA informations\n"
             "- Definitions, explanations, rights overview, Contact Details\n"
             "- Simple Q&A about law\n"
             "- Summarize Legal Findings\n"
@@ -72,8 +72,15 @@ class RoutingClassifier:
             "{\n"
             '  "route": "Casual-LLM" | "General-LLM" | "Reasoning-LLM",\n'
             '  "confidence": float,\n'
-            '  "trigger_signals": [list of short strings]\n'
-            "}"
+            '  "search_signals": [list of short phrases] | null\n'
+            "}\n"
+            "\n"
+            "Signal Generation Rules (for search_signals):\n"
+            "- Always include Contact Details in keyword phrases\n"
+            "- If the query is a new legal inquiry: Provide 4-6 concise keyword phrases (noun phrases, ≤ 5 words each) optimized for retrieval.\n"
+            "- If the query is a follow-up, clarification, summarization, or lacks new legal information: Return null.\n"
+            "- Avoid verbs, questions, or full sentences.\n"
+            "- Use legal/domain-relevant keywords."
         )
 
     def _route_query_(self, query: str) -> dict:
@@ -110,7 +117,7 @@ class RoutingClassifier:
                 return {
                     "route": None,
                     "confidence": 0.0,
-                    "trigger_signals": ["Empty LLM Response"],
+                    "search_signals": ["Empty LLM Response"],
                     "error": error_msg
                 }
 
@@ -129,7 +136,7 @@ class RoutingClassifier:
             return {
                 "route": None,
                 "confidence": 0.0,
-                "trigger_signals": ["Routing Error", str(e)],
+                "search_signals": ["Routing Error", str(e)],
                 "error": error_msg
             }
 
@@ -171,6 +178,6 @@ class RoutingClassifier:
             return {
                 "route": None,
                 "confidence": 0.0,
-                "trigger_signals": ["JSON Parsing Failed", text[:50] if text else "empty"],
+                "search_signals": ["JSON Parsing Failed", text[:50] if text else "empty"],
                 "error": error_msg
             }

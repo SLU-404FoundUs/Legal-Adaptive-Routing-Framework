@@ -65,7 +65,7 @@ class SemanticRouterModule:
 
     ## ── Method 2: Single-Turn Generation ──────────────────────────────────
 
-    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None) -> dict:
+    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, is_follow_up: bool = False) -> dict:
         """
         @func_ _generate_response_ (@params classification, normalized_text, context)
         @params classification  : (dict) Output from _process_routing_ containing route and confidence.
@@ -89,7 +89,7 @@ class SemanticRouterModule:
             }
 
         ## @logic_ Build the query payload
-        query = self._build_augmented_query_(normalized_text, context, route)
+        query = self._build_augmented_query_(normalized_text, context, route, is_follow_up=is_follow_up)
 
         ## @logic_ Dispatch to the appropriate LLM engine
         response_text = self._generator._dispatch_(query, route)
@@ -102,7 +102,7 @@ class SemanticRouterModule:
 
     ## ── Method 3: Multi-Turn Generation ───────────────────────────────────
 
-    def _generate_conversation_(self, classification: dict, messages: list, context: str = None) -> dict:
+    def _generate_conversation_(self, classification: dict, messages: list, context: str = None, is_follow_up: bool = False) -> dict:
         """
         @func_ _generate_conversation_ (@params classification, messages, context)
         @params classification : (dict) Output from _process_routing_ containing route and confidence.
@@ -134,7 +134,7 @@ class SemanticRouterModule:
                     last_user_msg = msg
                     break
             if last_user_msg:
-                last_user_msg["content"] = self._build_augmented_query_(last_user_msg["content"], context, route)
+                last_user_msg["content"] = self._build_augmented_query_(last_user_msg["content"], context, route, is_follow_up=is_follow_up)
 
         ## @logic_ Dispatch the full conversation to the appropriate LLM engine
         response_text = self._generator._dispatch_conversation_(messages, route)
@@ -147,9 +147,9 @@ class SemanticRouterModule:
 
     ## ── Internal Helper ───────────────────────────────────────────────────
 
-    def _build_augmented_query_(self, normalized_text: str, context: str, route: str) -> str:
+    def _build_augmented_query_(self, normalized_text: str, context: str, route: str, is_follow_up: bool = False) -> str:
         """
-        @func_ _build_augmented_query_ (@params normalized_text, context, route)
+        @func_ _build_augmented_query_ (@params normalized_text, context, route, is_follow_up)
         @desc_ Constructs the final query string, optionally wrapping RAG context with delimiters.
                Casual routes skip context injection entirely.
         @return_ str : The final query to send to the LLM.
@@ -157,8 +157,10 @@ class SemanticRouterModule:
         if not context or route == "Casual-LLM":
             return normalized_text
 
+        follow_up_hint = "\n[SYSTEM: This is a follow-up query. Use the provided legal context. Do not introduce new legal concepts unless explicitly required.]" if is_follow_up else ""
+
         return (
-            f"{normalized_text}\n\n"
+            f"{normalized_text}{follow_up_hint}\n\n"
             f"[RETRIEVED CONTEXT — Use if relevant to the query above]\n"
             f"{context}\n"
             f"[END CONTEXT]\n\n"

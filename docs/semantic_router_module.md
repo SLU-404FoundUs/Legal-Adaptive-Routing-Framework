@@ -50,14 +50,14 @@ The **Semantic Router Module** is the **second stage** of the Adaptive Routing p
 │  │  Outputs:         │      │  Three Engines:        │  │
 │  │  - route          │      │  - Casual-LLM engine   │  │
 │  │  - confidence     │      │  - General-LLM engine  │  │
-│  │  - trigger_signals│      │  - Reasoning-LLM engine│  │
+│  │  - search_signals │      │  - Reasoning-LLM engine│  │
 │  └───────────────────┘      └────────────────────────┘  │
 └─────────────────────────────────────────────────────────┘
 ```
 
 **Data flow:**
 1. Normalized text → `SemanticRouterModule._process_routing_()`
-2. `RoutingClassifier._route_query_()` classifies intent → returns `{route, confidence, trigger_signals}`
+2. `RoutingClassifier._route_query_()` classifies intent → returns `{route, confidence, search_signals}`
 3. If route is valid (not `PATHWAY_2`), `LegalGenerator._dispatch_()` generates the response
 4. If route is `PATHWAY_2` (ambiguous), a clarification prompt is returned
 5. Combined classification + response returned to caller
@@ -116,7 +116,7 @@ def _process_routing_(self, normalized_text: str, threshold: float = None, persi
 ### `_generate_response_()`
 
 ```python
-def _generate_response_(self, classification: dict, normalized_text: str, context: str = None) -> dict
+def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, is_follow_up: bool = False) -> dict
 ```
 
 **Single-turn generation** using the classified route.
@@ -126,6 +126,7 @@ def _generate_response_(self, classification: dict, normalized_text: str, contex
 | `classification` | `dict` | Yes | Output from `_process_routing_()` |
 | `normalized_text` | `str` | Yes | The user's normalized query |
 | `context` | `str` | No | RAG-retrieved legal context to augment the query |
+| `is_follow_up` | `bool` | No | If True, adds a system hint that the query is a follow-up. |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -134,7 +135,7 @@ def _generate_response_(self, classification: dict, normalized_text: str, contex
 ### `_generate_conversation_()`
 
 ```python
-def _generate_conversation_(self, classification: dict, messages: list, context: str = None) -> dict
+def _generate_conversation_(self, classification: dict, messages: list, context: str = None, is_follow_up: bool = False) -> dict
 ```
 
 **Multi-turn generation** using the classified route. Injects RAG context into the latest user message before dispatching the full conversation history.
@@ -144,6 +145,7 @@ def _generate_conversation_(self, classification: dict, messages: list, context:
 | `classification` | `dict` | Yes | Output from `_process_routing_()` |
 | `messages` | `list[dict]` | Yes | Full conversation history `[{role, content}, ...]` |
 | `context` | `str` | No | RAG-retrieved legal context to inject into the last user message |
+| `is_follow_up` | `bool` | No | If True, adds a system hint that the query is a follow-up. |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -158,7 +160,7 @@ Both `_generate_response_()` and `_generate_conversation_()` return:
     "classification": {
         "route": str,             # "Casual-LLM", "General-LLM", "Reasoning-LLM", or None on error
         "confidence": float,      # 0.0 to 1.0
-        "trigger_signals": list   # Short strings explaining the classification
+        "search_signals": list    # Keyword phrases for RAG retrieval
     },
     "accepted": bool,             # True if confidence >= threshold or no error occurred
     "response_text": str          # LLM response, or clarification/error message if rejected
@@ -169,7 +171,7 @@ Both `_generate_response_()` and `_generate_conversation_()` return:
 
 ```python
 {
-    "classification": {"route": "General-LLM", "confidence": 0.35, "trigger_signals": [...]},
+    "classification": {"route": "General-LLM", "confidence": 0.35, "search_signals": [...]},
     "accepted": False,
     "response_text": "I'm not confident enough in my understanding of your query. Could you please clarify?"
 }
@@ -182,7 +184,7 @@ Both `_generate_response_()` and `_generate_conversation_()` return:
     "classification": {
         "route": "Reasoning-LLM",
         "confidence": 0.88,
-        "trigger_signals": ["specific scenario", "employment dispute", "legal action needed"]
+        "search_signals": ["domestic worker contract", "termination without notice", "PH labor law"]
     },
     "response_text": "**1. Application**\nThe worker alleges non-payment of overtime...\n..."
 }
@@ -195,7 +197,7 @@ Both `_generate_response_()` and `_generate_conversation_()` return:
     "classification": {
         "route": "PATHWAY_2",
         "confidence": 0.0,
-        "trigger_signals": ["Routing Error", "..."]
+        "search_signals": ["Routing Error", "..."]
     },
     "response_text": "Hi There can you please clarify your inquiry, provide specific details."
 }
@@ -256,10 +258,9 @@ def _route_query_(self, query: str) -> dict
 The classifier instructs the LLM to return structured JSON:
 
 ```python
-{
     "route": "General-LLM" | "Reasoning-LLM",
     "confidence": float,           # 0.0 to 1.0
-    "trigger_signals": [str, ...]  # List of short reasoning strings
+    "search_signals": [str, ...] | null  # List of keyword phrases or null for follow-ups
 }
 ```
 
@@ -305,7 +306,7 @@ If routing fails for **any reason** (API error, JSON parsing failure, or an empt
 {
     "route": None,
     "confidence": 0.0,
-    "trigger_signals": ["JSON Parsing Failed", "empty"],
+    "search_signals": ["JSON Parsing Failed", "empty"],
     "error": "Failed to parse router output as JSON. [Router Config] model=... USE_SYSTEM=...\n  Possible fixes:..."
 }
 ```
@@ -501,7 +502,7 @@ print(classification)
 # {
 #     "route": "General-LLM",
 #     "confidence": 0.95,
-#     "trigger_signals": ["rights overview", "general information"]
+#     "search_signals": ["OFW rights", "PH labor code", "migrant worker protections"]
 # }
 ```
 
@@ -567,7 +568,7 @@ custom_prompt = (
     "JSON Schema:\n"
     '{"route": "General-LLM" | "Reasoning-LLM", '
     '"confidence": float, '
-    '"trigger_signals": [list]}'
+    '"search_signals": [list] | null}'
 )
 
 classifier = RoutingClassifier(system_prompt=custom_prompt)

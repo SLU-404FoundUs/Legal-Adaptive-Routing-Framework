@@ -438,6 +438,7 @@ def main():
         sys.exit(1)
 
     history = []
+    last_rag_context = None
 
     print_active_config()
 
@@ -533,7 +534,7 @@ def main():
             # ──────────────────────────────────────────────────
             # Stage 2: Semantic Routing (Classification)
             # ──────────────────────────────────────────────────
-            classification = {"route": "General-LLM", "confidence": 0.0, "trigger_signals": []}
+            classification = {"route": "General-LLM", "confidence": 0.0, "search_signals": None}
             with console.status("[magenta]🔀 Routing request...[/magenta]", spinner="dots"):
                 for attempt in range(1, MAX_RETRIES + 1):
                     try:
@@ -545,7 +546,7 @@ def main():
                                 classification = {
                                     "route": "Casual-LLM",
                                     "confidence": 1.0,
-                                    "trigger_signals": ["Fallback due to threshold failure"]
+                                    "search_signals": None
                                 }
                                 break
                             else:
@@ -564,32 +565,45 @@ def main():
 
             route = classification.get("route", "General-LLM")
             confidence = classification.get("confidence", 0.0)
-            signals = classification.get("trigger_signals", [])
+            signals = classification.get("search_signals")
             logging.info(f"[Router] route={route!r} confidence={confidence:.2f} signals={signals}")
 
             route_colors = {"Reasoning-LLM": "magenta", "General-LLM": "blue", "Casual-LLM": "yellow"}
             rc = route_colors.get(route, "white")
-            trigger_text = f" | [dim]Signals: {', '.join(str(s) for s in signals)}[/dim]" if signals else ""
-            console.print(f"  [magenta]🔀 Router[/magenta]  │  Route: [{rc} bold]{route}[/] (Conf: {confidence:.2f}){trigger_text}")
+            signal_text = f" | [dim]Search Signals: {', '.join(str(s) for s in signals)}[/dim]" if signals else " | [dim]Follow-up Detection: REUSING CONTEXT[/dim]" if route != "Casual-LLM" else ""
+            console.print(f"  [magenta]🔀 Router[/magenta]  │  Route: [{rc} bold]{route}[/] (Conf: {confidence:.2f}){signal_text}")
 
             # ──────────────────────────────────────────────────
             # Stage 3: RAG Retrieval (skip for Casual)
             # ──────────────────────────────────────────────────
-            context_str = None
+            context_str = last_rag_context  # Initial fallback
+            
             if route != "Casual-LLM":
-                with console.status("[green]📚 Searching legal corpus (Hybrid BM25 + Vector)...[/green]", spinner="dots"):
-                    try:
-                        retrieval_output = retrieval._process_retrieval_(normalized_text)
-                        chunks = retrieval_output.get("retrieved_chunks", [])
-                        if chunks:
-                            context_str = "\n\n".join([c.get("chunk", "") for c in chunks[:3]])
-                            console.print(f"  [green]📚 RAG[/green]     │  Retrieved [bold]{len(chunks[:3])}[/bold] relevant legal sources.")
-                        else:
-                            console.print(f"  [dim]📚 RAG[/dim]     │  [dim]No relevant sources found.[/dim]")
-                    except Exception as e:
-                        logging.error(f"Retrieval error: {e}")
-                        console.print()
-                        print_error_box("RAG Retrieval Failed", str(e), hint="Proceeding without legal context.")
+                # Use search_signals to decide if we need a new search
+                if signals is not None:
+                    with console.status("[green]📚 Searching legal corpus (Hybrid BM25 + Vector)...[/green]", spinner="dots"):
+                        try:
+                            retrieval_output = retrieval._process_retrieval_(normalized_text, signals=signals)
+                            chunks = retrieval_output.get("retrieved_chunks", [])
+                            if chunks:
+                                context_str = "\n\n".join([c.get("chunk", "") for c in chunks[:5]])
+                                last_rag_context = context_str  # Update persistence
+                                console.print(f"  [green]📚 RAG[/green]     │  New information found. Retrieved [bold]{len(chunks[:5])}[/bold] sources.")
+                            else:
+                                console.print(f"  [dim]📚 RAG[/dim]     │  [dim]No new relevant sources found.[/dim]")
+                                context_str = None # Reset if truly nothing found on a new search
+                        except Exception as e:
+                            logging.error(f"Retrieval error: {e}")
+                            console.print()
+                            print_error_box("RAG Retrieval Failed", str(e), hint="Proceeding with fallback or no context.")
+                else:
+                    # Signals are null, reuse last context
+                    if last_rag_context:
+                        console.print(f"  [green]📚 RAG[/green]     │  [cyan]Context Reuse Mode[/cyan]: Reusing previous legal findings.")
+                    else:
+                        console.print(f"  [dim]📚 RAG[/dim]     │  [dim]No previous context to reuse.[/dim]")
+            else:
+                context_str = None # No context for casual routes
 
             # ──────────────────────────────────────────────────
             # Stage 4: Generation (Multi-Turn)
@@ -604,7 +618,8 @@ def main():
                         gen_result = router._generate_conversation_(
                             classification=classification,
                             messages=history,
-                            context=context_str
+                            context=context_str,
+                            is_follow_up=(signals is None and route != "Casual-LLM")
                         )
                         if gen_result.get("error"):
                             raise Exception(gen_result["error"])

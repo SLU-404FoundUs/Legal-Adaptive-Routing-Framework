@@ -216,6 +216,38 @@ if(closeRagBtn) {
     closeRagBtn.addEventListener('click', () => ragModal.classList.add('hidden'));
 }
 
+// =============================================
+// Module Details Modal Logic
+// =============================================
+const detailsModal = document.getElementById('details-modal');
+const closeDetailsBtn = document.getElementById('close-details-btn');
+const modalDetailsContent = document.getElementById('details-modal-content');
+const modalDetailsTitle = document.getElementById('details-modal-title');
+
+window.openDetailsModal = function(title, dataStr) {
+    if (!detailsModal) return;
+    const data = JSON.parse(decodeURIComponent(dataStr));
+    
+    modalDetailsTitle.innerText = title;
+    
+    let html = '<table class="details-table">';
+    for (const [key, value] of Object.entries(data)) {
+        html += `
+        <tr>
+            <th>${key}</th>
+            <td>${typeof value === 'object' ? JSON.stringify(value, null, 2) : value}</td>
+        </tr>`;
+    }
+    html += '</table>';
+    
+    modalDetailsContent.innerHTML = html;
+    detailsModal.classList.remove('hidden');
+};
+
+if(closeDetailsBtn) {
+    closeDetailsBtn.addEventListener('click', () => detailsModal.classList.add('hidden'));
+}
+
 // Delegate listener for citation clicks
 chatHistory.addEventListener('click', (e) => {
     if (e.target.closest('.citation')) {
@@ -322,12 +354,15 @@ chatForm.addEventListener('submit', async (e) => {
                         // Update Pipeline
                         let statusText = data.content;
                         if(data.type === 'data') {
+                           const encodedData = encodeURIComponent(JSON.stringify(data.data));
+                           const detailsLink = `<span class="details-link" onclick="window.openDetailsModal('${data.title}', '${encodedData}')">(View details)</span>`;
+                           
                            if(data.title.includes("Routing")) {
-                               statusText = `Routed via <strong>${data.data.Route}</strong> (${(data.data.Confidence*100).toFixed(0)}% confidence)`;
+                               statusText = `Routed via <strong>${data.data.Route || data.data["Selected Route"]}</strong> ${detailsLink}`;
                            } else if(data.title.includes("Triage")) {
-                               statusText = `Triage applied. Normalized Input: "${data.data["Normalized Text"]}"`;
+                               statusText = `Triage applied. ${detailsLink}`;
                            } else {
-                               statusText = `Data check: ${data.title}`;
+                               statusText = `${data.title} ${detailsLink}`;
                            }
                         }
                         

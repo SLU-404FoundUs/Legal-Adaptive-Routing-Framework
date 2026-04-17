@@ -294,6 +294,25 @@
         </div>
     </div>
 
+    <!-- Details Modal (for Triage/Router diagnostics) -->
+    <div id="details-modal" class="modal-overlay hidden">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2 id="details-modal-title">Module Details</h2>
+                <button id="close-details-btn" class="close-btn" aria-label="Close modal">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="details-modal-content" class="details-table-container">
+                    <!-- Data injected here via JS -->
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- CDNs for robust Markdown Rendering -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>

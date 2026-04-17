@@ -16,6 +16,8 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
   - [Constructor](#constructor)
   - [_ingest_documents_()](#_ingest_documents_)
   - [_process_retrieval_()](#_process_retrieval_)
+  - [Signal-Guided Retrieval](#signal-guided-retrieval)
+  - [Context Reuse](#context-reuse)
   - [_save_index_()](#_save_index_)
   - [_load_index_()](#_load_index_)
   - [build_and_save_index()](#build_and_save_index)
@@ -70,9 +72,10 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 
 **Data flow — Retrieval:**
 1. Query → `_process_retrieval_()` → `LegalRetriever._retrieve_context_()`
-2. Query embedded → `_get_embeddings_()`
+2. Signal-Guided Search: If search signals (keywords) are provided by the Semantic Router, they are combined with the query.
 3. Hybrid Search: FAISS nearest-neighbor search + BM25 keyword search → results combined via Reciprocal Rank Fusion (RRF)
-4. Results are deduplicated and parent context is injected if available
+4. Context Reuse: If the user query is a follow-up (no new signals), the system can reuse the last retrieved context.
+5. Results are deduplicated and parent context is injected if available
 
 ---
 
@@ -158,7 +161,7 @@ retriever._ingest_documents_(docs)
 ### `_process_retrieval_()`
 
 ```python
-def _process_retrieval_(self, query: str, top_k: int = None) -> dict
+def _process_retrieval_(self, query: str, signals: list = None, top_k: int = None) -> dict
 ```
 
 The **main entry point** for retrieval. Returns the most relevant document chunks for a given query.
@@ -166,6 +169,7 @@ The **main entry point** for retrieval. Returns the most relevant document chunk
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `query` | `str` | Yes | The user's legal question |
+| `signals` | `list` | No | Keyword phrases from the Semantic Router to guide search. |
 | `top_k` | `int` | No | Override for number of chunks to retrieve (default: `FrameworkConfig._RETRIEVAL_TOP_K`) |
 
 **Returns**: `dict`
@@ -195,6 +199,16 @@ The **main entry point** for retrieval. Returns the most relevant document chunk
 > **Note**: Score thresholds depend on the retrieval algorithm parameters. The system automatically bypasses explicit cosine similarity thresholds when RRF scoring is detected to preserve optimal hybrid results. 
 > 
 > **Parent Context Injection**: During retrieval, if a chunk contains a `parent_context` metadata key, the retriever will automatically deduplicate results and inject the broader contiguous parent text as the retrieval chunk, rather than just the isolated line.
+
+---
+
+### Signal-Guided Retrieval
+
+When the `SemanticRouterModule` identifies specific legal entities or actions, it generates **Search Signals**. These are concise keywords that are appended to the user's query before performing the hybrid search. This significantly improves RAG precision by grounding the search in confirmed legal concepts.
+
+### Context Reuse
+
+For follow-up questions where no new legal signals are detected (e.g., "Tell me more about the first point"), the framework reuses the `last_rag_context` stored in the session state. This avoids redundant API calls and ensures continuity in the legal analysis.
 
 ---
 

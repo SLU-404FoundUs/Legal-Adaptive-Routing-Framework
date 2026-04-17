@@ -1,10 +1,15 @@
 {
   "department_metadata": {
-    "agency": "Department of Migrant Workers (DMW)",
+    "agency": "Department of Migrant Workers Contact Details/ Contact Information (DMW)",
     "headquarters": "Blas F. Ople Building, Ortigas Avenue cor. EDSA, Mandaluyong City 1550",
     "last_updated_central": "January 30, 2026",
     "last_updated_mwo": "February 25, 2026",
-    "general_hotlines": ["8722-1182", "0722-1155", "122-1153", "0724-3645"]
+    "general_hotlines": [
+      "8722-1182",
+      "0722-1155",
+      "122-1153",
+      "0724-3645"
+    ]
   },
   "central_leadership_and_bureaus": {
     "executive": {
@@ -29,7 +34,10 @@
     "specialized_services": {
       "legal_service": {
         "director": "Atty. Janine T. Tutanes",
-        "divisions": ["Legal Division A (legal.A@dmw.gov.ph)", "Legal Division B (legal.B@dmw.gov.ph)"]
+        "divisions": [
+          "Legal Division A (legal.A@dmw.gov.ph)",
+          "Legal Division B (legal.B@dmw.gov.ph)"
+        ]
       },
       "licensing_and_regulations": {
         "director": "Atty. Liza C. Alcera",
@@ -52,7 +60,10 @@
       {
         "post": "Singapore",
         "head": "Haney Lynn G. Siclot",
-        "concurrent_jurisdiction": ["Indonesia", "Cambodia"],
+        "concurrent_jurisdiction": [
+          "Indonesia",
+          "Cambodia"
+        ],
         "email": "mwo_singapore@dmw.gov.ph"
       }
     ],
@@ -60,8 +71,16 @@
       {
         "post": "Dubai, UAE",
         "head": "John Rio A. Bautista",
-        "jurisdiction": ["Dubai", "Sharjah"],
-        "concurrent": ["Ajman", "Ras Al Khaimah", "Fujairah", "Umm Al-Quwain"],
+        "jurisdiction": [
+          "Dubai",
+          "Sharjah"
+        ],
+        "concurrent": [
+          "Ajman",
+          "Ras Al Khaimah",
+          "Fujairah",
+          "Umm Al-Quwain"
+        ],
         "hotline": "+971506526626"
       },
       {
@@ -73,7 +92,15 @@
       {
         "post": "Morocco",
         "head": "William E. Calina",
-        "concurrent": ["Libya", "Algeria", "Chad", "Mali", "Niger", "Mauritania", "Tunisia"],
+        "concurrent": [
+          "Libya",
+          "Algeria",
+          "Chad",
+          "Mali",
+          "Niger",
+          "Mauritania",
+          "Tunisia"
+        ],
         "email": "polo.rabat2021@gmail.com"
       }
     ],
@@ -81,7 +108,14 @@
       {
         "post": "Washington DC",
         "head": "Saul T. de Vries",
-        "oversight": ["Mexico", "Costa Rica", "Brazil", "Argentina", "Chile", "Colombia"],
+        "oversight": [
+          "Mexico",
+          "Costa Rica",
+          "Brazil",
+          "Argentina",
+          "Chile",
+          "Colombia"
+        ],
         "email": "mwo_washingtondc@dmw.gov.ph"
       }
     ],
@@ -89,7 +123,14 @@
       {
         "post": "London",
         "head": "Ma. Nena G. German",
-        "concurrent": ["Norway", "Denmark", "Finland", "Sweden", "Iceland", "Greenland"],
+        "concurrent": [
+          "Norway",
+          "Denmark",
+          "Finland",
+          "Sweden",
+          "Iceland",
+          "Greenland"
+        ],
         "email": "mwo_london@dmw.gov.ph"
       }
     ]
