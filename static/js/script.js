@@ -85,6 +85,7 @@ settingsBtn.addEventListener('click', async () => {
         document.getElementById('input_triage_max_tokens').value = data.triage_max_tokens || 1000;
         document.getElementById('input_triage_use_system').value = data.triage_use_system ? "true" : "false";
         document.getElementById('input_triage_reasoning').value = data.triage_reasoning ? "true" : "false";
+        document.getElementById('input_triage_instructions').value = data.triage_instructions || '';
         
         // Router
         document.getElementById('input_router_model').value = data.router_model || '';
@@ -133,6 +134,7 @@ configForm.addEventListener('submit', async (e) => {
         triage_max_tokens: parseInt(document.getElementById('input_triage_max_tokens').value) || 1000,
         triage_use_system: document.getElementById('input_triage_use_system').value === "true",
         triage_reasoning: document.getElementById('input_triage_reasoning').value === "true",
+        triage_instructions: document.getElementById('input_triage_instructions').value,
         
         router_model: document.getElementById('input_router_model').value,
         router_temp: parseFloat(document.getElementById('input_router_temp').value),

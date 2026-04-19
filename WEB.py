@@ -1,3 +1,10 @@
+## Saint Louis University
+## Team 404FoundUs
+## @file WEB.py
+## @project_ LLM Legal Adaptive Routing Framework
+## @desc_ Web interface (Flask) for the Legal Adaptive Routing Framework.
+## @deps os, json, time, uuid, flask, dotenv, src.adaptive_routing
+
 import os
 import json
 import time
@@ -324,6 +331,7 @@ def get_config():
         "casual_use_system": FrameworkConfig._CASUAL_USE_SYSTEM,
         "casual_reasoning": FrameworkConfig._CASUAL_REASONING,
         "casual_instructions": FrameworkConfig._CASUAL_INSTRUCTIONS,
+        "triage_instructions": FrameworkConfig._TRIAGE_INSTRUCTIONS,
     })
 
 @app.route('/api/config', methods=['POST'])
@@ -366,6 +374,7 @@ def save_config():
         casual_use_system=bool(data.get('casual_use_system', FrameworkConfig._CASUAL_USE_SYSTEM)),
         casual_reasoning=bool(data.get('casual_reasoning', FrameworkConfig._CASUAL_REASONING)),
         casual_instructions=data.get('casual_instructions', FrameworkConfig._CASUAL_INSTRUCTIONS),
+        triage_instructions=data.get('triage_instructions', FrameworkConfig._TRIAGE_INSTRUCTIONS),
     )
     
     from dotenv import set_key
