@@ -85,8 +85,8 @@ class FrameworkConfig:
                 )
 
     ## @const_ _GENERAL_MODEL : Information generation model settings.
-    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "qwen/qwen-turbo")
-    _GENERAL_TEMP = float(os.getenv("GENERAL_TEMP", "0.5"))
+    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-4-26b-a4b-it")
+    _GENERAL_TEMP = float(os.getenv("GENERAL_TEMP", "1.4"))
     _GENERAL_MAX_TOKENS = int(os.getenv("GENERAL_MAX_TOKENS", "2500"))
     _GENERAL_USE_SYSTEM = os.getenv("GENERAL_USE_SYSTEM", "True").lower() == "true"
     _GENERAL_REASONING = os.getenv("GENERAL_REASONING", "False").lower() == "true"
@@ -119,8 +119,8 @@ class FrameworkConfig:
 
     ## @const_ _REASONING_MODEL : Reasoning/Advice generation model settings.
     _REASONING_MODEL = os.getenv("REASONING_MODEL", "deepseek/deepseek-chat-v3.1")
-    _REASONING_TEMP = float(os.getenv("REASONING_TEMP", "0.7"))
-    _REASONING_MAX_TOKENS = int(os.getenv("REASONING_MAX_TOKENS", "3000"))
+    _REASONING_TEMP = float(os.getenv("REASONING_TEMP", "1"))
+    _REASONING_MAX_TOKENS = int(os.getenv("REASONING_MAX_TOKENS", "4000"))
     _REASONING_USE_SYSTEM = os.getenv("REASONING_USE_SYSTEM", "True").lower() == "true"
     _REASONING_REASONING = os.getenv("REASONING_REASONING", "True").lower() == "true"
     _REASONING_INSTRUCTIONS = os.getenv("REASONING_INSTRUCTIONS", (

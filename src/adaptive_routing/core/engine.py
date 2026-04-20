@@ -87,11 +87,38 @@ class LLMRequestEngine:
         """
         if 'choices' in response_json and len(response_json['choices']) > 0:
             message = response_json['choices'][0]['message']
-            content = message.get('content', '')
             
-            reasoning = message.get('reasoning', None)
+            # Extract content, ensuring it's at least an empty string if null
+            content = message.get('content') or ""
+            
+            # Extract reasoning from multiple possible fields (OpenRouter / OpenAI / O1)
+            reasoning = message.get('reasoning') or message.get('reasoning_content')
+            
+            # Check for reasoning_details (list of dicts) used by some providers
+            if not reasoning and 'reasoning_details' in message:
+                details = message['reasoning_details']
+                if isinstance(details, list) and len(details) > 0:
+                    # Collect all summary/text parts from reasoning details
+                    parts = []
+                    for part in details:
+                        if isinstance(part, dict) and 'summary' in part:
+                            parts.append(part['summary'])
+                        elif isinstance(part, dict) and 'data' in part and not part.get('type') == 'reasoning.encrypted':
+                             parts.append(part['data'])
+                    if parts:
+                        reasoning = "\n".join(parts)
+
+            # If user wants reasoning and we found some, prepend it
             if self._include_reasoning and reasoning:
                 return f"<reasoning>\n{reasoning}\n</reasoning>\n\n{content}"
+            
+            # Fallback if content is null but we have reasoning (indicates reasoning took all tokens)
+            if not content and reasoning:
+                return f"[REASONING ONLY - NO CONTENT GENERATED]\n\n{reasoning}"
+            
+            # Final fallback if absolutely nothing was generated
+            if not content:
+                content = "The model returned an empty response (and no reasoning could be extracted). Please try increasing the MAX_TOKENS setting or check your API credits."
             
             return content
         else:

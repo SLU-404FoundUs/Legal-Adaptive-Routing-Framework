@@ -496,7 +496,12 @@ DOM.chatForm.addEventListener('submit', async (e) => {
                     triage_result: triageEvent ? triageEvent.data : null,
                     routing_decision: routingEvent ? routingEvent.data : null,
                     rag_chunks_count: ragEvent ? ragEvent.chunks.length : 0,
-                    rag_chunks: ragEvent ? ragEvent.chunks.map(c => ({ score: c.score, metadata: c.metadata, excerpt: (c.text || '').substring(0, 200) })) : [],
+                    rag_chunks: ragEvent ? ragEvent.chunks.map(c => ({ 
+                        score: c.score, 
+                        metadata: c.metadata, 
+                        text: c.text,
+                        excerpt: (c.text || '').substring(0, 200) // Keep excerpt for backward compat
+                    })) : [],
                     llm_response_preview: assistantText.substring(0, 300),
                     route: resultEvent ? resultEvent.route : null,
                 });
@@ -895,18 +900,27 @@ function restoreConversation(data) {
 
             // Step: RAG
             if (trace.rag_chunks_count > 0 && trace.rag_chunks) {
-                // Store chunks so the modal works
                 const ragStep = document.createElement('div');
                 ragStep.className = 'pipe-step done';
+                ragStep.style.cursor = 'pointer';
                 const chunkCount = trace.rag_chunks_count;
-                // Rebuild chunks for modal (use excerpts)
+                
+                // Rebuild chunks for modal (prefer full text)
                 const restoredChunks = trace.rag_chunks.map(c => ({
-                    text: c.excerpt || '',
+                    text: c.text || c.excerpt || '',
                     metadata: c.metadata || {},
                     score: c.score || 0
                 }));
-                ragStep.style.cursor = 'pointer';
-                ragStep.innerHTML = `<span class="step-icon">✓</span><span class="step-text" style="color:var(--accent-primary);text-decoration:underline" onclick="(function(){window._restoredRagChunks=${JSON.stringify(restoredChunks).replace(/'/g,"\\'")}; var prev=state.currentRagChunks; state.currentRagChunks=JSON.parse(window._restoredRagChunks); window.openRagModal(); state.currentRagChunks=prev;})()">Found ${chunkCount} legal source${chunkCount !== 1 ? 's' : ''} (click to view)</span>`;
+                
+                ragStep.innerHTML = `<span class="step-icon">✓</span><span class="step-text" style="color:var(--accent-primary);text-decoration:underline">Found ${chunkCount} legal source${chunkCount !== 1 ? 's' : ''} (click to view)</span>`;
+                
+                // Fix the "click to view" functionality
+                ragStep.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    state.currentRagChunks = restoredChunks;
+                    window.openRagModal();
+                });
+                
                 pipelineDiv.appendChild(ragStep);
             }
 

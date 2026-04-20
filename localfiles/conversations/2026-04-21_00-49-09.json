@@ -1,0 +1,98 @@
+{
+  "session_id": "cce3bc97-afcf-45b5-bee0-71fb8faf7796",
+  "title": "What are my rights as an OFW in Hong Kong?",
+  "timestamp": "2026-04-21T00:49:09.260841",
+  "message_count": 3,
+  "messages": [
+    {
+      "role": "user",
+      "content": "What are my rights as an OFW in Hong Kong?",
+      "timestamp": "2026-04-20T16:45:54.256Z"
+    },
+    {
+      "role": "pipeline_trace",
+      "timestamp": "2026-04-20T16:46:18.003Z",
+      "triage_result": {
+        "Original Input": "What are my rights as an OFW in Hong Kong?",
+        "Detected Language": "English",
+        "Normalized English": "What are the rights of an Overseas Filipino Worker in Hong Kong?"
+      },
+      "routing_decision": {
+        "Selected Route": "General-LLM",
+        "Confidence Score": 0.95,
+        "Search Signals": [
+          "Overseas Filipino Worker rights Hong Kong",
+          "Filipino worker legal protections Hong Kong",
+          "Migrant worker rights Hong Kong",
+          "Contact Details OWWA Hong Kong",
+          "Labor laws for Filipinos in Hong Kong"
+        ]
+      },
+      "rag_chunks_count": 5,
+      "rag_chunks": [
+        {
+          "score": 0.031024531024531024,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except ",
+            "category": "general",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except \nthrough the Boards and entities authorized by the Secretary of Labor. Direct-hiring by members of the \ndiplomatic corps, international organizations and such other employers as may be allowed by the Secretary of \nLabor is exempted from this provision."
+          },
+          "excerpt": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except \nthrough the Boards and entities authorized by the Secretary of Labor. Direct-hiring by members of the \ndi"
+        },
+        {
+          "score": 0.01639344262295082,
+          "metadata": {
+            "jurisdiction": "HK",
+            "title": "Maintenance and delivery to the Commissioner of prescribed",
+            "category": "general",
+            "source_file": "Cap 57 Consolidated version for the Whole Chapter (24-08-2025) (English).pdf",
+            "parent_context": "registers, records and returns\n\t\n(1)\t\nA licensee shall—\n\t\n(a)\t\nmaintain a record of—\n\t\n(i)\t\nall job applicants registered with his employment \nagency; and\n\t\n(ii)\t\njob applicants who, at the time of registration, were \nnot residents of Hong Kong and who were placed \nLast updated date\n24.8.2025\nEmployment Ordinance\nPart XII\t\n12-16\nSection 55\t\nCap. 57\nVerified Copy\nin employment in Hong Kong by his employment \nagency,\ncontaining the person’s name, address, Hong Kong \nIdentity Card number or, in the case of a non-resident, \npassport number and citizenship, fee and commission \nreceived, date of employment and name and address of \nemployer; and (Replaced 28 of 1992 s. 5)\n\t\n(b)\t\nkeep such records available for inspection at the \nplace of business of the employment agency by the \nCommissioner, or by any public officer authorized by \nhim in that behalf, at all reasonable times. (Amended 28 \nof 1992 s. 5)\n\t\n(2)\t\nA licensee shall, within such time as may be prescribed, \ndeliver to the Commissioner such returns in respect of the \nemployment agency as may be prescribed.\n\t\n(3)\t\nThe records referred to in subsection (1) shall be retained by \nthe licensee for a period of not less than 12 months after the \nexpiration of each accounting year of the employment agency \nconcerned. (Amended 28 of 1992 s. 5)"
+          },
+          "excerpt": "registers, records and returns\n\t\n(1)\t\nA licensee shall—\n\t\n(a)\t\nmaintain a record of—\n\t\n(i)\t\nall job applicants registered with his employment \nagency; and\n\t\n(ii)\t\njob applicants who, at the time of re"
+        },
+        {
+          "score": 0.01639344262295082,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least",
+            "category": "general",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least \nseventy-five percent (75%) of the authorized and voting capital stock of which is owned and controlled by \nFilipino citizens shall be permitted to participate in the recruitment and placement of workers, locally or \noverseas."
+          },
+          "excerpt": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least \nseventy-five percent (75%) of the authorized and voting capital stock of which is owned and contro"
+        },
+        {
+          "score": 0.016129032258064516,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Foreign employment. The Commission shall ensure adequate coverage of Filipino employees ",
+            "category": "general",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Foreign employment. The Commission shall ensure adequate coverage of Filipino employees \nemployed abroad, subject to regulations as it may prescribe."
+          },
+          "excerpt": ". Foreign employment. The Commission shall ensure adequate coverage of Filipino employees \nemployed abroad, subject to regulations as it may prescribe."
+        },
+        {
+          "score": 0.016129032258064516,
+          "metadata": {
+            "jurisdiction": "HK",
+            "title": "Documentary requirements relating to paternity leave pay:",
+            "category": "benefits",
+            "source_file": "Cap 57 Consolidated version for the Whole Chapter (24-08-2025) (English).pdf",
+            "parent_context": "birth in Hong Kong\n\t\n(1)\t\nFor section 15H(b), an employee who takes paternity leave in \nrespect of the birth of a child in Hong Kong must provide the \nemployer with the birth certificate of the child—\n\t\n(a)\t\nthat is issued under the Births and Deaths Registration \nOrdinance (Cap. 174); and\n\t\n(b)\t\non which the employee’s name is entered as the child’s \nfather.\n\t\n(2)\t\nDespite subsection (1), if the child is born dead, or if the \nchild dies after birth and no birth certificate has been issued in \nrespect of the child under the Births and Deaths Registration \nOrdinance (Cap. 174), the employee must provide the \nemployer with—\n\t\n(a)\t\na medical certificate described in subsection (3); and\n\t\n(b)\t\n(if the employer so requires) a written statement signed \nby the employee, stating that—\nLast updated date\n11.12.2020\nEmployment Ordinance\nPart IIIA\t\n3A-12\nSection 15J\t\nCap. 57\nVerified Copy\n\t\n(i)\t\nhe is the father of the child delivered by the \nwoman named in the medical certificate; and\n\t\n(ii)\t\nthe child is born dead or dies after birth (whichever \nis appropriate).\n\t\n(3)\t\nFor subsection (2)(a), the medical certificate—\n\t\n(a)\t\nmust certify the delivery of the child; and\n\t\n(b)\t\nmust be issued by—\n\t\n(i)\t\na registered medical practitioner; or\n\t\n(ii)\t\ndespite section 16 of the Midwives Registration \nOrdinance (Cap. 162), a midwife registered under \nsection 8, or deemed to be registered under section \n25, of that Ordinance.\n\t\n(4)\t\nThe documents required under this section must be provided \nto the employer—\n\t\n(a)\t\nwithin 12 months after the first day on which the \nemployee takes the paternity leave; or\n\t\n(b)\t\nif the employee has ceased to be employed by the \nemployer, within the period mentioned in paragraph (a) \nor within 6 months after the cessation (whichever period \nexpires first)."
+          },
+          "excerpt": "birth in Hong Kong\n\t\n(1)\t\nFor section 15H(b), an employee who takes paternity leave in \nrespect of the birth of a child in Hong Kong must provide the \nemployer with the birth certificate of the child—"
+        }
+      ],
+      "llm_response_preview": "It is completely natural to want to understand your rights and protections while working far from home. Knowing what you are entitled to can provide a sense of security and help you feel more empowered in your workplace.\n\n**Simplified Legal Concept**\nAs an OFW in Hong Kong, your rights are protected",
+      "route": "General-LLM"
+    },
+    {
+      "role": "assistant",
+      "content": "It is completely natural to want to understand your rights and protections while working far from home. Knowing what you are entitled to can provide a sense of security and help you feel more empowered in your workplace.\n\n**Simplified Legal Concept**\nAs an OFW in Hong Kong, your rights are protected by two different sets of laws: **Philippine Laws** (which protect you during the recruitment process and ensure your welfare as a citizen) and **Hong Kong Laws** (which govern your daily working conditions, such as your contract, pay, and leaves once you are physically in Hong Kong).\n\n**General Explanation**\nTo make it easier to understand, we can look at your rights in two stages:\n\n**1. Your Rights under Philippine Law (Before and during deployment):**\n*   **Protection from Illegal Recruitment:** You have the right to be hired through authorized agencies. The law generally prohibits \"direct hiring,\" meaning your employer should go through official channels like the Department of Migrant Workers (DMW) to ensure you are protected.\n*   **Right to Proper Recruitment:** Only agencies that are Filipino-owned (at least 75% Filipino-owned) are allowed to recruit you, ensuring that your agency is accountable to Philippine standards.\n*   **Right to Government Support:** The Philippine government has a duty to ensure you have adequate coverage and support while you are working abroad.\n\n**2. Your Rights under Hong Kong Law (While working in HK):**\n*   **Employment Ordinance Protections:** Once you are in Hong Kong, the local *Employment Ordinance* protects you. This includes rights to specific benefits, such as paternity leave for fathers (provided you provide the necessary birth certificates or medical documents).\n*   **Record Keeping:** Employment agencies in Hong Kong are required by law to keep accurate records of your employment, including your name, passport number, and the details of your employer. This ensures there is a paper trail of your employment.\n*   **Standard Working Conditions:** You are entitled to the terms stated in your employment contract, which must follow Hong Kong's labor standards regarding wages, rest days, and holidays.\n\nIn summary, Philippine laws act as your shield during the hiring process, while Hong Kong laws govern your actual daily life and benefits as an employee in the city.\n\nDoes this help clarify the different types of protections available to you, or would you like me to explain a specific right in more detail?\n\n***\n\n*Note: This information is provided as general guidance and may not reflect the most current legal updates. For specific legal concerns or if you are experiencing issues with your employer or agency, please contact:*\n\n*   **Department of Migrant Workers (DMW):** For issues regarding recruitment, contracts, or agency disputes.\n*   **Overseas Workers Welfare Administration (OWWA):** For welfare assistance and support services.",
+      "timestamp": "2026-04-20T16:46:18.003Z"
+    }
+  ]
+}

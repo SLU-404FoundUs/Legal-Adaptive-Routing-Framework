@@ -1,0 +1,88 @@
+{
+  "session_id": "5512a066-8015-4801-9dd5-ca2b69f18c40",
+  "title": "What are my rights as an OFW in Hong Kong?",
+  "timestamp": "2026-04-21T00:50:34.715516",
+  "message_count": 3,
+  "messages": [
+    {
+      "role": "user",
+      "content": "What are my rights as an OFW in Hong Kong?",
+      "timestamp": "2026-04-20T16:50:03.633Z"
+    },
+    {
+      "role": "pipeline_trace",
+      "timestamp": "2026-04-20T16:50:26.072Z",
+      "triage_result": {
+        "Original Input": "What are my rights as an OFW in Hong Kong?",
+        "Detected Language": "English",
+        "Normalized English": "What are the rights of an Overseas Filipino Worker in Hong Kong?"
+      },
+      "routing_decision": {
+        "Selected Route": "General-LLM",
+        "Confidence Score": 0.95,
+        "Search Signals": [
+          "Overseas Filipino Worker rights",
+          "Hong Kong labor laws",
+          "Filipino worker protections",
+          "DMW Hong Kong contact",
+          "OWWA Hong Kong assistance",
+          "migrant worker rights"
+        ]
+      },
+      "rag_chunks_count": 4,
+      "rag_chunks": [
+        {
+          "score": 0.031054405392392875,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except ",
+            "category": "general",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except \nthrough the Boards and entities authorized by the Secretary of Labor. Direct-hiring by members of the \ndiplomatic corps, international organizations and such other employers as may be allowed by the Secretary of \nLabor is exempted from this provision."
+          },
+          "excerpt": ". Ban on direct-hiring. No employer may hire a Filipino worker for overseas employment except \nthrough the Boards and entities authorized by the Secretary of Labor. Direct-hiring by members of the \ndi"
+        },
+        {
+          "score": 0.030117753623188408,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Foreign service role and participation. To provide ample protection to Filipino workers abroad, th",
+            "category": "contracts",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Foreign service role and participation. To provide ample protection to Filipino workers abroad, the \nlabor attaches, the labor reporting officers duly designated by the Secretary of Labor and the Philippine \ndiplomatic or consular officials concerned shall, even without prior instruction or advice from the home office, \nexercise the power and duty: \na. To provide all Filipino workers within their jurisdiction assistance on all matters arising out of \nemployment; \n   \nb. To insure that Filipino workers are not exploited or discriminated against; \n   \nc. To verify and certify as requisite to authentication that the terms and conditions of employment in \ncontracts involving Filipino workers are in accordance with the Labor Code and rules and \nregulations of the Overseas Employment Development Board and National Seamen Board; \n   \nd. To make continuing studies or researches and recommendations on the various aspects of the \nemployment market within their jurisdiction; \n   \ne. To gather and analyze information on the employment situation and its probable trends, and to make \nsuch information available; and \n   \nf. To perform such other duties as may be required of them from time to time."
+          },
+          "excerpt": ". Foreign service role and participation. To provide ample protection to Filipino workers abroad, the \nlabor attaches, the labor reporting officers duly designated by the Secretary of Labor and the Ph"
+        },
+        {
+          "score": 0.01639344262295082,
+          "metadata": {
+            "jurisdiction": "HK",
+            "title": "Maintenance and delivery to the Commissioner of prescribed",
+            "category": "general",
+            "source_file": "Cap 57 Consolidated version for the Whole Chapter (24-08-2025) (English).pdf",
+            "parent_context": "registers, records and returns\n\t\n(1)\t\nA licensee shall—\n\t\n(a)\t\nmaintain a record of—\n\t\n(i)\t\nall job applicants registered with his employment \nagency; and\n\t\n(ii)\t\njob applicants who, at the time of registration, were \nnot residents of Hong Kong and who were placed \nLast updated date\n24.8.2025\nEmployment Ordinance\nPart XII\t\n12-16\nSection 55\t\nCap. 57\nVerified Copy\nin employment in Hong Kong by his employment \nagency,\ncontaining the person’s name, address, Hong Kong \nIdentity Card number or, in the case of a non-resident, \npassport number and citizenship, fee and commission \nreceived, date of employment and name and address of \nemployer; and (Replaced 28 of 1992 s. 5)\n\t\n(b)\t\nkeep such records available for inspection at the \nplace of business of the employment agency by the \nCommissioner, or by any public officer authorized by \nhim in that behalf, at all reasonable times. (Amended 28 \nof 1992 s. 5)\n\t\n(2)\t\nA licensee shall, within such time as may be prescribed, \ndeliver to the Commissioner such returns in respect of the \nemployment agency as may be prescribed.\n\t\n(3)\t\nThe records referred to in subsection (1) shall be retained by \nthe licensee for a period of not less than 12 months after the \nexpiration of each accounting year of the employment agency \nconcerned. (Amended 28 of 1992 s. 5)"
+          },
+          "excerpt": "registers, records and returns\n\t\n(1)\t\nA licensee shall—\n\t\n(a)\t\nmaintain a record of—\n\t\n(i)\t\nall job applicants registered with his employment \nagency; and\n\t\n(ii)\t\njob applicants who, at the time of re"
+        },
+        {
+          "score": 0.01639344262295082,
+          "metadata": {
+            "jurisdiction": "PH",
+            "title": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least",
+            "category": "general",
+            "source_file": "Labor-Code-of-the-Philippines-DOLE.pdf",
+            "parent_context": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least \nseventy-five percent (75%) of the authorized and voting capital stock of which is owned and controlled by \nFilipino citizens shall be permitted to participate in the recruitment and placement of workers, locally or \noverseas."
+          },
+          "excerpt": ". Citizenship requirement. Only Filipino citizens or corporations, partnerships or entities at least \nseventy-five percent (75%) of the authorized and voting capital stock of which is owned and contro"
+        }
+      ],
+      "llm_response_preview": "Hello! I understand that knowing your rights can sometimes feel overwhelming, especially when you are far from home and working in a different country. Please know that you are not alone, and it is very brave of you to seek out this information to protect yourself and your future.\n\n**Simplified Lega",
+      "route": "General-LLM"
+    },
+    {
+      "role": "assistant",
+      "content": "Hello! I understand that knowing your rights can sometimes feel overwhelming, especially when you are far from home and working in a different country. Please know that you are not alone, and it is very brave of you to seek out this information to protect yourself and your future.\n\n**Simplified Legal Concept**\nAs an OFW in Hong Kong, your rights are protected by two main sets of rules: the **Philippine laws** (which protect how you are hired and how the government assists you) and the **Hong Kong Employment Ordinance** (which governs your actual working conditions and how employment agencies must behave).\n\n**General Explanation**\nTo make it easier to understand, we can look at your rights in two parts:\n\n**1. Your Rights under Philippine Law (Protection and Support)**\n*   **Right to Proper Recruitment:** You have the right to be hired through authorized agencies. In the Philippines, \"direct hiring\" (where an employer hires you without an agency) is generally not allowed, ensuring that an agency is responsible for your placement.\n*   **Right to Government Assistance:** You have the right to seek help from Philippine officials in Hong Kong, such as Labor Attaches and Consular Officers. Their job is to make sure you are not being exploited or discriminated against and to assist you with any employment problems you encounter.\n\n**2. Your Rights under Hong Kong Law (Employment and Agency Standards)**\n*   **Right to Transparent Agency Records:** Under Hong Kong's Employment Ordinance, employment agencies are required to keep strict records of your details (like your name, passport number, and contract terms). This ensures there is a formal paper trail of your employment, which helps protect you if something goes wrong.\n*   **Protection via Regulated Agencies:** The agencies working in Hong Kong must follow specific rules regarding how they handle your information and your placement, ensuring they are accountable to the Hong Kong government.\n\nIn short, Philippine laws focus on making sure you are hired safely and supported by our government, while Hong Kong laws focus on regulating your employers and the agencies that placed you.\n\nDoes this help answer your concern, or would you like me to clarify any part of this?\n\n***\n\n***Information Advisory:** This information is provided as general guidance only and may not reflect the most current legal updates. It is not a substitute for professional legal advice.*",
+      "timestamp": "2026-04-20T16:50:26.072Z"
+    }
+  ]
+}
