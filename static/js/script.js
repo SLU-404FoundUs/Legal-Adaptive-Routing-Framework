@@ -51,6 +51,11 @@ const DOM = {
     detailsModal: document.getElementById('details-modal'),
     detailsModalTitle: document.getElementById('details-modal-title'),
     detailsModalBody: document.getElementById('details-modal-body'),
+    instructionsModal: document.getElementById('instructions-modal'),
+    instructionsModalTitle: document.getElementById('instructions-modal-title'),
+    instructionsModalTextarea: document.getElementById('instructions-modal-textarea'),
+    instructionsModalMeta: document.getElementById('instructions-modal-meta'),
+    instrModalCharCount: document.getElementById('instr-modal-char-count'),
     // Toast
     toastContainer: document.getElementById('toast-container'),
 };
@@ -64,8 +69,19 @@ let state = {
     currentRoute: null,
     messageCount: 0,
     currentRagChunks: [],
-    chatHistory: [], // local mirror for save/load
+    chatHistory: [], // local mirror for save/load (includes full pipeline events)
+    // Module enabled states for developer testing
+    moduleEnabled: {
+        triage: true,
+        router: true,
+        general: true,
+        reasoning: true,
+        casual: true,
+    },
 };
+
+// Active module for instructions modal
+let _activeInstrModule = null;
 
 // =============================================
 // 1. Theme Manager
@@ -125,10 +141,24 @@ window.toggleConfigSection = function(headerEl) {
 // =============================================
 // 3. Sync Status
 // =============================================
+const SYNC_POLL_INTERVAL = 15000; // 15s
+
 async function updateSyncStatus() {
     try {
+        console.log('[Sync] Checking index status...');
         const res = await fetch('/api/sync-status');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        
         const data = await res.json();
+        
+        if (data.error) {
+            console.error('[Sync] Server reported error:', data.error);
+            DOM.syncDot.className = 'sync-dot red';
+            DOM.syncText.textContent = 'Sync Error';
+            DOM.syncStatus.title = `Error: ${data.error}`;
+            return;
+        }
+
         if (data.is_synced) {
             DOM.syncDot.className = 'sync-dot green';
             DOM.syncText.textContent = 'Index Synced';
@@ -138,13 +168,18 @@ async function updateSyncStatus() {
             DOM.syncText.textContent = `Out of Sync (${data.missing_count})`;
             DOM.syncStatus.title = `${data.missing_count} documents missing from index.`;
         }
-    } catch {
+        console.log('[Sync] Status updated:', data.is_synced ? 'Synced' : 'Out of Sync');
+    } catch (err) {
+        console.error('[Sync] Fetch failed:', err);
         DOM.syncDot.className = 'sync-dot red';
         DOM.syncText.textContent = 'Sync Error';
-        DOM.syncStatus.title = 'Failed to fetch sync status.';
+        DOM.syncStatus.title = `Failed to fetch sync status: ${err.message}`;
     }
 }
+
+// Initial check and set up polling
 updateSyncStatus();
+setInterval(updateSyncStatus, SYNC_POLL_INTERVAL);
 
 // =============================================
 // 4. Toast Notifications
@@ -197,6 +232,50 @@ window.openDetailsModal = function(title, dataStr) {
     DOM.detailsModalBody.innerHTML = html;
     DOM.detailsModal.classList.remove('hidden');
 };
+
+// System Instructions Modal
+const MODULE_LABELS = {
+    triage: 'Triage Module',
+    router: 'Router Module',
+    general: 'General Response',
+    reasoning: 'Reasoning (Legal Logic)',
+    casual: 'Casual Response',
+};
+
+window.openInstructionsModal = function(module) {
+    _activeInstrModule = module;
+    const ta = document.getElementById(`cfg_${module}_instructions`);
+    const currentVal = ta ? ta.value : '';
+    DOM.instructionsModalTitle.textContent = `Edit System Instructions — ${MODULE_LABELS[module] || module}`;
+    DOM.instructionsModalMeta.innerHTML = `<span class="instr-module-badge">${MODULE_LABELS[module] || module}</span> Edit the system prompt used to instruct this module.`;
+    DOM.instructionsModalTextarea.value = currentVal;
+    DOM.instrModalCharCount.textContent = `${currentVal.length} chars`;
+    DOM.instructionsModal.classList.remove('hidden');
+    // Focus the textarea
+    setTimeout(() => DOM.instructionsModalTextarea.focus(), 80);
+};
+
+window.saveInstructionsModal = function() {
+    if (!_activeInstrModule) return;
+    const ta = document.getElementById(`cfg_${_activeInstrModule}_instructions`);
+    const preview = document.getElementById(`preview_${_activeInstrModule}_instructions`);
+    const val = DOM.instructionsModalTextarea.value;
+    if (ta) ta.value = val;
+    if (preview) {
+        preview.textContent = val.length > 0 ? val.substring(0, 120) + (val.length > 120 ? '…' : '') : 'No instructions set';
+    }
+    updateCharCount(_activeInstrModule);
+    closeModal('instructions-modal');
+    showToast('System instructions updated', 'success');
+    _activeInstrModule = null;
+};
+
+// Live char count in instructions modal
+if (DOM.instructionsModalTextarea) {
+    DOM.instructionsModalTextarea.addEventListener('input', () => {
+        DOM.instrModalCharCount.textContent = `${DOM.instructionsModalTextarea.value.length} chars`;
+    });
+}
 
 // =============================================
 // 6. Markdown Renderer
@@ -295,7 +374,7 @@ function addUserMessage(text) {
     div.innerHTML = `<div class="msg-bubble user-bubble">${escapeHtml(text)}</div>`;
     DOM.chatMessages.appendChild(div);
     
-    state.chatHistory.push({ role: 'user', content: text });
+    state.chatHistory.push({ role: 'user', content: text, timestamp: new Date().toISOString() });
     state.messageCount++;
     DOM.statusMsgCount.textContent = state.messageCount;
     scrollToBottom();
@@ -347,6 +426,9 @@ DOM.chatForm.addEventListener('submit', async (e) => {
         const payload = { message };
         if (state.sessionId) payload.sessionId = state.sessionId;
 
+        // Send module enabled/disabled state to backend for pipeline control
+        payload.moduleEnabled = { ...state.moduleEnabled };
+
         const response = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -357,6 +439,8 @@ DOM.chatForm.addEventListener('submit', async (e) => {
         const decoder = new TextDecoder();
         let assistantText = '';
         let buffer = '';
+        // Pipeline event accumulator for history
+        const pipelineEvents = [];
 
         while (true) {
             const { done, value } = await reader.read();
@@ -375,6 +459,10 @@ DOM.chatForm.addEventListener('submit', async (e) => {
                     if (data.type === 'result') {
                         assistantText = data.content;
                     }
+                    // Capture all pipeline events for history
+                    if (['step', 'data', 'rag_context', 'result', 'error'].includes(data.type)) {
+                        pipelineEvents.push({ ...data, timestamp: new Date().toISOString() });
+                    }
                 } catch (parseErr) {
                     console.error('Stream parse error:', parseErr);
                 }
@@ -387,12 +475,33 @@ DOM.chatForm.addEventListener('submit', async (e) => {
                 const data = JSON.parse(buffer);
                 handleStreamEvent(data, pipelineDiv, bubbleDiv);
                 if (data.type === 'result') assistantText = data.content;
+                if (['step', 'data', 'rag_context', 'result', 'error'].includes(data.type)) {
+                    pipelineEvents.push({ ...data, timestamp: new Date().toISOString() });
+                }
             } catch {}
         }
 
-        // Store in local history
+        // Store full pipeline + assistant response in local history
         if (assistantText) {
-            state.chatHistory.push({ role: 'assistant', content: assistantText });
+            // Record a pipeline_trace entry capturing the full process
+            if (pipelineEvents.length > 0) {
+                const triageEvent = pipelineEvents.find(e => e.type === 'data' && e.title && e.title.includes('Triage'));
+                const routingEvent = pipelineEvents.find(e => e.type === 'data' && e.title && e.title.includes('Routing'));
+                const ragEvent = pipelineEvents.find(e => e.type === 'rag_context');
+                const resultEvent = pipelineEvents.find(e => e.type === 'result');
+
+                state.chatHistory.push({
+                    role: 'pipeline_trace',
+                    timestamp: new Date().toISOString(),
+                    triage_result: triageEvent ? triageEvent.data : null,
+                    routing_decision: routingEvent ? routingEvent.data : null,
+                    rag_chunks_count: ragEvent ? ragEvent.chunks.length : 0,
+                    rag_chunks: ragEvent ? ragEvent.chunks.map(c => ({ score: c.score, metadata: c.metadata, excerpt: (c.text || '').substring(0, 200) })) : [],
+                    llm_response_preview: assistantText.substring(0, 300),
+                    route: resultEvent ? resultEvent.route : null,
+                });
+            }
+            state.chatHistory.push({ role: 'assistant', content: assistantText, timestamp: new Date().toISOString() });
             state.messageCount++;
         }
 
@@ -530,6 +639,10 @@ DOM.newChatBtn.addEventListener('click', () => {
         </div>`;
 
     updateStatusBar();
+    // Reset inputs
+    DOM.userInput.value = '';
+    DOM.userInput.style.height = 'auto';
+    
     showToast('New chat started', 'info');
 });
 
@@ -609,7 +722,15 @@ async function loadConversationsList() {
             files.forEach(f => {
                 const item = document.createElement('div');
                 item.className = 'convo-item';
-                item.innerHTML = `<span class="convo-title">${escapeHtml(f.title)}</span><span class="convo-meta">${f.message_count} messages · ${formatTimestamp(f.timestamp)}</span>`;
+                item.innerHTML = `
+                    <div class="convo-info">
+                        <span class="convo-title">${escapeHtml(f.title)}</span>
+                        <span class="convo-meta">${f.message_count} messages · ${formatTimestamp(f.timestamp)}</span>
+                    </div>
+                    <button class="convo-delete-btn" title="Delete conversation" onclick="event.stopPropagation(); deleteConversation('${f.filename}')">
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    </button>
+                `;
                 item.addEventListener('click', () => loadConversation(f.filename));
                 frag.appendChild(item);
             });
@@ -638,33 +759,179 @@ async function loadConversation(filename) {
     }
 }
 
+async function deleteConversation(filename) {
+    if (!confirm('Are you sure you want to delete this conversation?')) return;
+    
+    try {
+        const res = await fetch('/api/chat/delete', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ filename })
+        });
+        const data = await res.json();
+        if (data.status === 'success') {
+            showToast('Conversation deleted', 'success');
+            loadConversationsList();
+        } else {
+            showToast('Delete failed: ' + data.error, 'error');
+        }
+    } catch {
+        showToast('Error deleting conversation', 'error');
+    }
+}
+
+async function deleteAllConversations() {
+    try {
+        const res = await fetch('/api/chat/list');
+        const files = await res.json();
+        
+        if (files.length === 0) {
+            showToast('No conversations to clear', 'info');
+            return;
+        }
+        
+        if (!confirm(`Are you sure you want to delete ALL ${files.length} saved conversations? This cannot be undone.`)) return;
+        
+        let successCount = 0;
+        for (const file of files) {
+            const delRes = await fetch('/api/chat/delete', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ filename: file.filename })
+            });
+            if ((await delRes.json()).status === 'success') successCount++;
+        }
+        
+        showToast(`Cleared ${successCount} conversations`, 'success');
+        loadConversationsList();
+    } catch {
+        showToast('Error clearing conversations', 'error');
+    }
+}
+
 function restoreConversation(data) {
     // Clear current chat
     DOM.chatMessages.innerHTML = '';
     state.sessionId = data.session_id || null;
     state.chatHistory = data.messages || [];
-    state.messageCount = state.chatHistory.length;
     state.currentRoute = null;
     state.currentRagChunks = [];
 
-    // Rebuild chat UI
-    const frag = document.createDocumentFragment();
+    // Group messages into turns: [ {user, trace?, assistant} ]
+    // pipeline_trace always sits between a user and assistant entry
+    const turns = [];
+    let current = null;
     state.chatHistory.forEach(msg => {
-        const div = document.createElement('div');
-        div.className = `message ${msg.role === 'user' ? 'user' : 'assistant'}`;
-        const bubble = document.createElement('div');
-        
         if (msg.role === 'user') {
-            bubble.className = 'msg-bubble user-bubble';
-            bubble.textContent = msg.content;
-        } else {
-            bubble.className = 'msg-bubble assistant-bubble markdown-body';
-            bubble.innerHTML = renderMarkdown(msg.content);
+            current = { user: msg, trace: null, assistant: null };
+            turns.push(current);
+        } else if (msg.role === 'pipeline_trace' && current) {
+            current.trace = msg;
+        } else if (msg.role === 'assistant' && current) {
+            current.assistant = msg;
+            current = null;
         }
-        
-        div.appendChild(bubble);
-        frag.appendChild(div);
     });
+
+    // Count only real message pairs
+    state.messageCount = turns.filter(t => t.user || t.assistant).length * 2;
+
+    const frag = document.createDocumentFragment();
+
+    turns.forEach(turn => {
+        // --- User bubble ---
+        if (turn.user) {
+            const userDiv = document.createElement('div');
+            userDiv.className = 'message user';
+            const userBubble = document.createElement('div');
+            userBubble.className = 'msg-bubble user-bubble';
+            userBubble.textContent = turn.user.content;
+            if (turn.user.timestamp) {
+                const ts = document.createElement('div');
+                ts.className = 'msg-timestamp';
+                ts.textContent = formatTimestamp(turn.user.timestamp);
+                userDiv.appendChild(ts);
+            }
+            userDiv.appendChild(userBubble);
+            frag.appendChild(userDiv);
+        }
+
+        // --- Assistant message group (trace + bubble) ---
+        const assistantDiv = document.createElement('div');
+        assistantDiv.className = 'message assistant';
+
+        // Pipeline trace block
+        if (turn.trace) {
+            const trace = turn.trace;
+            const pipelineDiv = document.createElement('div');
+            pipelineDiv.className = 'pipeline-container restored-pipeline';
+
+            // Restored badge
+            const badge = document.createElement('div');
+            badge.className = 'restored-badge';
+            badge.innerHTML = `<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/></svg> Restored session — ${formatTimestamp(trace.timestamp)}`;
+            pipelineDiv.appendChild(badge);
+
+            // Step: Triage
+            if (trace.triage_result) {
+                const tr = trace.triage_result;
+                const encodedTriage = encodeURIComponent(JSON.stringify(tr));
+                const step = document.createElement('div');
+                step.className = 'pipe-step done';
+                step.innerHTML = `<span class="step-icon">✓</span><span class="step-text">Triage applied <span class="details-link" onclick="window.openDetailsModal('Triage Result', '${encodedTriage}')">(View details)</span></span>`;
+                pipelineDiv.appendChild(step);
+            }
+
+            // Step: Routing
+            if (trace.routing_decision) {
+                const rd = trace.routing_decision;
+                const encodedRoute = encodeURIComponent(JSON.stringify(rd));
+                const step = document.createElement('div');
+                step.className = 'pipe-step done';
+                step.innerHTML = `<span class="step-icon">✓</span><span class="step-text">Routed via <strong>${escapeHtml(rd['Selected Route'] || '')}</strong> (confidence: ${typeof rd['Confidence Score'] === 'number' ? rd['Confidence Score'].toFixed(2) : rd['Confidence Score']}) <span class="details-link" onclick="window.openDetailsModal('Routing Result', '${encodedRoute}')">(View details)</span></span>`;
+                if (trace.route) state.currentRoute = trace.route;
+                pipelineDiv.appendChild(step);
+            }
+
+            // Step: RAG
+            if (trace.rag_chunks_count > 0 && trace.rag_chunks) {
+                // Store chunks so the modal works
+                const ragStep = document.createElement('div');
+                ragStep.className = 'pipe-step done';
+                const chunkCount = trace.rag_chunks_count;
+                // Rebuild chunks for modal (use excerpts)
+                const restoredChunks = trace.rag_chunks.map(c => ({
+                    text: c.excerpt || '',
+                    metadata: c.metadata || {},
+                    score: c.score || 0
+                }));
+                ragStep.style.cursor = 'pointer';
+                ragStep.innerHTML = `<span class="step-icon">✓</span><span class="step-text" style="color:var(--accent-primary);text-decoration:underline" onclick="(function(){window._restoredRagChunks=${JSON.stringify(restoredChunks).replace(/'/g,"\\'")}; var prev=state.currentRagChunks; state.currentRagChunks=JSON.parse(window._restoredRagChunks); window.openRagModal(); state.currentRagChunks=prev;})()">Found ${chunkCount} legal source${chunkCount !== 1 ? 's' : ''} (click to view)</span>`;
+                pipelineDiv.appendChild(ragStep);
+            }
+
+            // Step: LLM response preview
+            if (trace.llm_response_preview) {
+                const step = document.createElement('div');
+                step.className = 'pipe-step done';
+                step.innerHTML = `<span class="step-icon">✓</span><span class="step-text">Completed via <strong>${escapeHtml(trace.route || 'LLM')}</strong></span>`;
+                pipelineDiv.appendChild(step);
+            }
+
+            assistantDiv.appendChild(pipelineDiv);
+        }
+
+        // Assistant bubble
+        if (turn.assistant) {
+            const bubble = document.createElement('div');
+            bubble.className = 'msg-bubble assistant-bubble markdown-body';
+            bubble.innerHTML = renderMarkdown(turn.assistant.content);
+            assistantDiv.appendChild(bubble);
+        }
+
+        frag.appendChild(assistantDiv);
+    });
+
     DOM.chatMessages.appendChild(frag);
     updateStatusBar();
     scrollToBottom();
@@ -698,16 +965,15 @@ async function loadConfig() {
         document.getElementById('cfg_triage_temp').value = data.triage_temp ?? 0;
         document.getElementById('cfg_triage_max_tokens').value = data.triage_max_tokens ?? 1000;
         document.getElementById('cfg_triage_use_system').checked = !!data.triage_use_system;
-        document.getElementById('cfg_triage_reasoning').checked = !!data.triage_reasoning;
-        document.getElementById('cfg_triage_instructions').value = data.triage_instructions || '';
-        updateCharCount('triage');
+        // reasoning fixed false — hidden input already set
+        setInstructionValue('triage', data.triage_instructions || '');
 
         // Router
         document.getElementById('cfg_router_model').value = data.router_model || '';
         document.getElementById('cfg_router_temp').value = data.router_temp ?? 0;
         document.getElementById('cfg_router_max_tokens').value = data.router_max_tokens ?? 1000;
         document.getElementById('cfg_router_use_system').checked = !!data.router_use_system;
-        document.getElementById('cfg_router_reasoning').checked = !!data.router_reasoning;
+        // reasoning fixed false — hidden input already set
 
         // General
         document.getElementById('cfg_general_model').value = data.general_model || '';
@@ -715,8 +981,7 @@ async function loadConfig() {
         document.getElementById('cfg_general_max_tokens').value = data.general_max_tokens ?? 1000;
         document.getElementById('cfg_general_use_system').checked = !!data.general_use_system;
         document.getElementById('cfg_general_reasoning').checked = !!data.general_reasoning;
-        document.getElementById('cfg_general_instructions').value = data.general_instructions || '';
-        updateCharCount('general');
+        setInstructionValue('general', data.general_instructions || '');
 
         // Reasoning
         document.getElementById('cfg_reasoning_model').value = data.reasoning_model || '';
@@ -724,8 +989,7 @@ async function loadConfig() {
         document.getElementById('cfg_reasoning_max_tokens').value = data.reasoning_max_tokens ?? 2000;
         document.getElementById('cfg_reasoning_use_system').checked = !!data.reasoning_use_system;
         document.getElementById('cfg_reasoning_reasoning').checked = !!data.reasoning_reasoning;
-        document.getElementById('cfg_reasoning_instructions').value = data.reasoning_instructions || '';
-        updateCharCount('reasoning');
+        setInstructionValue('reasoning', data.reasoning_instructions || '');
 
         // Casual
         document.getElementById('cfg_casual_model').value = data.casual_model || '';
@@ -733,12 +997,22 @@ async function loadConfig() {
         document.getElementById('cfg_casual_max_tokens').value = data.casual_max_tokens ?? 200;
         document.getElementById('cfg_casual_use_system').checked = !!data.casual_use_system;
         document.getElementById('cfg_casual_reasoning').checked = !!data.casual_reasoning;
-        document.getElementById('cfg_casual_instructions').value = data.casual_instructions || '';
-        updateCharCount('casual');
+        setInstructionValue('casual', data.casual_instructions || '');
 
     } catch (e) {
         console.error('Failed to load config:', e);
     }
+}
+
+/** Set textarea value AND update its preview div, then refresh char count */
+function setInstructionValue(module, val) {
+    const ta = document.getElementById(`cfg_${module}_instructions`);
+    const preview = document.getElementById(`preview_${module}_instructions`);
+    if (ta) ta.value = val;
+    if (preview) {
+        preview.textContent = val.length > 0 ? val.substring(0, 120) + (val.length > 120 ? '…' : '') : 'No instructions set';
+    }
+    updateCharCount(module);
 }
 
 function updateCharCount(module) {
@@ -776,14 +1050,14 @@ DOM.saveConfigBtn.addEventListener('click', async () => {
         triage_temp: parseFloat(document.getElementById('cfg_triage_temp').value) || 0,
         triage_max_tokens: parseInt(document.getElementById('cfg_triage_max_tokens').value) || 1000,
         triage_use_system: document.getElementById('cfg_triage_use_system').checked,
-        triage_reasoning: document.getElementById('cfg_triage_reasoning').checked,
+        triage_reasoning: false, // Fixed OFF per QA requirement
         triage_instructions: document.getElementById('cfg_triage_instructions').value,
 
         router_model: document.getElementById('cfg_router_model').value,
         router_temp: parseFloat(document.getElementById('cfg_router_temp').value) || 0,
         router_max_tokens: parseInt(document.getElementById('cfg_router_max_tokens').value) || 1000,
         router_use_system: document.getElementById('cfg_router_use_system').checked,
-        router_reasoning: document.getElementById('cfg_router_reasoning').checked,
+        router_reasoning: false, // Fixed OFF per QA requirement
 
         general_model: document.getElementById('cfg_general_model').value,
         general_temp: parseFloat(document.getElementById('cfg_general_temp').value) || 0,

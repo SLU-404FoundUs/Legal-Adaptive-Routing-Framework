@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Module Test — {{ module | capitalize }} — Agapay AI Studio</title>
+    <meta name="description" content="Isolated test harness for the {{ module }} module of the Legal Adaptive Routing Framework.">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/test.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+    <!-- Pass module name to JS safely -->
+    <script>
+        window.TEST_MODULE = {{ module | tojson }};
+    </script>
+</head>
+<body>
+
+<div class="test-layout">
+
+    <!-- ==================== HEADER ==================== -->
+    <header class="test-header">
+        <a href="/" class="test-back-btn" id="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 12H5M12 5l-7 7 7 7"/>
+            </svg>
+            Back to Studio
+        </a>
+
+        <div class="test-header-divider"></div>
+
+        <!-- Module Badge — populated by JS -->
+        <span class="test-module-badge" id="module-badge"></span>
+
+        <span class="test-module-desc" id="module-desc"></span>
+
+        <!-- Theme toggle (inherits from main app) -->
+        <button class="icon-btn" id="theme-btn" aria-label="Toggle Theme" title="Toggle Theme" style="margin-left:auto;">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path id="theme-icon" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+            </svg>
+        </button>
+    </header>
+
+    <!-- ==================== SPLIT BODY ==================== -->
+    <div class="test-body">
+
+        <!-- ===== LEFT: INPUT PANE ===== -->
+        <div class="test-input-pane">
+            <div class="test-pane-header">
+                <span class="test-pane-title">Inputs</span>
+                <div class="test-pane-actions">
+                    <button class="btn btn-ghost" id="reset-btn" style="font-size:0.75rem;padding:4px 10px;">
+                        Reset
+                    </button>
+                </div>
+            </div>
+
+            <div class="test-input-scroll" id="input-form-container">
+                <!-- ==================== TRIAGE INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-triage" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="triage-raw-input">
+                            Raw User Input
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="triage-raw-input"
+                            class="test-textarea large"
+                            placeholder="Paste any raw user text here — Tagalog, Taglish, Cantonese, mixed, etc.&#10;&#10;Example: 'Hindi ko natatanggap ang sahod ko ng dalang buwan. Ano po ang dapat kong gawin?'"
+                            rows="6"
+                        ></textarea>
+                        <span class="test-hint">
+                            The Triage module accepts multilingual input and normalizes it into formal English for downstream routing. Try pasting Tagalog, Taglish, or mixed-language text.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ==================== ROUTER INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-router" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="router-normalized-text">
+                            Normalized Text
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="router-normalized-text"
+                            class="test-textarea large"
+                            placeholder="Enter standardized English text (as produced by the Triage module).&#10;&#10;Example: 'Reported employer has not paid salary for two months. Alleged violation of minimum wage regulations.'"
+                            rows="5"
+                        ></textarea>
+                        <span class="test-hint">
+                            This should be <strong>already-normalized English text</strong>, not raw user input. Run the Triage module first if needed.
+                        </span>
+                    </div>
+
+                    <div class="test-field">
+                        <label class="test-label" for="router-threshold">
+                            Confidence Threshold
+                            <span class="test-label-badge optional">Optional</span>
+                        </label>
+                        <div class="test-slider-row">
+                            <input type="range" id="router-threshold" class="test-slider"
+                                min="0" max="1" step="0.05" value="0.1">
+                            <span class="test-slider-value" id="router-threshold-val">0.10</span>
+                        </div>
+                        <span class="test-hint">
+                            Minimum confidence score required to accept a route. If the model's confidence is below this, the router will retry (up to 3 attempts) before falling back.
+                        </span>
+                    </div>
+                </div>
+
+                <!-- ==================== GENERAL LLM INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-general" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="general-user-message">
+                            User Message
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="general-user-message"
+                            class="test-textarea large"
+                            placeholder="Enter the user's message (normalized English preferred).&#10;&#10;Example: 'What are my rights as an OFW if my employer refuses to give me a rest day?'"
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <div class="test-field">
+                        <label class="test-label" for="general-rag-context">
+                            RAG Context
+                            <span class="test-label-badge optional">Optional — Default: None</span>
+                        </label>
+                        <textarea
+                            id="general-rag-context"
+                            class="test-textarea mono"
+                            placeholder="Paste retrieved legal document chunks here (leave empty to test without RAG context).&#10;&#10;The model will use this context to supplement its response."
+                            rows="4"
+                        ></textarea>
+                        <span class="test-hint">
+                            Leave blank to simulate a query with no retrieved context. Paste text from the Retrieval module to test full RAG-augmented generation.
+                        </span>
+                    </div>
+
+                    <div class="test-field">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                            <label class="test-label">Hyperparameters</label>
+                            <button class="btn btn-ghost" style="font-size:0.65rem; padding:2px 8px;" onclick="resetToDefaults('general')">
+                                Reset to Defaults
+                            </button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                            <div class="test-field">
+                                <label class="test-label" for="general-temp">
+                                    Temperature
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <div class="test-slider-row">
+                                    <input type="range" id="general-temp" class="test-slider" min="0" max="1" step="0.05" value="0.7">
+                                    <span class="test-slider-value" id="general-temp-val">0.70</span>
+                                </div>
+                            </div>
+                            <div class="test-field">
+                                <label class="test-label" for="general-max-tokens">
+                                    Max Tokens
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <input type="number" id="general-max-tokens" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;" value="2048" min="1" max="8192">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test-expander open" id="general-instr-expander">
+                        <div class="test-expander-header" onclick="toggleExpander('general-instr-expander')">
+                            <span class="test-expander-title">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                System Instructions
+                                <span class="test-label-badge" style="margin-left:2px;">Override</span>
+                            </span>
+                            <span class="test-expander-chevron">▶</span>
+                        </div>
+                        <div class="test-expander-body">
+                            <textarea id="general-system-instructions" class="test-textarea mono xl"
+                                placeholder="System instructions will be loaded from configuration..." rows="8"></textarea>
+                            <span class="test-hint" style="margin-top:6px;display:block;">
+                                Edits here only affect this test run — the saved config is <strong>not modified</strong>.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== REASONING LLM INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-reasoning" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="reasoning-user-message">
+                            User Message
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="reasoning-user-message"
+                            class="test-textarea large"
+                            placeholder="Enter a legal scenario or question requiring deeper analysis.&#10;&#10;Example: 'My employer terminated me without notice and confiscated my passport. What legal actions can I take under HK and PH law?'"
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <div class="test-field">
+                        <label class="test-label" for="reasoning-rag-context">
+                            RAG Context
+                            <span class="test-label-badge optional">Optional — Default: None</span>
+                        </label>
+                        <textarea
+                            id="reasoning-rag-context"
+                            class="test-textarea mono"
+                            placeholder="Paste legal document context retrieved from the RAG module (leave empty to omit)."
+                            rows="4"
+                        ></textarea>
+                    </div>
+
+                    <div class="test-field">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                            <label class="test-label">Hyperparameters</label>
+                            <button class="btn btn-ghost" style="font-size:0.65rem; padding:2px 8px;" onclick="resetToDefaults('reasoning')">
+                                Reset to Defaults
+                            </button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                            <div class="test-field">
+                                <label class="test-label" for="reasoning-temp">
+                                    Temperature
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <div class="test-slider-row">
+                                    <input type="range" id="reasoning-temp" class="test-slider" min="0" max="1" step="0.05" value="0.7">
+                                    <span class="test-slider-value" id="reasoning-temp-val">0.70</span>
+                                </div>
+                            </div>
+                            <div class="test-field">
+                                <label class="test-label" for="reasoning-max-tokens">
+                                    Max Tokens
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <input type="number" id="reasoning-max-tokens" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;" value="2048" min="1" max="8192">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test-expander open" id="reasoning-instr-expander">
+                        <div class="test-expander-header" onclick="toggleExpander('reasoning-instr-expander')">
+                            <span class="test-expander-title">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                System Instructions
+                                <span class="test-label-badge" style="margin-left:2px;">Override</span>
+                            </span>
+                            <span class="test-expander-chevron">▶</span>
+                        </div>
+                        <div class="test-expander-body">
+                            <textarea id="reasoning-system-instructions" class="test-textarea mono xl"
+                                placeholder="System instructions will be loaded from configuration..." rows="8"></textarea>
+                            <span class="test-hint" style="margin-top:6px;display:block;">
+                                Edits here only affect this test run — the saved config is <strong>not modified</strong>.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== CASUAL LLM INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-casual" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="casual-user-message">
+                            User Message
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="casual-user-message"
+                            class="test-textarea large"
+                            placeholder="Enter a greeting, off-topic message, or casual inquiry.&#10;&#10;Example: 'Magandang umaga! Anong oras kayo bukas?' or 'Can you help me write a recipe?'"
+                            rows="4"
+                        ></textarea>
+                        <span class="test-hint">
+                            The Casual module handles greetings and politely redirects off-topic queries. No RAG context is used.
+                        </span>
+                    </div>
+
+                    <div class="test-field">
+                        <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                            <label class="test-label">Hyperparameters</label>
+                            <button class="btn btn-ghost" style="font-size:0.65rem; padding:2px 8px;" onclick="resetToDefaults('casual')">
+                                Reset to Defaults
+                            </button>
+                        </div>
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                            <div class="test-field">
+                                <label class="test-label" for="casual-temp">
+                                    Temperature
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <div class="test-slider-row">
+                                    <input type="range" id="casual-temp" class="test-slider" min="0" max="1" step="0.05" value="0.7">
+                                    <span class="test-slider-value" id="casual-temp-val">0.70</span>
+                                </div>
+                            </div>
+                            <div class="test-field">
+                                <label class="test-label" for="casual-max-tokens">
+                                    Max Tokens
+                                    <span class="test-label-badge optional">Override</span>
+                                </label>
+                                <input type="number" id="casual-max-tokens" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;" value="2048" min="1" max="8192">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="test-expander open" id="casual-instr-expander">
+                        <div class="test-expander-header" onclick="toggleExpander('casual-instr-expander')">
+                            <span class="test-expander-title">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg>
+                                System Instructions
+                                <span class="test-label-badge" style="margin-left:2px;">Override</span>
+                            </span>
+                            <span class="test-expander-chevron">▶</span>
+                        </div>
+                        <div class="test-expander-body">
+                            <textarea id="casual-system-instructions" class="test-textarea mono xl"
+                                placeholder="System instructions will be loaded from configuration..." rows="8"></textarea>
+                            <span class="test-hint" style="margin-top:6px;display:block;">
+                                Edits here only affect this test run — the saved config is <strong>not modified</strong>.
+                            </span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ==================== RETRIEVAL INPUTS ==================== -->
+                <div class="module-inputs" id="inputs-retrieval" style="display:none; flex-direction:column; gap:14px;">
+                    <div class="test-field">
+                        <label class="test-label" for="retrieval-query">
+                            Search Query
+                            <span class="test-label-badge">Required</span>
+                        </label>
+                        <textarea
+                            id="retrieval-query"
+                            class="test-textarea"
+                            placeholder="Enter the normalized query text to search the legal corpus.&#10;&#10;Example: 'minimum wage domestic helper Hong Kong termination rights'"
+                            rows="3"
+                        ></textarea>
+                        <span class="test-hint">Use normalized English text (output from Triage) for best results.</span>
+                    </div>
+
+                    <div class="test-field">
+                        <label class="test-label" for="retrieval-signals">
+                            Search Signals
+                            <span class="test-label-badge optional">Optional</span>
+                        </label>
+                        <input type="text" id="retrieval-signals" class="test-textarea" style="min-height:auto;padding:9px 12px;"
+                            placeholder="Comma-separated keywords: e.g. minimum wage, HK labor law, POEA contract">
+                        <span class="test-hint">
+                            Search signals are keyword phrases from the Router classifier. They expand the query for better hybrid BM25 + semantic retrieval. Leave empty for pure semantic search.
+                        </span>
+                    </div>
+
+                    <div class="test-field">
+                        <label class="test-label" for="retrieval-top-k">
+                            Top K Results
+                            <span class="test-label-badge optional">Optional</span>
+                        </label>
+                        <div class="test-slider-row">
+                            <input type="range" id="retrieval-top-k" class="test-slider"
+                                min="1" max="15" step="1" value="5">
+                            <span class="test-slider-value" id="retrieval-top-k-val">5</span>
+                        </div>
+                        <span class="test-hint">Number of document chunks to retrieve from the FAISS index.</span>
+                    </div>
+                </div>
+
+                <!-- Run Button (shared) -->
+                <button class="test-run-btn" id="run-btn">
+                    <div class="btn-spinner"></div>
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    Run Test
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== RIGHT: OUTPUT PANE ===== -->
+        <div class="test-output-pane">
+            <div class="test-pane-header">
+                <span class="test-pane-title">Output</span>
+                <div class="test-pane-actions">
+                    <span id="run-timer" style="font-size:0.72rem;color:var(--text-muted);font-family:var(--font-mono);"></span>
+                    <button class="btn btn-ghost" id="clear-output-btn" style="font-size:0.75rem;padding:4px 10px;">
+                        Clear
+                    </button>
+                </div>
+            </div>
+
+            <div class="test-output-scroll" id="output-area">
+                <!-- Empty state -->
+                <div class="test-output-empty" id="output-empty">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <polygon points="5 3 19 12 5 21 5 3"/>
+                    </svg>
+                    <p>Fill in the inputs on the left and click <strong>Run Test</strong> to see the module output here.</p>
+                </div>
+            </div>
+
+            <!-- Log drawer -->
+            <div class="test-log-drawer" id="log-drawer">
+                <div class="test-log-inner">
+                    <div class="test-log-toolbar">
+                        <span style="font-size:0.7rem;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.5px;">Live Logs</span>
+                        <button class="icon-btn" id="clear-logs-btn" style="width:24px;height:24px;" title="Clear logs">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width:13px;height:13px;">
+                                <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="test-log-entries" id="log-entries"></div>
+                </div>
+            </div>
+
+            <!-- Footer bar -->
+            <div class="test-footer">
+                <div class="test-footer-status">
+                    <span id="footer-status">Ready</span>
+                    <span id="footer-model" style="color:var(--text-muted);"></span>
+                </div>
+                <button class="test-log-toggle-btn" id="log-toggle-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="18" height="18" rx="2"/>
+                        <path d="M3 9h18"/>
+                    </svg>
+                    <span id="log-toggle-text">Show Logs</span>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast -->
+<div class="toast-container" id="toast-container"></div>
+
+<!-- CDNs for markdown rendering -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.0.6/dist/purify.min.js"></script>
+
+<script src="{{ url_for('static', filename='js/test.js') }}"></script>
+</body>
+</html>

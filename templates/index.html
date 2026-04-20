@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Agapay AI Studio — Legal Adaptive Routing Framework</title>
-    <meta name="description" content="AI Studio interface for the Legal Adaptive Routing Framework — OFW legal information assistant">
+    <title>Veritas AI Studio — Legal Adaptive Routing Framework</title>
+    <meta name="description"
+        content="AI Studio interface for the Legal Adaptive Routing Framework — OFW legal information assistant">
     <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap"
+        rel="stylesheet">
 </head>
+
 <body>
     <div class="app-layout">
 
@@ -15,9 +20,11 @@
         <header class="app-header">
             <div class="header-left">
                 <button class="icon-btn" id="sidebar-toggle-btn" aria-label="Toggle sidebar" title="Toggle Sidebar">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M3 6h18M3 18h18"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 12h18M3 6h18M3 18h18" />
+                    </svg>
                 </button>
-                <span class="logo">Agapay AI Studio</span>
+                <span class="logo">Veritas AI Studio</span>
                 <span class="badge">SLU 404FoundUs</span>
             </div>
             <div class="header-center">
@@ -29,13 +36,13 @@
             <div class="header-right">
                 <button class="icon-btn" id="theme-btn" aria-label="Toggle Theme" title="Toggle Theme">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path id="theme-icon" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+                        <path id="theme-icon" d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
                     </svg>
                 </button>
                 <button class="icon-btn" id="panel-toggle-btn" aria-label="Toggle Panel" title="Config & Logs Panel">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <rect x="3" y="3" width="18" height="18" rx="2"/>
-                        <path d="M15 3v18"/>
+                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                        <path d="M15 3v18" />
                     </svg>
                 </button>
             </div>
@@ -45,24 +52,38 @@
         <aside class="sidebar" id="sidebar">
             <div class="sidebar-section">
                 <button class="sidebar-btn primary" id="new-chat-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
                     New Chat
                 </button>
             </div>
             <div class="sidebar-section">
                 <button class="sidebar-btn" id="save-chat-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" />
+                        <polyline points="17 21 17 13 7 13 7 21" />
+                        <polyline points="7 3 7 8 15 8" />
+                    </svg>
                     Save Conversation
                 </button>
                 <button class="sidebar-btn" id="load-file-btn">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="7 10 12 15 17 10" />
+                        <line x1="12" y1="15" x2="12" y2="3" />
+                    </svg>
                     Load from File
                 </button>
                 <input type="file" id="load-file-input" class="file-input-hidden" accept=".json">
             </div>
             <div class="sidebar-divider"></div>
-            <div class="sidebar-section">
-                <div class="sidebar-section-title">Saved Conversations</div>
+            <div class="sidebar-section" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="sidebar-section-title" style="margin-bottom:0;">Saved Conversations</div>
+                <button class="btn-clear-all" id="clear-all-chats-btn" title="Delete all conversations"
+                    onclick="deleteAllConversations()">
+                    Clear All
+                </button>
             </div>
             <div class="conversations-list" id="conversations-list">
                 <!-- Populated via JS -->
@@ -76,21 +97,39 @@
                     <!-- Welcome Screen -->
                     <div class="welcome-screen" id="welcome-screen">
                         <div class="welcome-icon">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 2L2 7l10 5 10-5-10-5z" />
+                                <path d="M2 17l10 5 10-5" />
+                                <path d="M2 12l10 5 10-5" />
+                            </svg>
                         </div>
                         <h2>Saan ako makakatulong, OFW?</h2>
-                        <p>Ask me anything about Philippine & Hong Kong labor laws, migrant worker rights, and legal procedures.</p>
+                        <p>Ask me anything about Philippine & Hong Kong labor laws, migrant worker rights, and legal
+                            procedures.</p>
                         <div class="welcome-hints">
-                            <button class="hint-chip" onclick="sendPreset('What are my rights as an OFW in Hong Kong?')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+                            <button class="hint-chip"
+                                onclick="sendPreset('What are my rights as an OFW in Hong Kong?')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01" />
+                                </svg>
                                 OFW rights in HK
                             </button>
-                            <button class="hint-chip" onclick="sendPreset('What is the minimum wage for domestic helpers?')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            <button class="hint-chip"
+                                onclick="sendPreset('What is the minimum wage for domestic helpers?')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M12 1v22M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6" />
+                                </svg>
                                 Minimum wage policies
                             </button>
-                            <button class="hint-chip" onclick="sendPreset('My employer did not pay me for 2 months, what should I do?')">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                            <button class="hint-chip"
+                                onclick="sendPreset('My employer did not pay me for 2 months, what should I do?')">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path
+                                        d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z" />
+                                    <line x1="12" y1="9" x2="12" y2="13" />
+                                    <line x1="12" y1="17" x2="12.01" y2="17" />
+                                </svg>
                                 Unpaid wages dispute
                             </button>
                         </div>
@@ -102,14 +141,18 @@
             <div class="input-area">
                 <div class="input-wrapper">
                     <form class="input-box" id="chat-form">
-                        <textarea id="user-input" placeholder="Ask anything about legal concerns..." rows="1"></textarea>
+                        <textarea id="user-input" placeholder="Ask anything about legal concerns..."
+                            rows="1"></textarea>
                         <button type="submit" class="send-btn" id="send-btn" aria-label="Send">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M22 2L11 13"/><path d="M22 2L15 22L11 13L2 9L22 2Z"/>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M22 2L11 13" />
+                                <path d="M22 2L15 22L11 13L2 9L22 2Z" />
                             </svg>
                         </button>
                     </form>
-                    <div class="input-disclaimer">Agapay AI generates responses that may contain errors. Always consult a real lawyer for official advice.</div>
+                    <div class="input-disclaimer">Agapay AI generates responses that may contain errors. Always consult
+                        a real lawyer for official advice.</div>
                 </div>
             </div>
         </main>
@@ -130,8 +173,13 @@
                         <label>OpenRouter API Key</label>
                         <div class="api-key-input-wrapper">
                             <input type="password" id="cfg_api_key" placeholder="sk-or-v1-..." autocomplete="off">
-                            <button type="button" class="api-key-toggle" onclick="toggleApiKeyVisibility()" title="Show/Hide">
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                            <button type="button" class="api-key-toggle" onclick="toggleApiKeyVisibility()"
+                                title="Show/Hide">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                                    <circle cx="12" cy="12" r="3" />
+                                </svg>
                             </button>
                         </div>
                     </div>
@@ -140,12 +188,19 @@
                 <div class="config-panel" id="config-panel">
                     <!-- Triage Module -->
                     <div class="config-section open" data-module="triage">
-                        <div class="config-section-header" onclick="toggleConfigSection(this)">
-                            <h3>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                        <div class="config-section-header">
+                            <div class="section-header-left"
+                                onclick="toggleConfigSection(this.closest('.config-section-header'))">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+                                    <polyline points="22 4 12 14.01 9 11.01" />
+                                </svg>
                                 Triage Module
-                            </h3>
-                            <span class="chevron">▶</span>
+                            </div>
+                            <div class="section-header-right">
+                                <span class="chevron">▶</span>
+                            </div>
                         </div>
                         <div class="config-section-body">
                             <div class="cfg-group">
@@ -169,29 +224,58 @@
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
-                            <div class="toggle-row">
-                                <label>Enable Reasoning</label>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="cfg_triage_reasoning">
-                                    <span class="toggle-slider"></span>
-                                </label>
-                            </div>
+                            <!-- Reasoning is fixed OFF for Triage (QA requirement) -->
+                            <input type="hidden" id="cfg_triage_reasoning" value="false">
                             <div class="cfg-group" style="margin-top:8px">
-                                <label>System Instructions</label>
-                                <textarea class="system-prompt-editor" id="cfg_triage_instructions" spellcheck="false"></textarea>
+                                <div class="sys-instr-header">
+                                    <label>System Instructions</label>
+                                    <button type="button" class="btn-edit-instr"
+                                        onclick="openInstructionsModal('triage')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+                                </div>
+                                <div class="instr-preview" id="preview_triage_instructions">No instructions set</div>
+                                <textarea class="system-prompt-editor" id="cfg_triage_instructions" spellcheck="false"
+                                    style="display:none"></textarea>
                                 <div class="char-count" id="cc_triage">0 chars</div>
+                            </div>
+                            <!-- Test Individually -->
+                            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                                <a href="/test/triage" target="_blank" class="btn btn-ghost"
+                                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.78rem;padding:7px 12px;text-decoration:none;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                    Test Individually
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Router Module -->
                     <div class="config-section" data-module="router">
-                        <div class="config-section-header" onclick="toggleConfigSection(this)">
-                            <h3>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>
+                        <div class="config-section-header">
+                            <div class="section-header-left"
+                                onclick="toggleConfigSection(this.closest('.config-section-header'))">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <polyline points="16 3 21 3 21 8" />
+                                    <line x1="4" y1="20" x2="21" y2="3" />
+                                    <polyline points="21 16 21 21 16 21" />
+                                    <line x1="15" y1="15" x2="21" y2="21" />
+                                    <line x1="4" y1="4" x2="9" y2="9" />
+                                </svg>
                                 Router Module
-                            </h3>
-                            <span class="chevron">▶</span>
+                            </div>
+                            <div class="section-header-right">
+                                <span class="chevron">▶</span>
+                            </div>
                         </div>
                         <div class="config-section-body">
                             <div class="cfg-group">
@@ -215,24 +299,38 @@
                                     <span class="toggle-slider"></span>
                                 </label>
                             </div>
-                            <div class="toggle-row">
-                                <label>Enable Reasoning</label>
-                                <label class="toggle-switch">
-                                    <input type="checkbox" id="cfg_router_reasoning">
-                                    <span class="toggle-slider"></span>
-                                </label>
+                            <!-- Reasoning is fixed OFF for Router (QA requirement) -->
+                            <input type="hidden" id="cfg_router_reasoning" value="false">
+                            <!-- Test Individually -->
+                            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                                <a href="/test/router" target="_blank" class="btn btn-ghost"
+                                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.78rem;padding:7px 12px;text-decoration:none;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                    Test Individually
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- General Module -->
                     <div class="config-section" data-module="general">
-                        <div class="config-section-header" onclick="toggleConfigSection(this)">
-                            <h3>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                        <div class="config-section-header">
+                            <div class="section-header-left"
+                                onclick="toggleConfigSection(this.closest('.config-section-header'))">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="10" />
+                                    <line x1="12" y1="16" x2="12" y2="12" />
+                                    <line x1="12" y1="8" x2="12.01" y2="8" />
+                                </svg>
                                 General Response
-                            </h3>
-                            <span class="chevron">▶</span>
+                            </div>
+                            <div class="section-header-right">
+                                <span class="chevron">▶</span>
+                            </div>
                         </div>
                         <div class="config-section-body">
                             <div class="cfg-group">
@@ -264,21 +362,52 @@
                                 </label>
                             </div>
                             <div class="cfg-group" style="margin-top:8px">
-                                <label>System Instructions</label>
-                                <textarea class="system-prompt-editor" id="cfg_general_instructions" spellcheck="false"></textarea>
+                                <div class="sys-instr-header">
+                                    <label>System Instructions</label>
+                                    <button type="button" class="btn-edit-instr"
+                                        onclick="openInstructionsModal('general')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+                                </div>
+                                <div class="instr-preview" id="preview_general_instructions">No instructions set</div>
+                                <textarea class="system-prompt-editor" id="cfg_general_instructions" spellcheck="false"
+                                    style="display:none"></textarea>
                                 <div class="char-count" id="cc_general">0 chars</div>
+                            </div>
+                            <!-- Test Individually -->
+                            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                                <a href="/test/general" target="_blank" class="btn btn-ghost"
+                                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.78rem;padding:7px 12px;text-decoration:none;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                    Test Individually
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Reasoning Module -->
                     <div class="config-section" data-module="reasoning">
-                        <div class="config-section-header" onclick="toggleConfigSection(this)">
-                            <h3>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"/></svg>
+                        <div class="config-section-header">
+                            <div class="section-header-left"
+                                onclick="toggleConfigSection(this.closest('.config-section-header'))">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path
+                                        d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 1 1 7.072 0l-.548.547A3.374 3.374 0 0 0 14 18.469V19a2 2 0 1 1-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                                </svg>
                                 Reasoning (Legal Logic)
-                            </h3>
-                            <span class="chevron">▶</span>
+                            </div>
+                            <div class="section-header-right">
+                                <span class="chevron">▶</span>
+                            </div>
                         </div>
                         <div class="config-section-body">
                             <div class="cfg-group">
@@ -310,21 +439,51 @@
                                 </label>
                             </div>
                             <div class="cfg-group" style="margin-top:8px">
-                                <label>System Instructions</label>
-                                <textarea class="system-prompt-editor" id="cfg_reasoning_instructions" spellcheck="false"></textarea>
+                                <div class="sys-instr-header">
+                                    <label>System Instructions</label>
+                                    <button type="button" class="btn-edit-instr"
+                                        onclick="openInstructionsModal('reasoning')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+                                </div>
+                                <div class="instr-preview" id="preview_reasoning_instructions">No instructions set</div>
+                                <textarea class="system-prompt-editor" id="cfg_reasoning_instructions"
+                                    spellcheck="false" style="display:none"></textarea>
                                 <div class="char-count" id="cc_reasoning">0 chars</div>
+                            </div>
+                            <!-- Test Individually -->
+                            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                                <a href="/test/reasoning" target="_blank" class="btn btn-ghost"
+                                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.78rem;padding:7px 12px;text-decoration:none;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                    Test Individually
+                                </a>
                             </div>
                         </div>
                     </div>
 
                     <!-- Casual Module -->
                     <div class="config-section" data-module="casual">
-                        <div class="config-section-header" onclick="toggleConfigSection(this)">
-                            <h3>
-                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                        <div class="config-section-header">
+                            <div class="section-header-left"
+                                onclick="toggleConfigSection(this.closest('.config-section-header'))">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z" />
+                                </svg>
                                 Casual Response
-                            </h3>
-                            <span class="chevron">▶</span>
+                            </div>
+                            <div class="section-header-right">
+                                <span class="chevron">▶</span>
+                            </div>
                         </div>
                         <div class="config-section-body">
                             <div class="cfg-group">
@@ -356,9 +515,33 @@
                                 </label>
                             </div>
                             <div class="cfg-group" style="margin-top:8px">
-                                <label>System Instructions</label>
-                                <textarea class="system-prompt-editor" id="cfg_casual_instructions" spellcheck="false"></textarea>
+                                <div class="sys-instr-header">
+                                    <label>System Instructions</label>
+                                    <button type="button" class="btn-edit-instr"
+                                        onclick="openInstructionsModal('casual')">
+                                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                        </svg>
+                                        Edit
+                                    </button>
+                                </div>
+                                <div class="instr-preview" id="preview_casual_instructions">No instructions set</div>
+                                <textarea class="system-prompt-editor" id="cfg_casual_instructions" spellcheck="false"
+                                    style="display:none"></textarea>
                                 <div class="char-count" id="cc_casual">0 chars</div>
+                            </div>
+                            <!-- Test Individually -->
+                            <div style="margin-top:12px;padding-top:10px;border-top:1px solid var(--border-subtle);">
+                                <a href="/test/casual" target="_blank" class="btn btn-ghost"
+                                    style="width:100%;display:flex;align-items:center;justify-content:center;gap:7px;font-size:0.78rem;padding:7px 12px;text-decoration:none;">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <polygon points="5 3 19 12 5 21 5 3" />
+                                    </svg>
+                                    Test Individually
+                                </a>
                             </div>
                         </div>
                     </div>
@@ -367,11 +550,19 @@
                 <!-- Config Action Buttons -->
                 <div class="config-actions">
                     <button class="btn btn-ghost" id="export-config-btn" title="Export as .config file">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="17 8 12 3 7 8" />
+                            <line x1="12" y1="3" x2="12" y2="15" />
+                        </svg>
                         Export
                     </button>
                     <button class="btn btn-ghost" id="import-config-btn" title="Import .config file">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                            <polyline points="7 10 12 15 17 10" />
+                            <line x1="12" y1="15" x2="12" y2="3" />
+                        </svg>
                         Import
                     </button>
                     <input type="file" id="import-config-input" class="file-input-hidden" accept=".config,.json">
@@ -388,7 +579,11 @@
                             <span id="log-status-text">Connecting...</span>
                         </div>
                         <button class="icon-btn" id="clear-logs-btn" title="Clear Logs">
-                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="3 6 5 6 21 6" />
+                                <path
+                                    d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2" />
+                            </svg>
                         </button>
                     </div>
                     <div class="logs-content" id="logs-content">
@@ -424,7 +619,9 @@
             <div class="modal-header">
                 <h2>Retrieved Legal Sources</h2>
                 <button class="modal-close" onclick="closeModal('rag-modal')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
             <div class="modal-body" id="rag-modal-body">
@@ -438,10 +635,38 @@
             <div class="modal-header">
                 <h2 id="details-modal-title">Module Details</h2>
                 <button class="modal-close" onclick="closeModal('details-modal')">
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6L6 18M6 6l12 12"/></svg>
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
                 </button>
             </div>
             <div class="modal-body" id="details-modal-body">
+            </div>
+        </div>
+    </div>
+
+    <!-- System Instructions Editor Modal -->
+    <div id="instructions-modal" class="modal-overlay hidden">
+        <div class="modal-box" style="max-width:720px;max-height:88vh">
+            <div class="modal-header">
+                <h2 id="instructions-modal-title">Edit System Instructions</h2>
+                <button class="modal-close" onclick="closeModal('instructions-modal')">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 6L6 18M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+            <div class="modal-body instr-modal-body">
+                <div class="instr-modal-meta" id="instructions-modal-meta"></div>
+                <textarea id="instructions-modal-textarea" class="instr-modal-textarea" spellcheck="false"
+                    placeholder="Enter system instructions..."></textarea>
+                <div class="instr-modal-footer">
+                    <span class="char-count" id="instr-modal-char-count">0 chars</span>
+                    <div class="instr-modal-actions">
+                        <button class="btn btn-ghost" onclick="closeModal('instructions-modal')">Cancel</button>
+                        <button class="btn btn-primary" onclick="saveInstructionsModal()">Apply Changes</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -455,4 +680,5 @@
 
     <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
+
 </html>

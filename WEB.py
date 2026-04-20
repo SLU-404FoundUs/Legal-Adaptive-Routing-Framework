@@ -138,13 +138,16 @@ def get_sync_status():
         index_dir = os.path.join(os.getcwd(), "localfiles", "legal-basis")
         chunks_file = os.path.join(index_dir, "combined_index.json")
         
+        logging.info(f"Sync status requested. Checking integrity: {chunks_file}")
         sync_info = legal_indexing.verify_index_integrity(
             corpus_dir="legal-corpus",
             chunks_path=chunks_file
         )
-        return json.dumps(sync_info)
+        logging.info(f"Sync status result: {sync_info['is_synced']} ({sync_info['corpus_count']} docs)")
+        return jsonify(sync_info)
     except Exception as e:
-        return json.dumps({"error": str(e)}), 500
+        logging.error(f"Sync status error: {str(e)}")
+        return jsonify({"error": str(e)}), 500
 
 # =============================================
 # Chat API
@@ -437,6 +440,26 @@ def load_conversation():
         except Exception as e:
             return jsonify({"error": str(e)}), 500
 
+@app.route('/api/chat/delete', methods=['POST'])
+def delete_conversation():
+    """Delete a saved conversation JSON file."""
+    data = request.json
+    filename = data.get('filename')
+    if not filename:
+        return jsonify({"error": "No filename provided"}), 400
+    
+    filepath = os.path.join(CONVERSATIONS_DIR, filename)
+    if not os.path.exists(filepath):
+        return jsonify({"error": "File not found"}), 404
+        
+    try:
+        os.remove(filepath)
+        app_logger.info(f"Conversation deleted: {filename}")
+        return jsonify({"status": "success"})
+    except Exception as e:
+        app_logger.error(f"Failed to delete conversation: {e}")
+        return jsonify({"error": str(e)}), 500
+
 # =============================================
 # Configuration API
 # =============================================
@@ -483,85 +506,108 @@ def get_config():
 
 @app.route('/api/config', methods=['POST'])
 def save_config():
+    global triage_module, router_module, retrieval_module
     data = request.json
     
-    # Update active memory immediately
-    FrameworkConfig._update_settings_(
-        api_key=data.get('api_key', FrameworkConfig._API_KEY),
+    try:
+        # Update active memory immediately
+        FrameworkConfig._update_settings_(
+            api_key=data.get('api_key', FrameworkConfig._API_KEY),
+            
+            triage_model=data.get('triage_model', FrameworkConfig._TRIAGE_MODEL),
+            triage_temp=float(data.get('triage_temp', FrameworkConfig._TRIAGE_TEMP)),
+            triage_max_tokens=int(data.get('triage_max_tokens', FrameworkConfig._TRIAGE_MAX_TOKENS)),
+            triage_use_system=data.get('triage_use_system', FrameworkConfig._TRIAGE_USE_SYSTEM),
+            triage_reasoning=data.get('triage_reasoning', FrameworkConfig._TRIAGE_REASONING),
+            triage_instructions=data.get('triage_instructions', FrameworkConfig._TRIAGE_INSTRUCTIONS),
+            
+            router_model=data.get('router_model', FrameworkConfig._ROUTER_MODEL),
+            router_temp=float(data.get('router_temp', FrameworkConfig._ROUTER_TEMP)),
+            router_max_tokens=int(data.get('router_max_tokens', FrameworkConfig._ROUTER_MAX_TOKENS)),
+            router_use_system=data.get('router_use_system', FrameworkConfig._ROUTER_USE_SYSTEM),
+            router_reasoning=data.get('router_reasoning', FrameworkConfig._ROUTER_REASONING),
+            
+            general_model=data.get('general_model', FrameworkConfig._GENERAL_MODEL),
+            general_temp=float(data.get('general_temp', FrameworkConfig._GENERAL_TEMP)),
+            general_max_tokens=int(data.get('general_max_tokens', FrameworkConfig._GENERAL_MAX_TOKENS)),
+            general_use_system=data.get('general_use_system', FrameworkConfig._GENERAL_USE_SYSTEM),
+            general_reasoning=data.get('general_reasoning', FrameworkConfig._GENERAL_REASONING),
+            general_instructions=data.get('general_instructions', FrameworkConfig._GENERAL_INSTRUCTIONS),
+            
+            reasoning_model=data.get('reasoning_model', FrameworkConfig._REASONING_MODEL),
+            reasoning_temp=float(data.get('reasoning_temp', FrameworkConfig._REASONING_TEMP)),
+            reasoning_max_tokens=int(data.get('reasoning_max_tokens', FrameworkConfig._REASONING_MAX_TOKENS)),
+            reasoning_use_system=data.get('reasoning_use_system', FrameworkConfig._REASONING_USE_SYSTEM),
+            reasoning_reasoning=data.get('reasoning_reasoning', FrameworkConfig._REASONING_REASONING),
+            reasoning_instructions=data.get('reasoning_instructions', FrameworkConfig._REASONING_INSTRUCTIONS),
+            
+            casual_model=data.get('casual_model', FrameworkConfig._CASUAL_MODEL),
+            casual_temp=float(data.get('casual_temp', FrameworkConfig._CASUAL_TEMP)),
+            casual_max_tokens=int(data.get('casual_max_tokens', FrameworkConfig._CASUAL_MAX_TOKENS)),
+            casual_use_system=data.get('casual_use_system', FrameworkConfig._CASUAL_USE_SYSTEM),
+            casual_reasoning=data.get('casual_reasoning', FrameworkConfig._CASUAL_REASONING),
+            casual_instructions=data.get('casual_instructions', FrameworkConfig._CASUAL_INSTRUCTIONS),
+        )
         
-        triage_model=data.get('triage_model', FrameworkConfig._TRIAGE_MODEL),
-        triage_temp=float(data.get('triage_temp', FrameworkConfig._TRIAGE_TEMP)),
-        triage_max_tokens=int(data.get('triage_max_tokens', FrameworkConfig._TRIAGE_MAX_TOKENS)),
-        triage_use_system=bool(data.get('triage_use_system', FrameworkConfig._TRIAGE_USE_SYSTEM)),
-        triage_reasoning=bool(data.get('triage_reasoning', FrameworkConfig._TRIAGE_REASONING)),
-        triage_instructions=data.get('triage_instructions', FrameworkConfig._TRIAGE_INSTRUCTIONS),
+        from dotenv import set_key
+        env_file = os.path.join(os.getcwd(), ".env")
         
-        router_model=data.get('router_model', FrameworkConfig._ROUTER_MODEL),
-        router_temp=float(data.get('router_temp', FrameworkConfig._ROUTER_TEMP)),
-        router_max_tokens=int(data.get('router_max_tokens', FrameworkConfig._ROUTER_MAX_TOKENS)),
-        router_use_system=bool(data.get('router_use_system', FrameworkConfig._ROUTER_USE_SYSTEM)),
-        router_reasoning=bool(data.get('router_reasoning', FrameworkConfig._ROUTER_REASONING)),
+        # Save standard properties to env
+        set_key(env_file, "OPENROUTER_API_KEY", FrameworkConfig._API_KEY or "")
         
-        general_model=data.get('general_model', FrameworkConfig._GENERAL_MODEL),
-        general_temp=float(data.get('general_temp', FrameworkConfig._GENERAL_TEMP)),
-        general_max_tokens=int(data.get('general_max_tokens', FrameworkConfig._GENERAL_MAX_TOKENS)),
-        general_use_system=bool(data.get('general_use_system', FrameworkConfig._GENERAL_USE_SYSTEM)),
-        general_reasoning=bool(data.get('general_reasoning', FrameworkConfig._GENERAL_REASONING)),
-        general_instructions=data.get('general_instructions', FrameworkConfig._GENERAL_INSTRUCTIONS),
+        set_key(env_file, "TRIAGE_MODEL", FrameworkConfig._TRIAGE_MODEL)
+        set_key(env_file, "TRIAGE_TEMP", str(FrameworkConfig._TRIAGE_TEMP))
+        set_key(env_file, "TRIAGE_MAX_TOKENS", str(FrameworkConfig._TRIAGE_MAX_TOKENS))
+        set_key(env_file, "TRIAGE_USE_SYSTEM", str(FrameworkConfig._TRIAGE_USE_SYSTEM))
+        set_key(env_file, "TRIAGE_REASONING", str(FrameworkConfig._TRIAGE_REASONING))
+        set_key(env_file, "TRIAGE_INSTRUCTIONS", FrameworkConfig._TRIAGE_INSTRUCTIONS)
         
-        reasoning_model=data.get('reasoning_model', FrameworkConfig._REASONING_MODEL),
-        reasoning_temp=float(data.get('reasoning_temp', FrameworkConfig._REASONING_TEMP)),
-        reasoning_max_tokens=int(data.get('reasoning_max_tokens', FrameworkConfig._REASONING_MAX_TOKENS)),
-        reasoning_use_system=bool(data.get('reasoning_use_system', FrameworkConfig._REASONING_USE_SYSTEM)),
-        reasoning_reasoning=bool(data.get('reasoning_reasoning', FrameworkConfig._REASONING_REASONING)),
-        reasoning_instructions=data.get('reasoning_instructions', FrameworkConfig._REASONING_INSTRUCTIONS),
+        set_key(env_file, "ROUTER_MODEL", FrameworkConfig._ROUTER_MODEL)
+        set_key(env_file, "ROUTER_TEMP", str(FrameworkConfig._ROUTER_TEMP))
+        set_key(env_file, "ROUTER_MAX_TOKENS", str(FrameworkConfig._ROUTER_MAX_TOKENS))
+        set_key(env_file, "ROUTER_USE_SYSTEM", str(FrameworkConfig._ROUTER_USE_SYSTEM))
+        set_key(env_file, "ROUTER_REASONING", str(FrameworkConfig._ROUTER_REASONING))
         
-        casual_model=data.get('casual_model', FrameworkConfig._CASUAL_MODEL),
-        casual_temp=float(data.get('casual_temp', FrameworkConfig._CASUAL_TEMP)),
-        casual_max_tokens=int(data.get('casual_max_tokens', FrameworkConfig._CASUAL_MAX_TOKENS)),
-        casual_use_system=bool(data.get('casual_use_system', FrameworkConfig._CASUAL_USE_SYSTEM)),
-        casual_reasoning=bool(data.get('casual_reasoning', FrameworkConfig._CASUAL_REASONING)),
-        casual_instructions=data.get('casual_instructions', FrameworkConfig._CASUAL_INSTRUCTIONS),
-    )
-    
-    from dotenv import set_key
-    env_file = os.path.join(os.getcwd(), ".env")
-    
-    # Save standard properties to env
-    set_key(env_file, "OPENROUTER_API_KEY", FrameworkConfig._API_KEY or "")
-    
-    set_key(env_file, "TRIAGE_MODEL", FrameworkConfig._TRIAGE_MODEL)
-    set_key(env_file, "TRIAGE_TEMP", str(FrameworkConfig._TRIAGE_TEMP))
-    set_key(env_file, "TRIAGE_MAX_TOKENS", str(FrameworkConfig._TRIAGE_MAX_TOKENS))
-    set_key(env_file, "TRIAGE_USE_SYSTEM", str(FrameworkConfig._TRIAGE_USE_SYSTEM))
-    set_key(env_file, "TRIAGE_REASONING", str(FrameworkConfig._TRIAGE_REASONING))
-    
-    set_key(env_file, "ROUTER_MODEL", FrameworkConfig._ROUTER_MODEL)
-    set_key(env_file, "ROUTER_TEMP", str(FrameworkConfig._ROUTER_TEMP))
-    set_key(env_file, "ROUTER_MAX_TOKENS", str(FrameworkConfig._ROUTER_MAX_TOKENS))
-    set_key(env_file, "ROUTER_USE_SYSTEM", str(FrameworkConfig._ROUTER_USE_SYSTEM))
-    set_key(env_file, "ROUTER_REASONING", str(FrameworkConfig._ROUTER_REASONING))
-    
-    set_key(env_file, "GENERAL_MODEL", FrameworkConfig._GENERAL_MODEL)
-    set_key(env_file, "GENERAL_TEMP", str(FrameworkConfig._GENERAL_TEMP))
-    set_key(env_file, "GENERAL_MAX_TOKENS", str(FrameworkConfig._GENERAL_MAX_TOKENS))
-    set_key(env_file, "GENERAL_USE_SYSTEM", str(FrameworkConfig._GENERAL_USE_SYSTEM))
-    set_key(env_file, "GENERAL_REASONING", str(FrameworkConfig._GENERAL_REASONING))
-    
-    set_key(env_file, "REASONING_MODEL", FrameworkConfig._REASONING_MODEL)
-    set_key(env_file, "REASONING_TEMP", str(FrameworkConfig._REASONING_TEMP))
-    set_key(env_file, "REASONING_MAX_TOKENS", str(FrameworkConfig._REASONING_MAX_TOKENS))
-    set_key(env_file, "REASONING_USE_SYSTEM", str(FrameworkConfig._REASONING_USE_SYSTEM))
-    set_key(env_file, "REASONING_REASONING", str(FrameworkConfig._REASONING_REASONING))
-    
-    set_key(env_file, "CASUAL_MODEL", FrameworkConfig._CASUAL_MODEL)
-    set_key(env_file, "CASUAL_TEMP", str(FrameworkConfig._CASUAL_TEMP))
-    set_key(env_file, "CASUAL_MAX_TOKENS", str(FrameworkConfig._CASUAL_MAX_TOKENS))
-    set_key(env_file, "CASUAL_USE_SYSTEM", str(FrameworkConfig._CASUAL_USE_SYSTEM))
-    set_key(env_file, "CASUAL_REASONING", str(FrameworkConfig._CASUAL_REASONING))
-    
-    app_logger.info("Configuration updated and saved to .env")
-    return json.dumps({"status": "success", "message": "Configuration updated successfully."})
+        set_key(env_file, "GENERAL_MODEL", FrameworkConfig._GENERAL_MODEL)
+        set_key(env_file, "GENERAL_TEMP", str(FrameworkConfig._GENERAL_TEMP))
+        set_key(env_file, "GENERAL_MAX_TOKENS", str(FrameworkConfig._GENERAL_MAX_TOKENS))
+        set_key(env_file, "GENERAL_USE_SYSTEM", str(FrameworkConfig._GENERAL_USE_SYSTEM))
+        set_key(env_file, "GENERAL_REASONING", str(FrameworkConfig._GENERAL_REASONING))
+        set_key(env_file, "GENERAL_INSTRUCTIONS", FrameworkConfig._GENERAL_INSTRUCTIONS)
+        
+        set_key(env_file, "REASONING_MODEL", FrameworkConfig._REASONING_MODEL)
+        set_key(env_file, "REASONING_TEMP", str(FrameworkConfig._REASONING_TEMP))
+        set_key(env_file, "REASONING_MAX_TOKENS", str(FrameworkConfig._REASONING_MAX_TOKENS))
+        set_key(env_file, "REASONING_USE_SYSTEM", str(FrameworkConfig._REASONING_USE_SYSTEM))
+        set_key(env_file, "REASONING_REASONING", str(FrameworkConfig._REASONING_REASONING))
+        set_key(env_file, "REASONING_INSTRUCTIONS", FrameworkConfig._REASONING_INSTRUCTIONS)
+        
+        set_key(env_file, "CASUAL_MODEL", FrameworkConfig._CASUAL_MODEL)
+        set_key(env_file, "CASUAL_TEMP", str(FrameworkConfig._CASUAL_TEMP))
+        set_key(env_file, "CASUAL_MAX_TOKENS", str(FrameworkConfig._CASUAL_MAX_TOKENS))
+        set_key(env_file, "CASUAL_USE_SYSTEM", str(FrameworkConfig._CASUAL_USE_SYSTEM))
+        set_key(env_file, "CASUAL_REASONING", str(FrameworkConfig._CASUAL_REASONING))
+        set_key(env_file, "CASUAL_INSTRUCTIONS", FrameworkConfig._CASUAL_INSTRUCTIONS)
+        
+        # Re-initialize modules to pick up changes immediately
+        triage_module = TriageModule()
+        router_module = SemanticRouterModule()
+        
+        # Retrieval module reload (re-use existing index if possible to avoid rebuild delay)
+        index_dir = os.path.join(os.getcwd(), "localfiles", "legal-basis")
+        index_file = os.path.join(index_dir, "combined_index.faiss")
+        chunks_file = os.path.join(index_dir, "combined_index.json")
+        
+        retrieval_module = LegalRetrievalModule()
+        if os.path.exists(index_file) and os.path.exists(chunks_file):
+            retrieval_module._load_index_(index_file, chunks_file)
+            
+        app_logger.info("Configuration updated, saved to .env, and modules re-initialized.")
+        return json.dumps({"status": "success", "message": "Configuration updated successfully."})
+        
+    except Exception as e:
+        app_logger.error(f"Error saving configuration: {e}")
+        return json.dumps({"status": "error", "message": str(e)}), 500
 
 @app.route('/api/config/export', methods=['GET'])
 def export_config():
@@ -622,6 +668,23 @@ def export_config():
     
     app_logger.info(f"Configuration exported: {filename}")
     return send_file(filepath, as_attachment=True, download_name=filename, mimetype='application/json')
+
+@app.route('/api/debug/config', methods=['GET'])
+def debug_config():
+    """Diagnostic endpoint to verify shared configuration state."""
+    from src.adaptive_routing.modules.triage import FrameworkConfig as TriageFC
+    from src.adaptive_routing.modules.router import FrameworkConfig as RouterFC
+    from src.adaptive_routing.modules.semantic_router.legal_generation import FrameworkConfig as GenFC
+    
+    return jsonify({
+        "web_config_id": id(FrameworkConfig),
+        "triage_config_id": id(TriageFC),
+        "router_config_id": id(RouterFC),
+        "generation_config_id": id(GenFC),
+        "ids_match": len({id(FrameworkConfig), id(TriageFC), id(RouterFC), id(GenFC)}) == 1,
+        "current_reasoning_instructions": FrameworkConfig._REASONING_INSTRUCTIONS[:100] + "...",
+        "env_reasoning_instructions": os.getenv("REASONING_INSTRUCTIONS", "NOT SET")[:100] + "..."
+    })
 
 @app.route('/api/config/import', methods=['POST'])
 def import_config():
@@ -690,6 +753,228 @@ def stream_logs():
         'Cache-Control': 'no-cache',
         'X-Accel-Buffering': 'no'
     })
+
+# =============================================
+# Module Test Page
+# =============================================
+
+VALID_TEST_MODULES = {"triage", "router", "general", "reasoning", "casual", "retrieval"}
+
+@app.route('/test/<module_name>')
+def test_module_page(module_name):
+    """Serve the dedicated per-module test harness page."""
+    if module_name not in VALID_TEST_MODULES:
+        return "Unknown module", 404
+    return render_template('test.html', module=module_name)
+
+# =============================================
+# Individual Module Test API Endpoints
+# =============================================
+
+@app.route('/api/test/triage', methods=['POST'])
+def api_test_triage():
+    """Test the Triage Module: normalizes raw multilingual input."""
+    data = request.json
+    raw_input = data.get('raw_input', '').strip()
+    if not raw_input:
+        return jsonify({"error": "raw_input is required"}), 400
+    if not triage_module:
+        return jsonify({"error": "Triage module is not initialized"}), 500
+    try:
+        result = triage_module._process_request_(raw_input)
+        return jsonify(result)
+    except Exception as e:
+        app_logger.error(f"[Test/Triage] Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/test/router', methods=['POST'])
+def api_test_router():
+    """Test the Router Module: classifies normalized text into a route."""
+    data = request.json
+    normalized_text = data.get('normalized_text', '').strip()
+    threshold = float(data.get('threshold', 0.1))
+    if not normalized_text:
+        return jsonify({"error": "normalized_text is required"}), 400
+    if not router_module:
+        return jsonify({"error": "Router module is not initialized"}), 500
+    try:
+        result = router_module._process_routing_(normalized_text, threshold=threshold)
+        return jsonify(result)
+    except Exception as e:
+        app_logger.error(f"[Test/Router] Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route('/api/test/retrieval', methods=['POST'])
+def api_test_retrieval():
+    """Test the Legal Retrieval Module: returns RAG chunks for a query."""
+    data = request.json
+    query = data.get('query', '').strip()
+    signals_raw = data.get('signals', '')
+    top_k = int(data.get('top_k', 5))
+    if not query:
+        return jsonify({"error": "query is required"}), 400
+    if not retrieval_module:
+        return jsonify({"error": "Retrieval module is not initialized"}), 500
+    try:
+        signals = [s.strip() for s in signals_raw.split(',') if s.strip()] if signals_raw else None
+        result = retrieval_module._process_retrieval_(query, signals=signals, top_k=top_k)
+        chunks = result.get("retrieved_chunks", [])
+        return jsonify({
+            "query": result.get("query", query),
+            "combined_query": result.get("combined_query", query),
+            "chunk_count": len(chunks),
+            "chunks": [
+                {
+                    "text": c.get("chunk", ""),
+                    "metadata": c.get("metadata", {}),
+                    "score": float(c.get("score", 0.0))
+                }
+                for c in chunks
+            ]
+        })
+    except Exception as e:
+        app_logger.error(f"[Test/Retrieval] Error: {e}")
+        return jsonify({"error": str(e)}), 500
+
+
+def _stream_llm_test(module_name, system_instructions, user_message, rag_context=None, temperature=None, max_tokens=None):
+    """
+    Shared generator for LLM module test streaming.
+    Temporarily overrides FrameworkConfig instructions, creates a fresh
+    SemanticRouterModule instance, runs generation, and restores config.
+    """
+    route_map = {
+        "general": "General-LLM",
+        "reasoning": "Reasoning-LLM",
+        "casual": "Casual-LLM",
+    }
+    instr_attr_map = {
+        "general": "_GENERAL_INSTRUCTIONS",
+        "reasoning": "_REASONING_INSTRUCTIONS",
+        "casual": "_CASUAL_INSTRUCTIONS",
+    }
+    from src.adaptive_routing.core.engine import LLMRequestEngine
+    from src.adaptive_routing.modules.semantic_router.legal_generation import LegalGenerator
+    from src.adaptive_routing.modules.semantic_router.logic_classifier import RoutingClassifier
+
+    # Map module types to their config prefixes in FrameworkConfig
+    config_prefix_map = {
+        "general": "GENERAL",
+        "reasoning": "REASONING",
+        "casual": "CASUAL",
+    }
+    
+    prefix = config_prefix_map.get(module_name)
+    route = route_map.get(module_name, "General-LLM")
+
+    try:
+        yield json.dumps({"type": "step", "content": f"Initializing isolated {module_name.capitalize()} LLM engine..."}) + "\n"
+
+        # 1. Build an isolated engine using current config + user-specific overrides
+        # We fetch current snapshot values from FrameworkConfig
+        engine = LLMRequestEngine(
+            api_key=FrameworkConfig._API_KEY,
+            model=getattr(FrameworkConfig, f"_{prefix}_MODEL"),
+            temperature=float(temperature) if temperature is not None else getattr(FrameworkConfig, f"_{prefix}_TEMP"),
+            max_tokens=int(max_tokens) if max_tokens is not None else getattr(FrameworkConfig, f"_{prefix}_MAX_TOKENS"),
+            use_system_role=getattr(FrameworkConfig, f"_{prefix}_USE_SYSTEM"),
+            include_reasoning=getattr(FrameworkConfig, f"_{prefix}_REASONING")
+        )
+
+        # 2. Use the system instructions provided in the test UI, or fall back to config
+        active_instructions = system_instructions if system_instructions is not None else getattr(FrameworkConfig, f"_{prefix}_INSTRUCTIONS")
+
+        # 3. Create an isolated generator for this test run
+        # We inject our specific engine into the appropriate slot
+        engine_kwargs = {f"{module_name}_engine": engine}
+        test_generator = LegalGenerator(api_key=FrameworkConfig._API_KEY, **engine_kwargs)
+        
+        # 4. Create an isolated module instance with the test generator
+        test_router_mod = SemanticRouterModule(generator=test_generator)
+
+        yield json.dumps({"type": "step", "content": "Sending request to isolated module..."}) + "\n"
+
+        classification = {"route": route, "confidence": 1.0, "search_signals": None}
+        messages = [{"role": "user", "content": user_message}]
+
+        # Unified generation logic for all routes
+        # We prepare the final content (optionally with RAG context)
+        final_user_content = user_message
+        if rag_context and route != "Casual-LLM":
+            # Inject context into the user message using the framework's builder logic
+            final_user_content = test_router_mod._build_augmented_query_(user_message, rag_context, route)
+        
+        # We call the engine directly with the isolated instructions
+        # This bypasses the global FrameworkConfig fallback in LegalGenerator
+        response_text = engine._get_chat_completion_([
+            {"role": "system", "content": active_instructions},
+            {"role": "user", "content": final_user_content}
+        ])
+
+        yield json.dumps({"type": "result", "content": response_text, "route": route}) + "\n"
+
+    except Exception as e:
+        app_logger.error(f"[Test/{module_name}] Error: {e}")
+        yield json.dumps({"type": "error", "content": str(e)}) + "\n"
+
+
+@app.route('/api/test/general', methods=['POST'])
+def api_test_general():
+    """Test the General LLM module with optional custom instructions and RAG context."""
+    data = request.json
+    user_message = data.get('user_message', '').strip()
+    system_instructions = data.get('system_instructions', None)
+    rag_context = data.get('rag_context', None)
+    temperature = data.get('temperature', None)
+    max_tokens = data.get('max_tokens', None)
+    
+    if not user_message:
+        return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
+                        mimetype='application/x-ndjson', status=400)
+    return Response(
+        stream_with_context(_stream_llm_test("general", system_instructions, user_message, rag_context, temperature, max_tokens)),
+        mimetype='application/x-ndjson'
+    )
+
+
+@app.route('/api/test/reasoning', methods=['POST'])
+def api_test_reasoning():
+    """Test the Reasoning LLM module with optional custom instructions and RAG context."""
+    data = request.json
+    user_message = data.get('user_message', '').strip()
+    system_instructions = data.get('system_instructions', None)
+    rag_context = data.get('rag_context', None)
+    temperature = data.get('temperature', None)
+    max_tokens = data.get('max_tokens', None)
+
+    if not user_message:
+        return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
+                        mimetype='application/x-ndjson', status=400)
+    return Response(
+        stream_with_context(_stream_llm_test("reasoning", system_instructions, user_message, rag_context, temperature, max_tokens)),
+        mimetype='application/x-ndjson'
+    )
+
+
+@app.route('/api/test/casual', methods=['POST'])
+def api_test_casual():
+    """Test the Casual LLM module with optional custom instructions and no RAG context."""
+    data = request.json
+    user_message = data.get('user_message', '').strip()
+    system_instructions = data.get('system_instructions', None)
+    temperature = data.get('temperature', None)
+    max_tokens = data.get('max_tokens', None)
+
+    if not user_message:
+        return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
+                        mimetype='application/x-ndjson', status=400)
+    return Response(
+        stream_with_context(_stream_llm_test("casual", system_instructions, user_message, None, temperature, max_tokens)),
+        mimetype='application/x-ndjson'
+    )
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5220)

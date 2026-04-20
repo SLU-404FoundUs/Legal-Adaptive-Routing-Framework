@@ -30,56 +30,7 @@ class RoutingClassifier:
             include_reasoning=FrameworkConfig._ROUTER_REASONING
         )
 
-        self._system_prompt = system_prompt or (
-            "ROLE: Legal Query Router\n"
-            "TASK: Analyze the USER QUERY and decide which LLM should handle it.\n"
-            "\n"
-            "Casual-LLM:\n"
-            "- Greetings (hi, hello, good morning, kumusta)\n"
-            "- Gratitude (thank you, thanks, salamat po)\n"
-            "- Farewells (bye, goodbye, take care, ingat)\n"
-            "- Small talk unrelated to law or legal matters\n"
-            "- Single-word affirmations (ok, yes, sure, noted, sige)\n"
-            "- Emotional check-ins without legal context\n"
-            "- Unrelated inquiries towards migrant worker rights and legal assistance\n"
-            "\n"
-            "General-LLM:\n"
-            "- General legal information and Government DMW/OWWA informations\n"
-            "- Definitions, explanations, rights overview, Contact Details\n"
-            "- Simple Q&A about law\n"
-            "- Summarize Legal Findings\n"
-            "- Perform Simplifications\n"
-            "- Clarify complex scenarios\n"
-            "- No personalized advice\n"
-            "- No complex scenario or dispute\n"
-            "\n"
-            "Reasoning-LLM:\n"
-            "- Describes a real or hypothetical situation\n"
-            "- Asks what action to take\n"
-            "- Involves disputes, violations, contracts, termination, abuse, or legal risk\n"
-            "- Requires legal interpretation and structured reasoning\n"
-            "\n"
-            "Constraints:\n"
-            "- Strictly adhere to the ROLE and TASK above\n"
-            "- The router must return structured JSON only\n"
-            "- No markdown allowed in output\n"
-            "- Do NOT answer the question\n"
-            "- When in doubt between Casual and Legal, choose the legal route\n"
-            "\n"
-            "JSON Schema:\n"
-            "{\n"
-            '  "route": "Casual-LLM" | "General-LLM" | "Reasoning-LLM",\n'
-            '  "confidence": float,\n'
-            '  "search_signals": [list of short phrases] | null\n'
-            "}\n"
-            "\n"
-            "Signal Generation Rules (for search_signals):\n"
-            "- Always include Contact Details in keyword phrases\n"
-            "- If the query is a new legal inquiry: Provide 4-6 concise keyword phrases (noun phrases, ≤ 5 words each) optimized for retrieval.\n"
-            "- If the query is a follow-up, clarification, summarization, or lacks new legal information: Return null.\n"
-            "- Avoid verbs, questions, or full sentences.\n"
-            "- Use legal/domain-relevant keywords."
-        )
+        self._system_prompt = system_prompt or FrameworkConfig._ROUTER_INSTRUCTIONS
 
     def _route_query_(self, query: str) -> dict:
         """

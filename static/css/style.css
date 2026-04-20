@@ -302,19 +302,44 @@ body {
     padding: 0 12px 12px;
 }
 
+.btn-clear-all {
+    background: transparent;
+    border: none;
+    color: var(--text-tertiary);
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: var(--radius-xs);
+    transition: var(--transition-fast);
+}
+.btn-clear-all:hover {
+    color: var(--accent-red);
+    background: var(--accent-red-soft);
+}
+
 .convo-item {
     display: flex;
-    flex-direction: column;
-    gap: 2px;
+    align-items: center; /* Changed from column to align items */
+    gap: 12px;
     padding: 10px 12px;
     border-radius: var(--radius-sm);
     cursor: pointer;
     transition: var(--transition-fast);
     border: 1px solid transparent;
+    position: relative; /* Added for sizing if needed */
 }
 .convo-item:hover {
     background: var(--bg-hover);
     border-color: var(--border-subtle);
+}
+.convo-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 .convo-item .convo-title {
     font-size: 0.82rem;
@@ -328,6 +353,29 @@ body {
     font-size: 0.7rem;
     color: var(--text-tertiary);
 }
+.convo-delete-btn {
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-sm);
+    border: none;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    opacity: 0; /* Hidden by default, shown on hover */
+    flex-shrink: 0;
+}
+.convo-item:hover .convo-delete-btn {
+    opacity: 1;
+}
+.convo-delete-btn:hover {
+    background: var(--accent-red-soft);
+    color: var(--accent-red);
+}
+.convo-delete-btn svg { width: 14px; height: 14px; }
 
 /* =============================================
    Main Chat Area
@@ -528,6 +576,34 @@ body {
     text-decoration: underline;
 }
 
+/* --- Restored Pipeline (from saved conversation) --- */
+.restored-pipeline {
+    border-color: var(--border-active);
+    opacity: 0.9;
+}
+
+.restored-badge {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.68rem;
+    color: var(--accent-cyan);
+    font-weight: 500;
+    padding-bottom: 6px;
+    border-bottom: 1px solid var(--border-subtle);
+    margin-bottom: 4px;
+    opacity: 0.8;
+}
+
+/* --- Message timestamp (shown on restored conversations) --- */
+.msg-timestamp {
+    font-size: 0.65rem;
+    color: var(--text-muted);
+    text-align: right;
+    margin-bottom: 3px;
+    padding-right: 4px;
+}
+
 /* --- Input Area --- */
 .input-area {
     position: absolute;
@@ -674,29 +750,202 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 12px 14px;
-    cursor: pointer;
+    padding: 10px 14px;
     transition: var(--transition-fast);
     user-select: none;
 }
 .config-section-header:hover { background: var(--bg-hover); }
 
-.config-section-header h3 {
-    font-size: 0.82rem;
-    font-weight: 600;
-    color: var(--text-primary);
+/* Left zone — clickable for expand/collapse */
+.section-header-left {
     display: flex;
     align-items: center;
     gap: 8px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    cursor: pointer;
+    flex: 1;
+    min-width: 0;
+}
+
+/* Right zone — contains enable toggle + chevron */
+.section-header-right {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+    margin-left: 8px;
+}
+
+/* Module status label (Enabled / Disabled) */
+.module-status-label {
+    font-size: 0.65rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    color: var(--accent-green);
+    transition: color var(--transition-fast);
+}
+
+/* Smaller toggle for module enable/disable in header */
+.module-enable-toggle {
+    width: 30px !important;
+    height: 16px !important;
+}
+.module-enable-toggle .toggle-slider { border-radius: 8px !important; }
+.module-enable-toggle .toggle-slider::before {
+    width: 11px !important;
+    height: 11px !important;
+    left: 2px !important;
+    top: 2px !important;
+}
+.module-enable-toggle input:checked + .toggle-slider::before {
+    transform: translateX(13px) !important;
 }
 
 .config-section-header .chevron {
     color: var(--text-tertiary);
     transition: transform var(--transition-base);
     font-size: 0.7rem;
+    cursor: pointer;
 }
 .config-section.open .config-section-header .chevron {
     transform: rotate(90deg);
+}
+
+/* --- System Instructions preview area --- */
+.sys-instr-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 6px;
+}
+.sys-instr-header label {
+    margin-bottom: 0 !important;
+}
+
+.instr-preview {
+    background: var(--bg-input);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-sm);
+    padding: 8px 10px;
+    font-size: 0.75rem;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    line-height: 1.55;
+    white-space: pre-wrap;
+    word-break: break-word;
+    min-height: 42px;
+    max-height: 72px;
+    overflow: hidden;
+    position: relative;
+}
+.instr-preview::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 20px;
+    background: linear-gradient(transparent, var(--bg-input));
+    pointer-events: none;
+}
+
+.btn-edit-instr {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 4px 8px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    font-family: var(--font-ui);
+    color: var(--accent-primary);
+    background: var(--accent-primary-soft);
+    border: 1px solid var(--border-accent);
+    border-radius: var(--radius-xs);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    white-space: nowrap;
+}
+.btn-edit-instr:hover {
+    background: rgba(99, 102, 241, 0.25);
+    box-shadow: var(--shadow-sm);
+}
+
+/* --- System Instructions Full-Screen Modal --- */
+.instr-modal-body {
+    display: flex;
+    flex-direction: column;
+    padding: 0 !important;
+    max-height: none !important;
+    overflow: hidden !important;
+    height: calc(88vh - 60px);
+}
+
+.instr-modal-meta {
+    padding: 10px 20px;
+    font-size: 0.78rem;
+    color: var(--text-secondary);
+    border-bottom: 1px solid var(--border-subtle);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg-surface);
+    flex-shrink: 0;
+}
+
+.instr-module-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: var(--radius-pill);
+    background: var(--accent-primary-soft);
+    color: var(--accent-primary);
+    border: 1px solid var(--border-accent);
+    font-size: 0.68rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+}
+
+.instr-modal-textarea {
+    flex: 1;
+    width: 100%;
+    min-height: 0;
+    padding: 16px 20px;
+    background: #0a0a10;
+    border: none;
+    border-radius: 0;
+    color: #c8c8e0;
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    line-height: 1.75;
+    resize: none;
+    outline: none;
+    tab-size: 4;
+    overflow-y: auto;
+}
+[data-theme="light"] .instr-modal-textarea {
+    background: #f5f5fa;
+    color: #333;
+}
+.instr-modal-textarea:focus {
+    box-shadow: none;
+}
+
+.instr-modal-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-subtle);
+    background: var(--bg-elevated);
+    flex-shrink: 0;
+}
+
+.instr-modal-actions {
+    display: flex;
+    gap: 8px;
 }
 
 .config-section-body {
