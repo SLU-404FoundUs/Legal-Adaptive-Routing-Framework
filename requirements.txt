@@ -2,7 +2,7 @@ requests
 dotenv
 flask
 faiss-cpu
-numpy<2
+numpy
 rich
 prompt_toolkit
 rank_bm25

@@ -97,7 +97,7 @@ LegalAdaptiveRoutingFramework/
 - **Python**: `3.10` or higher
 - **API Key**: [OpenRouter API Key](https://openrouter.ai/) for LLM access
 
-### Installation
+### Installation & Setup
 
 1. **Clone the repository**
    ```bash
@@ -105,30 +105,59 @@ LegalAdaptiveRoutingFramework/
    cd Legal-Adaptive-Routing-Framework
    ```
 
-2. **Install dependencies**
-   ```bash
+2. **Setup Virtual Environment**
+
+   Choose the instructions for your operating system:
+
+   <details>
+   <summary><b>Windows (PowerShell)</b></summary>
+
+   ```powershell
+   # 1. Set execution policy (Required to run scripts)
+   Set-ExecutionPolicy -ExecutionPolicy RemoteSigned -Scope CurrentUser
+
+   # 2. Create virtual environment
+   python -m venv myvenv
+
+   # 3. Activate virtual environment
+   .\myvenv\Scripts\Activate.ps1
+
+   # 4. Install dependencies
    pip install -r requirements.txt
    ```
+   </details>
 
-3. **Setup Environment**
-   You can set up your `.env` configuration file in one of two ways:
-   
-   **Option A: Interactive Setup via CLI**
-   Simply run `python CLI.py`. The interface will guide you through adding your models and API key, and will offer to generate/update the `.env` file automatically for you.
+   <details>
+   <summary><b>macOS / Linux (Terminal)</b></summary>
 
-   **Option B: Manual Setup**
-   Create a `.env` file in the root directory manually with the following format:
-   ```env
-   # Mandatory
-   OPENROUTER_API_KEY=your_api_key_here
-   
-   # Optional Model Overrides
-   TRIAGE_MODEL=z-ai/glm-4.5-air:free
-   ROUTER_MODEL=z-ai/glm-4.5-air:free
-   GENERAL_MODEL=z-ai/glm-4.5-air:free
-   REASONING_MODEL=nvidia/nemotron-3-nano-30b-a3b:free
-   CASUAL_MODEL=liquid/lfm-2.5-1.2b-instruct:free
+   ```bash
+   # 1. Create virtual environment
+   python3 -m venv myvenv
+
+   # 2. Activate virtual environment
+   source myvenv/bin/activate
+
+   # 3. Install dependencies
+   pip install -r requirements.txt
    ```
+   </details>
+
+3. **Initialize and Run**
+   The `.env` configuration file is **automatically generated** when you first run either the CLI or Web interface.
+
+   > [!TIP]
+   > To utilize the latest stable configuration for both `WEB.py` and `CLI.py`, it is highly recommended to **import** the `stable_veritas_v1.config` file (located in `localfiles/`) via the **Configuration** menu in the Web Interface.
+
+   **Run CLI Version:**
+   ```bash
+   python CLI.py
+   ```
+
+   **Run Web Version:**
+   ```bash
+   python WEB.py
+   ```
+   *Note: On your first run, you will be prompted to enter your OpenRouter API key and preferred models.*
 
 ---
 

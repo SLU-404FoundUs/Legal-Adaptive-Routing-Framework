@@ -9,6 +9,7 @@ import platform
 import subprocess
 import time
 import logging
+import json
 from dotenv import load_dotenv, set_key
 
 # --- LOGGING SETUP ---
@@ -173,6 +174,7 @@ def _load_config_from_env_():
         "triage_max_tokens":    FrameworkConfig._TRIAGE_MAX_TOKENS,
         "triage_use_system":    FrameworkConfig._TRIAGE_USE_SYSTEM,
         "triage_reasoning":     FrameworkConfig._TRIAGE_REASONING,
+        "triage_instructions":  FrameworkConfig._TRIAGE_INSTRUCTIONS,
         "router_model":         FrameworkConfig._ROUTER_MODEL,
         "router_temp":          FrameworkConfig._ROUTER_TEMP,
         "router_max_tokens":    FrameworkConfig._ROUTER_MAX_TOKENS,
@@ -183,16 +185,19 @@ def _load_config_from_env_():
         "general_max_tokens":   FrameworkConfig._GENERAL_MAX_TOKENS,
         "general_use_system":   FrameworkConfig._GENERAL_USE_SYSTEM,
         "general_reasoning":    FrameworkConfig._GENERAL_REASONING,
+        "general_instructions": FrameworkConfig._GENERAL_INSTRUCTIONS,
         "reasoning_model":      FrameworkConfig._REASONING_MODEL,
         "reasoning_temp":       FrameworkConfig._REASONING_TEMP,
         "reasoning_max_tokens": FrameworkConfig._REASONING_MAX_TOKENS,
         "reasoning_use_system": FrameworkConfig._REASONING_USE_SYSTEM,
         "reasoning_reasoning":  FrameworkConfig._REASONING_REASONING,
+        "reasoning_instructions": FrameworkConfig._REASONING_INSTRUCTIONS,
         "casual_model":         FrameworkConfig._CASUAL_MODEL,
         "casual_temp":          FrameworkConfig._CASUAL_TEMP,
         "casual_max_tokens":    FrameworkConfig._CASUAL_MAX_TOKENS,
         "casual_use_system":    FrameworkConfig._CASUAL_USE_SYSTEM,
         "casual_reasoning":     FrameworkConfig._CASUAL_REASONING,
+        "casual_instructions":  FrameworkConfig._CASUAL_INSTRUCTIONS,
         "request_timeout":      FrameworkConfig._REQUEST_TIMEOUT,
         "retry_count":          FrameworkConfig._RETRY_COUNT,
         "retry_backoff":        FrameworkConfig._RETRY_BACKOFF,
@@ -207,6 +212,47 @@ def _edit_module_config_(name, cfg, prefix):
     cfg[f"{prefix}_use_system"] = _input_bool_("System Role", cfg[f"{prefix}_use_system"])
     cfg[f"{prefix}_reasoning"] = _input_bool_("Reasoning", cfg[f"{prefix}_reasoning"])
     console.print(f"  [green]✓ {name} configuration updated.[/green]")
+
+def _import_config_file_(cfg):
+    console.print(f"\n[cyan bold]  Import .config File[/cyan bold]")
+    console.print("[dim]──────────────────────────────────────────────────[/]")
+    filepath = console.input("  Enter path to .config file (e.g. localfiles/stable_veritas_v1.config): ").strip()
+    if not filepath:
+        console.print("  [yellow]Import cancelled.[/yellow]")
+        return
+    if not os.path.exists(filepath):
+        console.print(f"  [red]✗ File not found: {filepath}[/red]")
+        return
+    try:
+        with open(filepath, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        config_data = data.get("config", {})
+        
+        module_map = {
+            "triage": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
+            "router": ["model", "temp", "max_tokens", "use_system", "reasoning"],
+            "general": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
+            "reasoning": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
+            "casual": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
+        }
+        
+        updates = 0
+        for module, fields in module_map.items():
+            if module in config_data:
+                for field in fields:
+                    if field in config_data[module]:
+                        key = f"{module}_{field}"
+                        val = config_data[module][field]
+                        if field == "temp": val = float(val)
+                        elif field == "max_tokens": val = int(val)
+                        elif field in ("use_system", "reasoning"): val = bool(val)
+                        if key in cfg:
+                            cfg[key] = val
+                            updates += 1
+                            
+        console.print(f"  [green]✓ Successfully imported {updates} settings from {filepath}[/green]")
+    except Exception as e:
+        console.print(f"  [red]✗ Failed to import config: {e}[/red]")
 
 def interactive_config():
     global _config
@@ -246,10 +292,11 @@ def interactive_config():
         console.print(f"  [bold]6.[/bold] Network Settings   │ Timeout: {_config['request_timeout']}s  Retries: {_config['retry_count']}  Backoff: {_config['retry_backoff']}s")
         
         console.print("\n[dim]──────────────────────────────────────────────────[/]")
+        console.print("  [bold]I.[/bold] Import .config File")
         console.print("  [bold]S.[/bold] Save and Start Chat")
         console.print("  [bold]Q.[/bold] Quit")
         
-        choice = console.input("\n  Select option (0-6, S, Q): ").strip().upper()
+        choice = console.input("\n  Select option (0-6, I, S, Q): ").strip().upper()
         
         if choice == '0':
             _config["api_key"] = console.input("  Enter OpenRouter API Key: ").strip() or _config["api_key"]
@@ -265,6 +312,9 @@ def interactive_config():
             _config["retry_count"] = _input_int_("Retry Count", _config["retry_count"])
             _config["retry_backoff"] = _input_float_("Retry Backoff (seconds)", _config["retry_backoff"])
             console.print("  [green]✓ Network settings updated.[/green]")
+            console.input("\n  Press Enter to continue...")
+        elif choice == 'I':
+            _import_config_file_(_config)
             console.input("\n  Press Enter to continue...")
         elif choice == 'S':
             break
@@ -285,6 +335,7 @@ def _apply_config_(cfg):
         triage_max_tokens=cfg["triage_max_tokens"],
         triage_use_system=cfg["triage_use_system"],
         triage_reasoning=cfg["triage_reasoning"],
+        triage_instructions=cfg.get("triage_instructions"),
         router_model=cfg["router_model"],
         router_temp=cfg["router_temp"],
         router_max_tokens=cfg["router_max_tokens"],
@@ -295,16 +346,19 @@ def _apply_config_(cfg):
         general_max_tokens=cfg["general_max_tokens"],
         general_use_system=cfg["general_use_system"],
         general_reasoning=cfg["general_reasoning"],
+        general_instructions=cfg.get("general_instructions"),
         reasoning_model=cfg["reasoning_model"],
         reasoning_temp=cfg["reasoning_temp"],
         reasoning_max_tokens=cfg["reasoning_max_tokens"],
         reasoning_use_system=cfg["reasoning_use_system"],
         reasoning_reasoning=cfg["reasoning_reasoning"],
+        reasoning_instructions=cfg.get("reasoning_instructions"),
         casual_model=cfg["casual_model"],
         casual_temp=cfg["casual_temp"],
         casual_max_tokens=cfg["casual_max_tokens"],
         casual_use_system=cfg["casual_use_system"],
         casual_reasoning=cfg["casual_reasoning"],
+        casual_instructions=cfg.get("casual_instructions"),
         request_timeout=cfg["request_timeout"],
         retry_count=cfg["retry_count"],
         retry_backoff=cfg["retry_backoff"],
@@ -319,6 +373,7 @@ def _save_config_to_env_(cfg):
         "TRIAGE_MAX_TOKENS":    str(cfg["triage_max_tokens"]),
         "TRIAGE_USE_SYSTEM":    str(cfg["triage_use_system"]),
         "TRIAGE_REASONING":     str(cfg["triage_reasoning"]),
+        "TRIAGE_INSTRUCTIONS":  cfg.get("triage_instructions", ""),
         "ROUTER_MODEL":         cfg["router_model"],
         "ROUTER_TEMP":          str(cfg["router_temp"]),
         "ROUTER_MAX_TOKENS":    str(cfg["router_max_tokens"]),
@@ -329,16 +384,19 @@ def _save_config_to_env_(cfg):
         "GENERAL_MAX_TOKENS":   str(cfg["general_max_tokens"]),
         "GENERAL_USE_SYSTEM":   str(cfg["general_use_system"]),
         "GENERAL_REASONING":    str(cfg["general_reasoning"]),
+        "GENERAL_INSTRUCTIONS": cfg.get("general_instructions", ""),
         "REASONING_MODEL":      cfg["reasoning_model"],
         "REASONING_TEMP":       str(cfg["reasoning_temp"]),
         "REASONING_MAX_TOKENS": str(cfg["reasoning_max_tokens"]),
         "REASONING_USE_SYSTEM": str(cfg["reasoning_use_system"]),
         "REASONING_REASONING":  str(cfg["reasoning_reasoning"]),
+        "REASONING_INSTRUCTIONS": cfg.get("reasoning_instructions", ""),
         "CASUAL_MODEL":         cfg["casual_model"],
         "CASUAL_TEMP":          str(cfg["casual_temp"]),
         "CASUAL_MAX_TOKENS":    str(cfg["casual_max_tokens"]),
         "CASUAL_USE_SYSTEM":    str(cfg["casual_use_system"]),
         "CASUAL_REASONING":     str(cfg["casual_reasoning"]),
+        "CASUAL_INSTRUCTIONS":  cfg.get("casual_instructions", ""),
         "REQUEST_TIMEOUT":      str(cfg["request_timeout"]),
         "RETRY_COUNT":          str(cfg["retry_count"]),
         "RETRY_BACKOFF":        str(cfg["retry_backoff"]),
