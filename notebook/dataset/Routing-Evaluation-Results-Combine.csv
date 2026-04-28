@@ -1,0 +1,582 @@
+Query,Expected,Groq Expected,Predicted_Gemini,Predicted_Qwen
+"Tatlong OFW na nasa deathrow sa China...  Nahanapan sila na mayroong Droga, may pag-asa pa bang mailigtas?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ang Passport and Employment Contract ko ay nasunog sa Isang High-rise fire Accident. Anong Gagawin ko?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+pag may pandemic. maiiwan ba ako here sa hongkong or sa home country ko?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Paano gumagana yung bagong Senate Bill No. 2390?,General-LLM,General-LLM,General-LLM,General-LLM
+Nawalan ako ng trabaho dahil I made a Case sa Sexual Assault sakin ng boss ko. may magagawa ba ako?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"I got fired by my boss because I admitted to eating my boss' meatballs, which he deducted and added additional fine from my salary. my boss then filed a case of theft. I will soon be stripped of eligibility to find work. can I do anything about this?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+paano ang repatriation? pag nacancel all flights ngay?,General-LLM,General-LLM,General-LLM,General-LLM
+may rumors na may pandemic dito sa hong kong. paano ko matutulungan pamilya ko?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+Ano ang mga karapatan ko as an OFW?,General-LLM,General-LLM,General-LLM,General-LLM
+Magkano na ang Minimum Allowable Wage (MAW) para sa mga FDH simula noong September 2025?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinaglilinis ako ng amo ko ng bintana sa labas ng high-rise building nang walang safety harness. Pwede ko ba itong tanggihan?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Kailan ang mga Statutory Holidays sa Hong Kong para sa taong 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+Nag-file ako ng maternity leave pero bigla akong binigyan ng termination notice. Ano ang legal steps na dapat kong gawin sa Labour Department?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Sabi ng amo ko, ikakaltas daw sa sahod ko yung nabasag kong mamahaling plorera. Tama ba ito sa ilalim ng Employment Ordinance?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang "417 rule" at paano ito nagbago ngayong January 2026 para sa mga part-time workers?,General-LLM,General-LLM,General-LLM,General-LLM
+Nawala ang HKID ko habang nagbabakasyon sa Pinas. Paano ako makakabalik sa Hong Kong?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Pwede bang pilitin ng amo na wag akong pag-off sa Linggo at bayaran na lang ang day-off ko?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ang amo ko ay lumipat ng bahay sa China at gusto nilang sumama ako para magtrabaho doon. Valid ba ito sa contract ko?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Ano ang address at hotline ng Philippine Consulate General sa United Centre, Admiralty?",General-LLM,General-LLM,General-LLM,General-LLM
+Binigyan ako ng "one-month notice" pero pinalayas ako agad sa bahay ngayong gabi. Saan ako pwedeng tumuloy na shelter?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Nakasaad ba sa batas na dapat may sariling kwarto ang isang stay-in na helper sa Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Paano ko makukuha ang aking Long Service Payment kung 5 years na ako sa amo ko pero ayaw nila akong i-renew?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang gagawin kung ang sahod ko ay laging late ng higit sa 7 araw?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Idadagdag na ba ang Easter Monday bilang statutory holiday simula ngayong 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+"Pwede ko bang kunin ang Easter Monday (April 6, 2026) bilang paid holiday?",General-LLM,General-LLM,General-LLM,General-LLM
+Nag-sign ako ng contract noong October 2025. Magkano dapat ang minimum na sahod ko?,General-LLM,General-LLM,General-LLM,General-LLM
+"Sabi ng amo ko, isasama na lang daw sa sahod ko yung bayad sa holiday para magtrabaho ako. Pwede ba yun?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Natapat sa Sunday (Rest Day) ang Ching Ming Festival ngayong April 5, 2026. May substitute holiday ba ako?",General-LLM,General-LLM,General-LLM,General-LLM
+"Paano kung nagkasakit ako sa mismong araw ng Statutory Holiday, mababayaran pa rin ba ako?",Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+Ano ang mangyayari kung hindi ako binigyan ng holiday pay kahit lagpas 3 months na ako sa trabaho?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+Magkano ang food allowance ko kung hindi ako pinapakain ng amo ko sa bahay nila?,General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"Nakapirma ako ng contract bago mag September 30, 2025. Makukuha ko ba yung $5,100 na sahod?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pwede ko bang ipunin ang mga statutory holidays ko at gamitin lahat sa dulo ng taon?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Sinabihan ako ng amo ko na magtrabaho sa holiday pero wala pang 48 hours na notice. Pwede ko ba itong i-report?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ilang araw ang annual leave ko kung naka-apat na taon na ako sa parehong amo?,General-LLM,General-LLM,General-LLM,General-LLM
+Gusto ng amo ko na cash na lang ibayad ang annual leave ko imbes na bakasyon. Legal ba ito?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Kailangan ko ba ng OEC (Overseas Employment Certificate) kung babalik ako sa HK mula sa bakasyon ngayong 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+"Ano ang gagawin ko kung pinirmahan ko sa contract ay $5,100 pero ang binibigay lang sa akin ay $4,990?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Kasama ba ang "Birthday of the Buddha" sa mga bayad na holiday para sa mga OFW?,General-LLM,General-LLM,General-LLM,General-LLM
+"Sabi ng amo ko, bawal daw akong lumabas ng bahay sa day-off ko dahil sa kumakalat na balita tungkol sa bagong virus. Pwede ba yun?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Na-diagnose ako na may breast cancer. Pwede ba akong i-terminate ng amo ko habang nagpapagamot?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Sino ang dapat magbayad ng hospital bill ko kung na-confine ako sa public hospital sa Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinatutulog ako ng amo ko sa sofa sa living room dahil wala silang extra room. Legal ba ito sa contract?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Binigyan ako ng amo ko ng "Notice of Termination" pero gusto nilang umalis ako immediately nang walang bayad. Ano ang dapat kong makuha?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pwede ko bang i-terminate ang contract ko kung hindi ako pinapakain nang tama o palaging panis ang binibigay na pagkain?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang "14-day rule" ng Immigration pagkatapos ma-cut ang contract ko?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Nag-resign ako dahil sa "physical abuse." Kailangan ko pa ba mag-serve ng one month notice?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pwede ba akong pilitin ng amo ko na maglinis ng bahay ng anak niya sa ibang building?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang gagawin ko kung ayaw ibigay ng amo ko ang passport ko dahil baka daw ako tumakas?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ilang oras ang dapat na pahinga ko sa isang araw ayon sa standard employment contract?,General-LLM,General-LLM,General-LLM,General-LLM
+Buntis ako at malapit na ang due date. May maternity leave ba ang mga OFW sa Hong Kong?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+Na-aksidente ako habang naglilinis ng bintana. Sagot ba ng insurance ng amo ang pagpapagamot ko?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Paano ko makukuha ang aking "Long Service Payment" kung naka-6 years na ako sa amo ko?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+"Sabi ng agency ko, kailangan ko daw magbayad ng ""placement fee"" kahit direct hire ako. Tama ba ito?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang gagawin kung namatay ang amo ko? Mapuputol ba agad ang contract ko?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pwede ba akong mag-part time sa weekend sa isang restaurant habang naka-visa bilang domestic helper?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Kinukuhanan ako ng video ng amo ko sa loob ng kwarto ko gamit ang CCTV. Violation ba ito ng privacy?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang "Certificate of Employment" at bakit kailangan ko ito pag-alis sa amo?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinagbabayad ako ng amo ko para sa repair ng sirang aircon na ginagamit ko sa kwarto. Pwede ba yun?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"My passport is expiring in 5 months, can I still renew my contract with my current employer?",General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+Pinapirma ako ng amo ko sa isang blankong papel bago ako mag-bakasyon. Is this dangerous?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How can I apply for an OEC online if the DMW website is down or not working?,General-LLM,General-LLM,General-LLM,General-LLM
+I took a loan from a finance company and I can't pay it back. Can they deport me for this?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Nawala yung HKID ko sa MTR yesterday. What are the first three steps I need to do?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My agency is asking for my passport as "collateral" for my plane ticket. Should I give it?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang mangyayari if I don't leave Hong Kong within 14 days after my contract was terminated?,General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+I found a job offer on Facebook for a "Waitress" position in HK but I have a Domestic Helper visa. Is this a scam?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Magkano ang fee for Passport Renewal sa Philippine Consulate this 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+"If I change my employer, do I need to go back to the Philippines first or can I process it here?",General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"My friend borrowed money using my name as a guarantor (guarantor ako). Ngayon tumakas siya, kailangan ko ba bayaran yun?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I use a photocopy of my contract to apply for a loan in World-Wide House?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I accidentally washed my passport in the laundry and the pages are damaged. Can I still use it to fly home?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+Ano ang kailangan kong documents para mapatunayan na single parent ako for SSS/PhilHealth?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer refused to give my release letter (Green Paper). How can I get a new job without it?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is it legal for a lending company to call my employer to demand payment for my personal loan?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I want to renew my contract "locally." Does that mean I don't need to exit to Macau or Shenzhen anymore?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+How long is the processing time for an E-visa at the HK Immigration Department?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer's signature on my salary receipt looks different from the contract. Should I be worried?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the hotline for the Migrant Workers Office (MWO) in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Tinatakot ako ng agency ko na iba-blacklist daw ako sa POEA if I break my contract. Magagawa ba nila yun?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I renew my OWWA membership even if I am still in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+What happens if my visa expires on a Sunday or a Public Holiday?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+I forgot my Pag-IBIG MID number. How can I retrieve it while I am here in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinipilit ako ng amo ko na mag-loan para sa business niya. Anong sasabihin ko sa kanya?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Sabi ng agency ko, I have to pay 10% of my first six months' salary. Is that the law in 2026?",General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pinipilit ako ng asawa ko sa Pinas na umuwi na dahil may sakit siya. Can I break my contract immediately?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I check my SSS contributions online while I am here in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency took my original contract and only gave me a photocopy. Is this allowed?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Ano ang gagawin ko if my employer is filming me while I am sleeping in my room?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I apply for a Pag-IBIG housing loan even if I am still working in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+Nag-expire na ang OWWA membership ko. Do I need to renew it before I fly home for vacation?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My employer told me to work in their relative's house for "just two days." Should I say yes?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Magkano ang monthly contribution for PhilHealth for OFWs starting this 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+I found out my husband is using my remittance for gambling. How can I stop the bank transfer?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the contact number of the Philippine Overseas Labor Office (POLO) in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is moving to the UK and wants me to go with them. Is my HK contract still valid there?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a refund from my agency if they failed to find me a job within 3 months?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Sabi ng amo ko, bawal daw ako gumamit ng phone during my rest day. Is that legal?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How many days of paid sick leave can I get if I have been working for 6 months?,General-LLM,General-LLM,General-LLM,General-LLM
+I lost my OEC receipt. Can I still get a Balik-Manggagawa clearance at the airport?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+Ano ang address ng SSS branch sa Fortune Centre sa Causeway Bay?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer's dog bit me while I was cleaning. Who should pay for my anti-rabies shots?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I use my PhilHealth to cover my child's hospitalization in the Philippines?,General-LLM,General-LLM,Casual-LLM,General-LLM
+Tinatago ng amo ko yung boarding pass ko pag-uwi ko. Is that a problem for my return trip?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What are the requirements for an OFW to get a Multi-Purpose Loan from Pag-IBIG?,General-LLM,General-LLM,General-LLM,General-LLM
+"My agency is charging me $2,000 for ""training fees"" even though I am an experienced worker.",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Does the Hong Kong Labor Department have a 24-hour hotline for domestic workers?,General-LLM,General-LLM,General-LLM,General-LLM
+I'm being bullied by the other helper in the house. Should I report this to my employer or the agency?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How can I update my marital status in my SSS records while abroad?,General-LLM,General-LLM,General-LLM,General-LLM
+Pwede ko ba dalhin ang anak ko sa Hong Kong for a 1-week vacation while I am working?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+What is the penalty if I overstay my visa by just one day in HK?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My employer is asking me to sign a document saying I received my salary even if I didn't.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is it mandatory to have a POLO-verified contract for every vacation to the Philippines?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to complain about my agency's illegal collection. Saan ako dapat pumunta sa HK?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get my "Severance Pay" if I have worked for the same family for 3 years?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My agency told me I can't transfer to a new employer because I'm "terminated with cause.",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the minimum age to work as a Domestic Helper in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I apply for a DFA passport renewal appointment without a slot online?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+How do I claim my Pag-IBIG savings (Provident Fund) after 20 years of working in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinapabayad ako ng amo ko for the electricity and water I use in my room. Is this right?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Standard Employment Contract" ID number and where can I find it?,General-LLM,General-LLM,General-LLM,General-LLM
+Can my employer deduct my plane ticket cost from my last salary?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer wants me to sleep in the same room as their teenage son. Can I refuse?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How much is the terminal fee at NAIA for OFWs returning to their jobs?,General-LLM,General-LLM,General-LLM,General-LLM
+I have a dispute with my employer regarding my "Rest Day" schedule. Who can mediate?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What documents do I need to bring to prove I am an OFW to avoid paying travel tax?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+"Sabi ng amo ko, wala daw akong ""Long Service Payment"" kasi ""Resigned"" ako. Is that true?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I renew my HKID online or do I need to go to the Immigration office personally?,General-LLM,General-LLM,General-LLM,General-LLM
+I accidentally broke a very expensive TV. Can the employer deduct the full price from my pay?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+My sister wants to borrow my HKID to apply for a loan. Is this a criminal offense?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How many months of "Maternity Leave" am I entitled to under HK Law?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to skip my day-off to earn extra money. Is this allowed by HK Immigration?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer just passed away in his sleep. What happens to my visa tomorrow?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Saan pwedeng kumuha ng NBI Clearance renewal habang nasa Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Nag-positive ako sa COVID or a new virus. Can my employer force me to sleep in the park?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the emergency hotline of the Philippine Consulate in Admiralty?,General-LLM,General-LLM,General-LLM,General-LLM
+My family in the Philippines was hit by a typhoon. Can I get an SSS calamity loan?,General-LLM,General-LLM,General-LLM,General-LLM
+Nakagat ako ng aso ng kapitbahay habang nilalakad ko yung aso ng amo ko. Who is liable?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I book an appointment for the Overseas Absentee Voting (OAV) for the next election?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinipilit ako ng amo ko na uminom ng gamot na hindi ko alam para daw hindi ako magkasakit.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Assistance to Nationals" (ATN) section of the Consulate for?,General-LLM,General-LLM,General-LLM,General-LLM
+Nasira yung phone ko and I lost my E-visa copy. How can I show it to Immigration?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+Magkano ang fee for a Notarial Service or Red Ribbon sa Consulate ngayon?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is verbally abusing me every day. Can I "break contract" for this reason?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is it true that there is a 24-hour shelter for OFWs in Jordan or Wan Chai?,General-LLM,General-LLM,General-LLM,General-LLM
+Na-scam ako sa Facebook investment. Can the Consulate help me get my money back?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How can I report an illegal recruitment agency back in the Philippines?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My amo wants me to clean the windows of a 40th-floor flat. Is this a violation of my contract?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What are the requirements to change my name in my passport after getting married?,General-LLM,General-LLM,General-LLM,General-LLM
+I am a victim of physical assault by my employer's child. Should I call 999 immediately?,Reasoning-LLM,Reasoning-LLM,Casual-LLM,Reasoning-LLM
+Can the Consulate provide a lawyer for me if I have a case in the Labour Tribunal?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My passport was stolen at the North Point market. What is the "Report of Loss" process?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+Is there a limit to how many balikbayan boxes I can send tax-free per year?,General-LLM,General-LLM,General-LLM,General-LLM
+I'm feeling depressed and lonely. Are there any free counseling services for OFWs in HK?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+How do I claim the insurance money for a deceased OFW relative in HK?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I accidentally overstayed my visa because I was in the hospital. Will I be jailed?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Pinagbabayad ako ng "Terminal Fee" sa airport even though I have an OEC. What should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I apply for a "Special Entry Permit" for my husband to visit me in Hong Kong?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My employer is monitoring my period/menstrual cycle. Is this an invasion of privacy?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How can I verify if my agency is blacklisted by the DMW/POEA?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to donate to a charity in the Philippines. How can I make sure it's not a scam?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the "Labor Tribunal" and how is it different from the "Minor Employment Claims Board"?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My agency is holding my original birth certificate. Can I ask for it back?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+How do I get a "Certificate of No Marriage" (CENOMAR) while living in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer refuses to buy my ticket back to the Philippines after my contract ended.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is there a "POLO" office inside the Philippine Consulate building?,General-LLM,General-LLM,General-LLM,General-LLM
+What are the operating hours of the Philippine Consulate on Sundays?,General-LLM,General-LLM,General-LLM,General-LLM
+"I found out my employer is filming the bathroom. This is a crime, right?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pinagsasabihan ako ng amo ko na wag makipag-usap sa ibang Pinoy sa labas. Is this legal?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How can I send a formal "Grievance Letter" to the DMW?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My contract was terminated while I was on home leave in the Philippines. Can I still return?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the minimum rest period between two working days for a helper?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to report a suspicious "Money Lending" person in World-Wide House.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How much is the OWWA membership fee in Hong Kong Dollars for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is forcing me to work on a day when there is a Signal No. 8 Typhoon.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a copy of my employment contract from the Labor Department?,General-LLM,General-LLM,General-LLM,General-LLM
+Is it legal for my employer to read my personal letters or emails?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My co-worker is stealing from our employer and blaming me. How do I defend myself?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Sabi ng friend ko, may ""468 rule"" na daw starting Jan 2026. Does this affect my contract as a stay-in helper?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Is Easter Monday (April 6, 2026) already considered a paid statutory holiday for us?",General-LLM,General-LLM,General-LLM,General-LLM
+"My employer is only paying me $4,990 but I signed my contract in November 2025. Is this correct?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I open a Maya or GCash account while I am physically here in Hong Kong?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Magkano ang food allowance ko starting September 2025 if my employer doesn't provide free food?,General-LLM,General-LLM,General-LLM,General-LLM
+What is the "1% Remittance Tax" I'm hearing about? Does it apply to money sent from HK to PH?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+My employer wants to pay me in cash every month. Is it better to have it through a bank transfer?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+How can I verify my Overseas Employment Certificate (OEC) using the DMW Mobile App?,General-LLM,General-LLM,General-LLM,General-LLM
+Nakatanggap ako ng message sa WhatsApp from "HK Immigration" asking for my bank details. Is this a scam?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What are the requirements for an SSS Salary Loan this 2026 for active members?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is asking for my ATM card and PIN "for safekeeping." Should I give it?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+How much is the "Contract Renewal Fee" if I process it through an agency in 2026?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I want to start a small business in the Philippines. Are there any programs from OWWA for this?,General-LLM,General-LLM,General-LLM,General-LLM
+"Sabi ng amo ko, deduction daw sa sahod ko yung fee for my mandatory insurance. Is this legal?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Can I pay my PhilHealth and Pag-IBIG contributions in one go at World-Wide House?,General-LLM,General-LLM,General-LLM,General-LLM
+My remittance was "frozen" because of a name mismatch. How can I fix this from HK?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What is the maximum amount I can send to the Philippines in one day via TNG or AlipayHK?,General-LLM,General-LLM,General-LLM,General-LLM
+I lost my phone with my digital E-visa. Can I print a new one from the Immigration website?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer told me to use my own money to buy groceries and they will just "reimburse" me. Is this safe?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I claim the "Death Benefit" from SSS if the member is an OFW in HK?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+Can I apply for a credit card in Hong Kong using my employment contract?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+My friend wants to use my bank account to receive money from a stranger. Is this "Money Laundering"?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is it true that the "418 rule" is now "468 rule"? What does "aggregate hours" mean?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+How can I check if my employer is actually paying for my medical insurance?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "E-Link" system for OFW workers at the Consulate?,General-LLM,General-LLM,General-LLM,General-LLM
+I was overcharged by a taxi in Central. Where can I file a complaint?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My agency says I need to pay for my own "Fit to Work" medical exam in HK. Is that right?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+Can I get a refund for my Pag-IBIG contributions if I decide to stay in the Philippines for good?,General-LLM,General-LLM,General-LLM,General-LLM
+I found a "part-time" job as a flyer distributor on my day-off. Will I get deported if I get caught?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What are the "Statutory Holidays" for the month of May 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is relocating to Singapore. Can I transfer my contract to their sister here in HK?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I apply for a "Red Ribbon" (Apostille) for my child's birth certificate in HK?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+Pinipilit ako ng amo ko na mag-sign ng "Termination by Mutual Consent" pero ayaw ko umalis.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"What is the ""Minimum Allowable Wage"" (MAW) for contracts signed after Sept 30, 2025?",General-LLM,General-LLM,General-LLM,General-LLM
+Can I use my Philippine driver's license to drive for my employer in Hong Kong?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+How do I update my mobile number in the SSS portal if I don't have my old SIM anymore?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is deduction $100 for every plate I break. Is there a limit to this deduction?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What is the "Certificate of Trial Balance" for? Do I need it for my loan?,General-LLM,General-LLM,General-LLM,General-LLM
+Is there a "Social Welfare Officer" at the Philippine Consulate for family disputes?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer hasn't given me a copy of my signed contract for 2 months now.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"How can I avail of the ""Balik-Pinas, Balik-Hanapbuhay"" program of OWWA?",General-LLM,General-LLM,General-LLM,General-LLM
+I want to cancel my loan with a finance company because of high interest. Is it possible?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the phone number of the "Bethune House" migrant women's shelter?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is asking me to work during my "Rest Day" because they have a party.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My agency is threatening to sue my family in the Philippines if I terminate my contract.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Is it true that starting this year, 2026, Easter Monday is already a paid statutory holiday?",General-LLM,General-LLM,Casual-LLM,General-LLM
+My employer said I have to work on April 6 (Easter Monday) without a replacement day. Is that okay?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Since Ching Ming Festival (April 5, 2026) falls on a Sunday, when should I get my holiday?",General-LLM,General-LLM,General-LLM,General-LLM
+I've been with my employer for only 2 months. Am I entitled to holiday pay for the 2026 Lunar New Year?,Reasoning-LLM,Reasoning-LLM,General-LLM,ERROR: Empty route returned
+"Magkano na ang minimum salary for contracts processed today, March 10, 2026?",General-LLM,General-LLM,General-LLM,General-LLM
+"My employer wants to pay me $4,990 because my contract was signed in August 2025. Is this legal?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Sabi ng amo ko, deduction daw sa sahod ko yung fee for my mandatory insurance. Is this legal?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"Can I go to a public hospital in HK if I have a high fever, or do I need my employer's permission first?",General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+I'm feeling very stressed and I want to see a doctor for mental health. Will my insurance cover it?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the "468 Rule" that started in January 2026? Does it apply to us domestic helpers?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is asking me to pay for my own medical check-up for contract renewal. Is that my responsibility?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"If I get pregnant this year, how many weeks of paid maternity leave am I entitled to in HK?",General-LLM,General-LLM,General-LLM,General-LLM
+I have a toothache and need an extraction. Is the employer required to pay for dental surgery?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What happens if a statutory holiday falls on my rest day? Do I lose that holiday?,General-LLM,General-LLM,General-LLM,General-LLM
+My boss told me to clean the aircon from the outside of the 20th floor. Can I say no?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I compute my "Average Daily Wage" for holiday pay purposes?,General-LLM,General-LLM,General-LLM,General-LLM
+I haven't had a pay slip for 3 months. Can I demand a written record of my salary?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,ERROR: Empty route returned
+What is the "Food Allowance" amount for 2026 if the employer doesn't provide free food?,General-LLM,General-LLM,General-LLM,General-LLM
+Can my employer fire me while I am on paid sick leave?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How many paid sick days do I earn for every month of service in my first year?,General-LLM,General-LLM,General-LLM,General-LLM
+"I accidentally broke the vacuum cleaner. Can my employer deduct $500 from my $5,100 salary?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the maximum fine an employer can face for underpaying a domestic helper in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo wants me to stay home on my rest day because of a "new virus" alert. Is this allowed?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I want to change my "Rest Day" from Sunday to Tuesday. Do I need to inform Immigration?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+How many days of annual leave do I get after completing my first 2-year contract?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is asking for a "medical report" before they give me my sick leave pay. Is this right?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Is it legal for the agency to charge me a "membership fee" every month?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I found out my employer is recording my voice in the kitchen. Is this a privacy violation?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the address of the Labour Department's "Foreign Domestic Helpers Administration Section"?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer died and the children want me to stay and work for them. Do I need a new visa?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a "Long Service Payment" if I've worked for the same employer for 5 years?,General-LLM,General-LLM,General-LLM,General-LLM
+I was terminated because I was "too slow." Do I still get my 1-month notice pay?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What are the requirements to renew a contract without going back to the Philippines (Direct Hire)?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My friend told me I can work "Part-time" as a cleaner for her friend. Is this worth the risk?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+How much is the current HKID replacement fee if I lose my card this 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer refuses to give me a proper bed; I sleep on a thin mat on the floor. Is this legal?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,ERROR: Empty route returned
+What is the "14-day rule" for stay-in domestic helpers whose contracts are terminated?,General-LLM,General-LLM,General-LLM,General-LLM
+"Can I sue my employer if they hit me, even if it was ""just once""?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I apply for an "Extension of Stay" if my passport is being renewed at the Consulate?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I lost my wallet with my ATM card and my HKID. What should I report to the police first?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What is the "E-visa" and do I still need a physical sticker on my passport?,General-LLM,General-LLM,General-LLM,General-LLM
+My boss is moving to a smaller flat and says I have to share a room with the kids. Can I complain?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How many "Statutory Holidays" are there in total for the year 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get my "Severance Pay" if my employer becomes bankrupt?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+What documents do I need to bring to the Airport to prove I am an OFW for tax exemption?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo is asking me to cook for their office staff every Friday. Is this allowed?,Reasoning-LLM,Reasoning-LLM,General-LLM,ERROR: Empty route returned
+How do I verify my "OWWA Membership" status using my phone?,General-LLM,General-LLM,General-LLM,General-LLM
+I'm being accused of theft by my boss but I didn't do it. Should I sign the confession paper?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the hotline for the "Migrant Workers Office" (MWO) in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+"It's March 2026. Is my $4,990 salary still legal if I signed my contract 2 years ago?",Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+"Do I need to pay the PHP 1,620 travel tax at NAIA if I have a valid OEC?",General-LLM,General-LLM,General-LLM,General-LLM
+My OEC exemption was denied on the DMW app because I changed my employer. What now?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"Is it true that Easter Monday (April 6, 2026) is now a mandatory paid holiday?",General-LLM,General-LLM,General-LLM,General-LLM
+I'm going home for a 2-week vacation. Do I need to get a new OEC if I'm returning to the same boss?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer wants to "buy" my statutory holiday for $200. Should I agree to this?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How much is the minimum food allowance if my boss doesn't provide meals this 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+What is the "468 Rule" and does it give me more rights than the old 418 rule?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I lost my boarding pass on my way back to HK. Will the Immigration let me in with just my visa?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"My amo told me to work on April 5 (Ching Ming). Since it's a Sunday, when is my substitute holiday?",Reasoning-LLM,Reasoning-LLM,General-LLM,ERROR: Empty route returned
+How do I book a flight home if my employer refuses to provide the ticket after 2 years?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the maximum weight for a Balikbayan box to be tax-free in the Philippines?,General-LLM,General-LLM,General-LLM,General-LLM
+I have an old OEC from 3 months ago. Can I still use it for my flight tomorrow?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My passport was damaged by water. Can I still fly if the data page is readable?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+How much is the "Terminal Fee" refund for OFWs at the Manila airport?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is asking me to pay for my own "Contract Verification" fee at the MWO.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Can I get an OEC at the airport on the day of my flight if I forgot to do it online?,General-LLM,General-LLM,General-LLM,General-LLM
+I missed my flight because of heavy traffic in Manila. Will my employer pay for the new ticket?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the website for the "DMW Online Services Portal" for OEC registration?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinipilit ako ng agency ko na mag-renew kahit ayaw ko na sa amo ko. May "Cooling-off" period ba?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How many days before my flight should I apply for an OEC exemption?,General-LLM,General-LLM,General-LLM,General-LLM
+My visa sticker is peeling off my passport. Is it still valid for travel?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+"What is the penalty for employers who don't give the new $5,100 salary for 2026 contracts?",General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I want to bring my 10-year-old son to HK for a visit. Do I need an "Invitation Letter"?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+Can I use my "Pag-IBIG Loyalty Card" as an ID at the Philippine Consulate?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer wants me to work in China for a week while they are on vacation. Is my HK visa enough?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the current address of the Migrant Workers Office (MWO) in Admiralty?,General-LLM,General-LLM,General-LLM,General-LLM
+I'm being asked to sign a "Waiver of Claims" before I go on vacation. Should I sign it?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How much is the OWWA renewal fee in HK Dollars this March 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is deducting the cost of the "E-visa" from my salary. Is this allowed?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a "Balik-Manggagawa" clearance if I'm already at the airport?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency told me I can't fly because my "Medical" has expired. Is this true for returning workers?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Red Ribbon" and why do I need it for my marriage certificate in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+I accidentally brought more than 2 reams of cigarettes to HK. What will happen at Customs?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I renew my Philippine Driver's License while I am working in Hong Kong?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+"My employer wants me to work on Good Friday (April 3, 2026). Is that a statutory holiday?",General-LLM,General-LLM,General-LLM,General-LLM
+What is the "Electronic Travel Declaration" (eTravel) form for the Philippines?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo is only giving me 5 hours of sleep. How do I complain without getting fired?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I apply for a SSS Calamity Loan if my province was declared under a state of calamity?,General-LLM,General-LLM,General-LLM,General-LLM
+My passport will expire in exactly 6 months. Can I still travel back to HK?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+How can I verify if my "Contract" is already uploaded to the DMW system?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I'm being asked to pay a "Processing Fee" for my Pag-IBIG loan by a fixer.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Assistance to Nationals" section hotline for emergencies?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is moving to Discovery Bay and wants me to work there. Is there a different rule?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+How many statutory holidays are there in total for the year 2026 in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to send a "Power of Attorney" to the Philippines. Where do I get it notarized?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is threatening to "Cancel my Visa" if I don't work on my rest day.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "OFW Pass" and is it different from the traditional OEC?,General-LLM,General-LLM,General-LLM,General-LLM
+"Sabi ng amo ko, bawal daw ako gumamit ng aircon sa kwarto ko kahit sobrang init. Is this a ""suitable accommodation"" violation?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer wants me to sleep in the kitchen on a folding bed. Is this legal in Hong Kong?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I refuse to share a room with my employer's 15-year-old son?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Pinipilit ako ng amo ko na mag-stay sa bahay nila kahit tapos na ang contract ko at may bago na akong amo.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Live-in Requirement" for FDHs and can I stay with my friends on my rest day?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I have a debt with a finance company. Can they legally take my passport as collateral?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My amo found out I have a loan and is threatening to fire me. Is having a debt a valid reason for termination?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Magkano ang "Food Allowance" starting 2026 if my employer doesn't provide free meals?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer installed a CCTV inside my private bedroom. What is the law on privacy?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I be deported if I cannot pay my bank loan in Hong Kong?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What are the requirements for "Suitable Accommodation" according to the Labour Department?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency told me to sign a loan for their "training fee." Is this a form of human trafficking?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Can my employer deduct $1,236 from my salary because they provide me with ""expensive food""?",General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I am a "guarantor" for my friend's loan and she ran away. Do I really have to pay her debt?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the maximum interest rate a licensed money lender can charge in HK as of 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo refuses to give me a key to the house. I have to wait for them to come home to enter. Is this allowed?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,ERROR: Empty route returned
+Is it legal for a debt collector to call my employer's office or home every day?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I sleep in a partitioned space in the living room. Does this count as "reasonable privacy"?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Can my employer enter my room anytime they want without knocking?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+How do I file a complaint if my employer is not providing "free access to water and toilet"?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer wants me to pay for the repair of the washing machine because I used it "too much.",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What happens if I get caught "living out" (not staying in my employer's house)?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I am being harassed by "loan sharks" (illegal lenders). Should I go to the police or the Consulate?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is the employer required to provide a cabinet with a lock for my personal belongings?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo told me I can only eat bread and noodles. Can I demand better food or a food allowance?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can a finance company sue me in the Philippines for a debt I made in Hong Kong?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I found a hidden camera in the bathroom. What is the first thing I should do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "36% and 48% interest rate" rule under the Money Lenders Ordinance?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer says I have to pay for the "Wifi" if I want to use it. Is this a legal deduction?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Does "Free Medical Treatment" include vitamins and supplements if I feel weak?,General-LLM,General-LLM,General-LLM,General-LLM
+I was fired because I got pregnant. My amo says they don't have space for a baby. What are my rights?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How much is the "Minimum Household Income" required for an employer to hire a helper in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency is asking for my HKID to "process my insurance." Should I let them keep it?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a loan from a bank like HSBC if I am a Domestic Helper?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I share a room with another helper. Does she have the right to look through my things?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Is it mandatory for an employer to provide a "proper bed" (not just a mat on the floor)?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer is asking me to sleep in their second house in the New Territories. Is this allowed?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What is the "Credit Reference Agency" and how does it affect my future loans?,General-LLM,General-LLM,General-LLM,General-LLM
+My amo is using my name to apply for a loan for themselves. Is this a scam?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Can I file for ""Bankruptcy"" in Hong Kong if my debt is over $100,000?",General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I am being forced to work for 18 hours straight without a break. Is there a "Maximum Work Hour" law?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What should I do if my employer moves to a flat that has no space for me to sleep?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Is the employer required to provide me with a uniform, or can I wear my own clothes?",General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My friend asked me to "pawn" my jewelry for her. Now she won't give it back.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I open a "Shared Account" with my employer for household expenses?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My employer is on vacation and locked the kitchen. I have no access to food. What do I do?,Reasoning-LLM,Reasoning-LLM,Casual-LLM,Casual-LLM
+What is the "Small Claims Tribunal" for when it comes to money disputes with friends?,General-LLM,General-LLM,General-LLM,General-LLM
+I suspect my employer is using my personal data to buy things online. How can I check?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I go to a "Debt Counseling" center for free in Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+Nasampal ako ng amo ko dahil nakalimutan ko i-off ang stove. Pwede ko ba siyang kasuhan kahit walang sugat?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer's ward has a mental condition and keeps hitting me. Is the employer still liable?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the maximum penalty for an employer who physically assaults a domestic helper in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+Pinagbibintangan ako ng amo ko na nagnakaw ng alahas. What should I do if the police arrive?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"I was one of the OFWs affected by the Wang Fuk Court fire. How do I claim the $20,000 subsidy?",General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+My employer's son is making inappropriate sexual jokes and touching my waist. Is this sexual harassment?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I be jailed if I am caught working part-time in a restaurant during my rest day?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My amo took my passport and HKID and locked them in a safe. Is this "Illegal Detention of Documents"?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the contact number of the HK Police "Emergency Hotline" for domestic violence?,General-LLM,General-LLM,General-LLM,General-LLM
+I am being forced to work 19 hours a day with only 4 hours of sleep. Is this considered forced labor?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can an employer be blacklisted from hiring helpers if they are convicted of physical abuse?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My agency is asking me to lie to Immigration about my actual salary. What happens if I get caught?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Is it true that the fine for hiring an illegal worker has been increased to $500,000 this year?",General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I found a hidden camera in my bedroom. Can I use my phone to record it as evidence for the police?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Operation Swordfish" by the Immigration Department and how does it affect OFWs?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer is threatening to "kill me" if I report them to the Labor Department. What's my safety plan?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I still get my backwages and air ticket if I am the one who terminated the contract due to abuse?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the definition of "Indecent Assault" under the Crimes Ordinance of Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+I saw my employer hitting their own child. Should I report this to the Social Welfare Department?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I file a "Common Law Claim" for damages after a serious workplace injury?,General-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+My friend was arrested for "Money Laundering" because she let someone use her bank account. How can I help?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I be deported for "overstaying" even if it's only for 2 days due to a medical emergency?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer is forcing me to clean the windows on the 30th floor without a grill. Is this a crime?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the address of the "Bethune House" or "Mission for Migrant Workers" shelter?,General-LLM,General-LLM,General-LLM,Casual-LLM
+I am a victim of "Cyber-bullying" by my employer on TikTok. Can I sue them for defamation?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How long is the jail sentence for an OFW caught using a forged or fake HKID?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My employer is withholding my food and water as a "punishment." Who should I call right now?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can the Consulate provide a "Temporary Shelter" if I have an ongoing case against my employer?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+I was touched inappropriately by a delivery man inside the house. Is my employer responsible for my safety?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is "Criminal Intimidation" and how is it different from a simple argument?,General-LLM,General-LLM,General-LLM,General-LLM
+"My agency is charging me $15,000 for ""loan processing."" Is this considered debt bondage?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I lose my job if I am a "Non-Refoulement Claimant" (recognizance paper) and I am caught working?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I am being accused of "Conspiracy to Defraud" by Immigration. Do I need a private lawyer?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What happens if I am a witness to a crime committed by my employer? Am I protected?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer's husband enters my room while I am changing. Is this a ground for immediate termination?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I be arrested for "Theft" if I ate my employer's food without asking?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Labor Tribunal" and how do I start a claim for unpaid wages?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+My boss is making me work in their office as a receptionist. Is this a "Breach of Condition of Stay"?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Statutory Minimum Wage" (SMW) and why does it not apply to stay-in helpers?,General-LLM,General-LLM,General-LLM,General-LLM
+I am being harassed by debt collectors for a loan I didn't even take. What should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a "Legal Aid" lawyer if I have no money to pay for a court case?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is recording my private phone calls with my family. Is this legal?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the jail term for "Making False Representation" to an Immigration Officer?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I was forced to sign a "Resignation Letter" under duress. Can I still claim my benefits?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+How do I apply for an "Extension of Stay" as a visitor while waiting for my court case to finish?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer hit me with a broom and I have a bruise. Should I go to the hospital or police first?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What are the signs of "Human Trafficking" that I should look out for in a job offer?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Can my employer terminate me if I am diagnosed with a chronic illness like HIV or TB?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the hotline for the "Equal Opportunities Commission" (EOC) for discrimination cases?,General-LLM,General-LLM,General-LLM,General-LLM
+I heard about the "Bernadette" case in Jan 2026. What should I do if my employer pulls my hair like in the video?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Magkano ang "Special Subsidy" for OFWs affected by the Wang Fuk Court fire in Tai Po?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer's ward has a "mental health condition" and hit me. Am I still allowed to file a case?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is "Operation Swordfish" and why is the HK Immigration raiding industrial buildings?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I am a "Non-refoulement claimant" (recognizance). Can I legally work as a helper in 2026?,General-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+My employer told me to help their friend's business during the Lunar New Year surge. Is this a trap?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"If I am a victim of a viral abuse incident, will the DMW (Department of Migrant Workers) provide a lawyer?",General-LLM,Reasoning-LLM,General-LLM,General-LLM
+What is the new penalty for employers who hire illegal workers as of February 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+"I lost all my belongings in the Wang Fuk Court fire. How do I apply for the $20,000 grant?",Reasoning-LLM,General-LLM,General-LLM,General-LLM
+Can the police arrest me if they see me selling "Lumpia" or "Longganisa" in Central on a Sunday?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What is "Section 38AA" of the Immigration Ordinance and why are people getting 22 months in jail?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer's ward is aggressive. Can I demand to be transferred to a shelter for my safety?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Does the "468 Rule" (Continuous Contract) apply to me if I've only worked for 3 weeks?,General-LLM,General-LLM,General-LLM,General-LLM
+I am being "red-tagged" or harassed by my agency for joining a protest in Wan Chai. Is this legal?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+"What is the current ""Food Allowance"" for contracts signed after September 30, 2025?",General-LLM,General-LLM,General-LLM,General-LLM
+My boss is a "Company Director." Can he be personally liable if he doesn't pay my salary?,General-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+"Is Easter Monday (April 6, 2026) a paid holiday even if it's my first year in HK?",General-LLM,General-LLM,General-LLM,General-LLM
+I saw an FDH cleaning a window on the 15th floor with no grills. How do I report this safely?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What happens if my "Statutory Holiday" falls on the same day as "Easter Monday"?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer wants me to work on April 7 because they gave me April 5 and 6 off. Is that fair?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+How do I check if my agency has a valid license from the HK Labour Department?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I was arrested during a "March 2025 raid" but my case is only now in 2026. Why is it so slow?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Assistance-to-Nationals" (ATN) team's role in physical abuse cases?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Can my employer fire me if I refuse to work in their warehouse/industrial office?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Smart Renewal" service for OFW visas in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+I have a "General Demand Note" (GDN) for my visa. Can I pay it at a 7-Eleven?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer refuses to pay the "Verification Fee" of HKD 222. Is this my responsibility?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Can I be deported if I am a victim of "Human Trafficking" (TIP)?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What are the "TIP indicators" that HK Immigration uses to identify victims?,General-LLM,General-LLM,General-LLM,General-LLM
+I was offered a "Waitress" job in a logistics building. Is this a "Swordfish" target?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+My employer told me to "ignore the viral videos" and keep working 16 hours. How do I resist?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+Can the Consulate help me if I am stranded in HK because of Middle East flight cancellations?,General-LLM,General-LLM,General-LLM,ERROR: Empty route returned
+Is it true that the high court now requires "immediate custodial sentences" for bad employers?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+"My roommate is using a ""Forged Identity Card."" If the police raid our room, will I be arrested too?",Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "One Country Team" approach for OFW repatriation in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+I want to claim "Long Service Payment" but my employer says they are bankrupt due to the 2026 economy.,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+How many days of "Prior Notice" must an employer give for an "Alternative Holiday"?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I use "AlipayHK" to pay for my E-visa fee?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer's ward has mental health issues and is hurting me. Should I file a police report?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "1348 Hotline" and can I call it using WhatsApp from Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+I am a "Balik-Manggagawa." Do I still pay the HKD 80 verification fee?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer is monitoring my "Social Media" (TikTok/FB). Is this a breach of the contract?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What happens if I miss the "60-day" deadline for an alternative holiday?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Can I get a "Replacement Holiday" if a typhoon signal 8 falls on my rest day?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+My employer wants to "buy out" my 15th statutory holiday. What is the fine for them?,General-LLM,General-LLM,Reasoning-LLM,ERROR: Empty route returned
+What is the "E-Link" portal and how does it help with my SSS/Pag-IBIG?,General-LLM,General-LLM,General-LLM,General-LLM
+I suspect my employer is a "Shadow Employer" (using another person's name). How do I check?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the address of the "Sha Tin Magistrates' Court" where illegal workers are sentenced?,General-LLM,General-LLM,General-LLM,General-LLM
+Can the DMW provide "Medical Observation" and a shelter if I am too scared to go back to my boss?,General-LLM,General-LLM,Reasoning-LLM,General-LLM
+Does the "MPF Offsetting Abolition" mean my boss can no longer take from my MPF to pay my Long Service?,General-LLM,General-LLM,General-LLM,General-LLM
+"If I've worked for 10 years, how is my Long Service Payment calculated after the May 2025 law change?",Reasoning-LLM,General-LLM,General-LLM,General-LLM
+Is it true that the portion of my Long Service earned before May 2025 can still be "offset" by MPF?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer says they won't pay Long Service because of the new law. Is this a misunderstanding?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+What happens to my MPF contributions if I decide to leave Hong Kong for good this 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+"If a conflict breaks out in the West Philippine Sea, what is the Philippine Consulate's protocol for OFWs?",Reasoning-LLM,General-LLM,General-LLM,General-LLM
+Are there "Repatriation Flights" planned by the DMW if regional tensions escalate into a war?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer is asking me to sign a new "window cleaning" annex. Is this because of a new safety law?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I refuse to clean windows if they don't have the locked grilles required by the 2017/2025 updates?,General-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the 2026 penalty for an employer who forces a helper to work in their shop or office?,General-LLM,General-LLM,General-LLM,General-LLM
+Will my HKID still be valid if Hong Kong enters a "State of Emergency"?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+"Is Easter Monday (April 6, 2026) a holiday for everyone, or only those who have worked for 3 months?",General-LLM,General-LLM,General-LLM,General-LLM
+"If my rest day is Sunday and Ching Ming is Sunday, when exactly are my 3 days of holiday in April 2026?",Reasoning-LLM,General-LLM,General-LLM,General-LLM
+"My employer wants to pay me $5,000 because ""the economy is bad."" Is this below the 2026 MAW?",General-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What are the "Extreme Weather" guidelines for 2026 if a T10 typhoon hits during my work hours?,General-LLM,Reasoning-LLM,General-LLM,General-LLM
+Can my employer be jailed for 10 years now if they hire an illegal part-time cleaner?,General-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I heard the "Swordfish" operation is targeting boarding houses. Is my weekend boarding house safe?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+What is the "Digital OFW Pass" and is it mandatory for all returning workers now?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer wants to install a tracker on my phone for "safety during war." Is this allowed?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Is it true that the "Statutory Minimum Wage" for local workers increased to $42.10? Does it affect me?,General-LLM,General-LLM,General-LLM,General-LLM
+Why is the "First Weekday after Christmas" a holiday in 2026 but wasn't before 2024?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+Can the Philippine government "freeze" my SSS or Pag-IBIG funds during a national emergency?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the "Assistance to Nationals" (ATN) 24/7 hotline for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+I am being "red-tagged" online by my agency for my political posts. What is my protection?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Can I get a "Special Entry Permit" for my sister to visit me if she is also an OFW elsewhere?,General-LLM,General-LLM,General-LLM,General-LLM
+"My employer refuses to give me the $5,100 salary even though my contract started in Jan 2026.",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "1% Remittance Fee" rumor in 2026? Is there a new tax on money sent home?,General-LLM,General-LLM,General-LLM,General-LLM
+I lost my passport and the Consulate is fully booked. Can I get a "Travel Document" to go home?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+Is it illegal for an agency to charge a "Documentation Fee" of more than 10% of my first month's salary?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My boss is moving to a "Hidden Bunker" or safe house and wants me to go. Is this a contract violation?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Code of Practice" for employers regarding helper safety during Black Rainstorms?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I claim "Unemployment Benefit" in HK if I am terminated due to the employer's bankruptcy?,General-LLM,General-LLM,General-LLM,General-LLM
+How do I verify my "OEC Exemption" if the DMW app is down during a crisis?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+Is "Cyber-harassment" by a landlord grounds for breaking a boarding house agreement?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Migrant Workers Office" (MWO) and how is it different from the old POLO?,General-LLM,General-LLM,General-LLM,General-LLM
+"Can my employer deduct the cost of my ""Mandatory Medical Check-up"" from my $5,100 salary?",General-LLM,General-LLM,General-LLM,Reasoning-LLM
+I suspect my employer is a "Shadow Employer" (not the one on the contract). Who do I tell?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "14-day rule" and has it been extended for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I file a "Sexual Harassment" claim at the EOC (Equal Opportunities Commission)?,General-LLM,General-LLM,General-LLM,Reasoning-LLM
+My employer says I have to "pay back" my airfare if I resign before 1 year. Is this legal?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+How do I update my "Emergency Contact" on the HK Immigration website?,General-LLM,General-LLM,General-LLM,General-LLM
+"Is it true that the ""Death Benefit"" for OFWs was increased to 200,000 Pesos in 2026?",General-LLM,General-LLM,General-LLM,General-LLM
+Can I be arrested for "Misprision of Felony" if I don't report my employer's illegal business?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What are the "Apostille" requirements for Philippine documents in HK for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency is forcing me to take a loan from a specific finance company. Is this "Debt Bondage"?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Can I use my "Octopus Card" to pay for government fees at the Immigration Department?,General-LLM,General-LLM,General-LLM,General-LLM
+What should I do if my "E-visa" QR code won't scan at the airport?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the address of the "Labour Tribunal" for cases in the New Territories?,General-LLM,General-LLM,General-LLM,General-LLM
+Can my employer terminate me for "Poor Performance" without a warning letter?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Is there a "Maximum Work Hour" limit for helpers in the 2026 Employment Ordinance?,General-LLM,General-LLM,General-LLM,General-LLM
+How many days of "Paid Annual Leave" do I get after 5 years of service?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get a "Termination Pay" if my employer moves to another country?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Small Claims Tribunal" limit for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My boss is filming the living room where I sleep. Is this a privacy breach?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Can I bring "Pork Products" from PH to HK during the current health alerts?,General-LLM,General-LLM,General-LLM,General-LLM
+What is the "OWWA Education Grant" (EDSP) for children of OFWs?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer wants me to work on "Good Friday." Is it a statutory holiday yet?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I file for "Legal Aid" for a labor case against a wealthy employer?,Reasoning-LLM,Reasoning-LLM,General-LLM,General-LLM
+How do I report a "Scam Remittance App" that stole my money?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Employees' Compensation" for a permanent disability?,General-LLM,General-LLM,General-LLM,General-LLM
+Can my employer "Transfer" me to their cousin's house for one week?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Home Leave" requirement after two contracts?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get my "Passport back" if I want to go to the bank?,Reasoning-LLM,General-LLM,General-LLM,General-LLM
+What is the "Consular Mobile Outreach" schedule for Yuen Long?,General-LLM,General-LLM,General-LLM,General-LLM
+My boss says I can't talk to my family on Sundays. Is this "Illegal Restraint"?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+Is it true that "Mental Health Insurance" is now mandatory for employers?,General-LLM,General-LLM,General-LLM,General-LLM
+How do I check if my "Contract is Verified" online?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I be "deported" for having a debt with a bank?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Minimum Household Income" to hire two helpers in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+My agency is "blacklisting" me from other jobs. Is this legal?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "24-hour Hotline" for the Hong Kong Labour Department?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get a "Refund" for my OEC if my flight was cancelled?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+What is the "DMW" address in the Philippines for complaints?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get "Sick Pay" if I have a medical certificate from a private clinic?,General-LLM,General-LLM,General-LLM,General-LLM
+My boss is forcing me to "work in their restaurant" for the weekend.,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+What is the "One-Month Notice" pay calculation?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I be jailed for "overstaying" for just 1 day?,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+What is the "Re-entry Permit" for Chinese nationals working in HK?,General-LLM,General-LLM,General-LLM,General-LLM
+How do I file a "Claim for Wages" after I already left HK?,Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+Can my employer "delete" my photos on my personal phone?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+What is the "Apostille" fee at the High Court in 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+How do I join the "SSS Flexi-fund" for OFWs?,General-LLM,General-LLM,General-LLM,General-LLM
+My employer says I have to "work during Typhoon Signal 8.",Reasoning-LLM,General-LLM,Reasoning-LLM,General-LLM
+What is the "Minimum Food Allowance" for 2026?,General-LLM,General-LLM,General-LLM,General-LLM
+Can I get a "Termination Letter" if I am the one resigning?,Reasoning-LLM,General-LLM,General-LLM,Reasoning-LLM
+Magkano lang ba ang puwedeng singil ng agency sa akin dito sa Hong Kong?,General-LLM,General-LLM,General-LLM,General-LLM
+"Malaki ang singil ng agency sa akin, tapos napilitan pa akong umutang para mabayaran sila. Pwede ba sila i-report sa HongKong at sa Pilipinas?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Na-redundant daw ako after 2 years at hindi na i-renew ang contract. May severance pay ba ako?,General-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+"May medical certificate ako at naka-paid sick leave, pero bigla akong sinibak. Pwede ba iyon?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"Lesbian ako, pinagbubully ng ibang Pinay helper sa Sunday gathering. Pwede ba i-report sa MWO?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Nahuli ako sa beauty service side gig. Ano exact penalty under new 2026 raids?,Reasoning-LLM,General-LLM,Reasoning-LLM,Reasoning-LLM
+"I am planning to renew my Contract, How do I do that?",Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+I sent a remittance through a banking app and it's been 3 days but my family hasn't received it. Are there laws that could give me refund? preferrably directly sent to my family?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+Do I use my HKID or my OWWA OFW ID to open a bank account in BOC (Bank of China) or HSBC? ,Reasoning-LLM,Reasoning-LLM,General-LLM,Reasoning-LLM
+My agency charged me excessive placement fees. Can I report this and how?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+My employer verbally abuses me and threatens termination if I complain. What actions can I take?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I signed a contract but my employer changed the salary after I arrived. What can I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer is forcing me to work in another house that is not in my contract. Is this legal and what should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I was terminated without notice and not paid my salary. What are my options?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer has not given me a rest day for 3 weeks. What should I do,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer has not paid my salary for two months and keeps delaying. What should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I was terminated immediately without notice after asking for a rest day. Is this legal and what are my options?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"My employer is asking me to work in their relative?? house, which is not in my contract. What action can I take?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I want to break my contract early because of poor treatment. What are the consequences and what should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer confiscated my passport and refuses to return it. What should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I am being verbally abused daily by my employer. Should I report this and where?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My agency charged me more than the legal placement fee. Can I recover the money and how?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"I was promised a certain salary, but on my paycheck, my employer paid less. What steps can I take?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer does not allow me to leave the house even on my rest day. Is this legal and what should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"I got injured while working, but my employer refuses to pay for medical treatment. What are my rights?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,General-LLM
+"My employer is forcing me to sleep in unsafe conditions (e.g., kitchen floor). What can I do about this?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+"I resigned properly, but my employer refuses to give my final pay. What actions can I take?",Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+My employer accused me of theft without evidence and threatened to report me. What should I do?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM
+I am being asked to work excessive hours with no rest. How can I address this situation legally?,Reasoning-LLM,Reasoning-LLM,Reasoning-LLM,
