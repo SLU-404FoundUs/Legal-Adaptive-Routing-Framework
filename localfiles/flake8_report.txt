@@ -1,0 +1,536 @@
+src/adaptive_routing/__init__.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/__init__.py:6:80: E501 line too long (150 > 79 characters)
+src/adaptive_routing/__init__.py:13:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/config.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:17:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/config.py:21:1: W293 blank line contains whitespace
+src/adaptive_routing/config.py:22:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/config.py:25:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:27:1: W293 blank line contains whitespace
+src/adaptive_routing/config.py:28:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:32:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/config.py:33:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/config.py:37:80: E501 line too long (140 > 79 characters)
+src/adaptive_routing/config.py:39:80: E501 line too long (137 > 79 characters)
+src/adaptive_routing/config.py:40:80: E501 line too long (152 > 79 characters)
+src/adaptive_routing/config.py:41:80: E501 line too long (160 > 79 characters)
+src/adaptive_routing/config.py:42:80: E501 line too long (144 > 79 characters)
+src/adaptive_routing/config.py:43:80: E501 line too long (116 > 79 characters)
+src/adaptive_routing/config.py:44:80: E501 line too long (219 > 79 characters)
+src/adaptive_routing/config.py:45:80: E501 line too long (150 > 79 characters)
+src/adaptive_routing/config.py:48:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:52:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/config.py:53:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/config.py:56:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:57:35: W291 trailing whitespace
+src/adaptive_routing/config.py:64:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:79:1: W293 blank line contains whitespace
+src/adaptive_routing/config.py:80:9: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:82:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/config.py:87:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/config.py:90:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:94:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/config.py:95:80: E501 line too long (82 > 79 characters)
+src/adaptive_routing/config.py:99:80: E501 line too long (382 > 79 characters)
+src/adaptive_routing/config.py:100:80: E501 line too long (389 > 79 characters)
+src/adaptive_routing/config.py:102:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/config.py:103:80: E501 line too long (365 > 79 characters)
+src/adaptive_routing/config.py:104:80: E501 line too long (225 > 79 characters)
+src/adaptive_routing/config.py:105:80: E501 line too long (314 > 79 characters)
+src/adaptive_routing/config.py:107:80: E501 line too long (138 > 79 characters)
+src/adaptive_routing/config.py:108:80: E501 line too long (176 > 79 characters)
+src/adaptive_routing/config.py:109:80: E501 line too long (107 > 79 characters)
+src/adaptive_routing/config.py:110:80: E501 line too long (223 > 79 characters)
+src/adaptive_routing/config.py:112:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/config.py:114:80: E501 line too long (137 > 79 characters)
+src/adaptive_routing/config.py:115:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/config.py:117:80: E501 line too long (163 > 79 characters)
+src/adaptive_routing/config.py:118:80: E501 line too long (253 > 79 characters)
+src/adaptive_routing/config.py:119:80: E501 line too long (212 > 79 characters)
+src/adaptive_routing/config.py:120:80: E501 line too long (119 > 79 characters)
+src/adaptive_routing/config.py:121:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/config.py:124:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:125:80: E501 line too long (82 > 79 characters)
+src/adaptive_routing/config.py:128:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/config.py:129:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/config.py:130:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/config.py:133:80: E501 line too long (353 > 79 characters)
+src/adaptive_routing/config.py:135:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/config.py:136:80: E501 line too long (180 > 79 characters)
+src/adaptive_routing/config.py:137:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/config.py:138:80: E501 line too long (317 > 79 characters)
+src/adaptive_routing/config.py:140:80: E501 line too long (200 > 79 characters)
+src/adaptive_routing/config.py:142:80: E501 line too long (123 > 79 characters)
+src/adaptive_routing/config.py:144:80: E501 line too long (111 > 79 characters)
+src/adaptive_routing/config.py:146:80: E501 line too long (125 > 79 characters)
+src/adaptive_routing/config.py:148:80: E501 line too long (149 > 79 characters)
+src/adaptive_routing/config.py:150:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/config.py:151:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/config.py:152:80: E501 line too long (139 > 79 characters)
+src/adaptive_routing/config.py:154:80: E501 line too long (163 > 79 characters)
+src/adaptive_routing/config.py:155:80: E501 line too long (253 > 79 characters)
+src/adaptive_routing/config.py:156:80: E501 line too long (212 > 79 characters)
+src/adaptive_routing/config.py:157:80: E501 line too long (119 > 79 characters)
+src/adaptive_routing/config.py:158:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/config.py:163:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/config.py:171:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/config.py:184:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/config.py:200:80: E501 line too long (142 > 79 characters)
+src/adaptive_routing/config.py:201:80: E501 line too long (117 > 79 characters)
+src/adaptive_routing/config.py:206:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:210:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/config.py:211:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/config.py:215:80: E501 line too long (205 > 79 characters)
+src/adaptive_routing/config.py:216:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/config.py:218:80: E501 line too long (225 > 79 characters)
+src/adaptive_routing/config.py:219:80: E501 line too long (195 > 79 characters)
+src/adaptive_routing/config.py:221:80: E501 line too long (142 > 79 characters)
+src/adaptive_routing/config.py:223:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/config.py:224:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/config.py:225:80: E501 line too long (194 > 79 characters)
+src/adaptive_routing/config.py:227:80: E501 line too long (191 > 79 characters)
+src/adaptive_routing/config.py:228:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/config.py:231:5: E266 too many leading '#' for block comment
+src/adaptive_routing/config.py:232:80: E501 line too long (94 > 79 characters)
+src/adaptive_routing/config.py:236:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/config.py:237:1: W293 blank line contains whitespace
+src/adaptive_routing/config.py:238:5: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:6:80: E501 line too long (105 > 79 characters)
+src/adaptive_routing/core/engine.py:23:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/engine.py:32:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/core/engine.py:34:80: E501 line too long (153 > 79 characters)
+src/adaptive_routing/core/engine.py:36:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:37:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:37:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/core/engine.py:41:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/core/engine.py:42:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:43:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:47:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/core/engine.py:52:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/core/engine.py:53:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:54:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:57:80: E501 line too long (134 > 79 characters)
+src/adaptive_routing/core/engine.py:59:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:59:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/core/engine.py:62:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:62:14: E117 over-indented
+src/adaptive_routing/core/engine.py:64:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:65:80: E501 line too long (100 > 79 characters)
+src/adaptive_routing/core/engine.py:67:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:67:14: E117 over-indented
+src/adaptive_routing/core/engine.py:67:80: E501 line too long (105 > 79 characters)
+src/adaptive_routing/core/engine.py:69:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/core/engine.py:71:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/core/engine.py:82:61: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:83:62: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:91:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/core/engine.py:95:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:98:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:99:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/core/engine.py:100:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/core/engine.py:101:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:102:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/core/engine.py:113:80: E501 line too long (121 > 79 characters)
+src/adaptive_routing/core/engine.py:114:30: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:114:30: E117 over-indented
+src/adaptive_routing/core/engine.py:121:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:122:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/core/engine.py:124:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/core/engine.py:125:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:128:80: E501 line too long (175 > 79 characters)
+src/adaptive_routing/core/engine.py:129:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:133:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/core/engine.py:133:87: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:141:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/core/engine.py:142:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/core/engine.py:153:80: E501 line too long (97 > 79 characters)
+src/adaptive_routing/core/engine.py:157:64: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:162:59: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:163:45: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:166:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:169:80: E501 line too long (127 > 79 characters)
+src/adaptive_routing/core/engine.py:171:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:174:80: E501 line too long (110 > 79 characters)
+src/adaptive_routing/core/engine.py:176:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:193:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/core/engine.py:201:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:204:80: E501 line too long (99 > 79 characters)
+src/adaptive_routing/core/engine.py:207:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/core/engine.py:211:80: E501 line too long (133 > 79 characters)
+src/adaptive_routing/core/engine.py:215:80: E501 line too long (116 > 79 characters)
+src/adaptive_routing/core/engine.py:216:17: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:216:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/core/engine.py:233:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:235:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:235:14: E117 over-indented
+src/adaptive_routing/core/engine.py:236:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:238:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:238:14: E117 over-indented
+src/adaptive_routing/core/engine.py:239:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:242:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:242:14: E117 over-indented
+src/adaptive_routing/core/engine.py:243:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:246:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:248:33: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:261:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/core/engine.py:266:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:266:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/core/engine.py:268:14: E111 indentation is not a multiple of 4
+src/adaptive_routing/core/engine.py:268:14: E117 over-indented
+src/adaptive_routing/core/engine.py:271:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/core/engine.py:272:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:274:13: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:279:9: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:282:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:291:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:310:13: E266 too many leading '#' for block comment
+src/adaptive_routing/core/engine.py:317:80: E501 line too long (107 > 79 characters)
+src/adaptive_routing/core/engine.py:318:44: W291 trailing whitespace
+src/adaptive_routing/core/engine.py:321:1: W293 blank line contains whitespace
+src/adaptive_routing/core/engine.py:323:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/core/engine.py:333:1: W293 blank line contains whitespace
+src/adaptive_routing/core/exceptions.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/exceptions.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/exceptions.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/exceptions.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/exceptions.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/core/exceptions.py:14:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/exceptions.py:21:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/exceptions.py:28:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/exceptions.py:35:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/exceptions.py:42:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/core/exceptions.py:45:80: E501 line too long (82 > 79 characters)
+src/adaptive_routing/core/exceptions.py:49:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/__init__.py:1:1: W391 blank line at end of file
+src/adaptive_routing/modules/legal_retrieval/embedding.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:5:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:6:80: E501 line too long (128 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:16:1: F401 'src.adaptive_routing.core.exceptions.APIConnectionError' imported but unused
+src/adaptive_routing/modules/legal_retrieval/embedding.py:25:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/embedding.py:28:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:36:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:37:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:43:80: E501 line too long (106 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:44:80: E501 line too long (118 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:45:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:46:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:59:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:64:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:66:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:69:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:76:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:78:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:81:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:85:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:100:80: E501 line too long (108 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:106:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:117:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:125:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:128:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:139:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:146:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:153:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:161:80: E501 line too long (102 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:172:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:175:80: E501 line too long (98 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:177:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:191:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:194:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:197:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:203:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:213:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/embedding.py:214:80: E501 line too long (130 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:215:80: E501 line too long (126 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:216:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/embedding.py:222:36: E701 multiple statements on one line (colon)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:222:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:223:34: E701 multiple statements on one line (colon)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:226:80: E501 line too long (110 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:231:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/embedding.py:232:80: E501 line too long (99 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:6:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:9:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:14:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/retriever.py:17:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:18:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:23:80: E501 line too long (129 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:34:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/retriever.py:35:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:36:80: E501 line too long (114 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:37:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/retriever.py:39:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:40:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:43:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:46:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:48:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:51:42: W291 trailing whitespace
+src/adaptive_routing/modules/legal_retrieval/retriever.py:52:80: E501 line too long (96 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/retriever.py:55:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:58:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/retriever.py:58:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:12:1: F401 'typing.Optional' imported but unused
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:18:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:28:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:34:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:47:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:57:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:59:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:64:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:70:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:70:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:80:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:81:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:88:9: E722 do not use bare 'except'
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:90:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:97:9: E722 do not use bare 'except'
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:99:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:101:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:109:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:109:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:117:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:121:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:128:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:128:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:137:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:140:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:143:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:144:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:153:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:157:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:159:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:163:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/legal_retrieval/utils/legal_indexing.py:166:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/multihead_classifier/__init__.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/__init__.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/__init__.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/__init__.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/__init__.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/__init__.py:7:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/__init__.py:8:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/detector.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/detector.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/detector.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/detector.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/detector.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/detector.py:5:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/detector.py:10:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/detector.py:15:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/detector.py:24:80: E501 line too long (118 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/detector.py:38:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:5:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:11:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:14:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:14:85: W291 trailing whitespace
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:16:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:31:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/multihead_classifier/linguistic.py:36:10: W292 no newline at end of file
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:8:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:12:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:17:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:18:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:18:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:20:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/multihead_classifier/utils/cleaner.py:21:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:5:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:6:80: E501 line too long (157 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:8:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:9:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:13:1: F401 'json' imported but unused
+src/adaptive_routing/modules/retrieval.py:18:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/retrieval.py:22:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:23:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:25:80: E501 line too long (112 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:26:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:26:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:34:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:36:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/retrieval.py:37:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:40:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/retrieval.py:45:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:52:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:54:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:56:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:60:80: E501 line too long (94 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:62:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:63:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:65:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/retrieval.py:65:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:71:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/retrieval.py:72:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:73:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/retrieval.py:98:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:101:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/retrieval.py:105:80: E501 line too long (99 > 79 characters)
+src/adaptive_routing/modules/router.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:5:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/router.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:6:80: E501 line too long (142 > 79 characters)
+src/adaptive_routing/modules/router.py:10:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/modules/router.py:11:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/router.py:15:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/router.py:18:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/router.py:19:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/modules/router.py:20:80: E501 line too long (97 > 79 characters)
+src/adaptive_routing/modules/router.py:26:80: E501 line too long (115 > 79 characters)
+src/adaptive_routing/modules/router.py:30:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/router.py:31:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/modules/router.py:32:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/router.py:33:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/router.py:37:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/router.py:38:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:38:80: E501 line too long (82 > 79 characters)
+src/adaptive_routing/modules/router.py:42:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/router.py:46:80: E501 line too long (139 > 79 characters)
+src/adaptive_routing/modules/router.py:47:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/router.py:50:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/router.py:57:80: E501 line too long (135 > 79 characters)
+src/adaptive_routing/modules/router.py:64:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/router.py:69:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:71:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/router.py:72:80: E501 line too long (193 > 79 characters)
+src/adaptive_routing/modules/router.py:79:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:80:80: E501 line too long (104 > 79 characters)
+src/adaptive_routing/modules/router.py:89:80: E501 line too long (133 > 79 characters)
+src/adaptive_routing/modules/router.py:96:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/router.py:101:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:103:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/router.py:104:80: E501 line too long (193 > 79 characters)
+src/adaptive_routing/modules/router.py:111:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:111:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/modules/router.py:114:13: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/router.py:114:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/router.py:120:80: E501 line too long (140 > 79 characters)
+src/adaptive_routing/modules/router.py:122:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/router.py:130:80: E501 line too long (121 > 79 characters)
+src/adaptive_routing/modules/router.py:143:80: E501 line too long (121 > 79 characters)
+src/adaptive_routing/modules/router.py:150:80: E501 line too long (81 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/legal_generation.py:14:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/semantic_router/legal_generation.py:17:80: E501 line too long (84 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:22:80: E501 line too long (101 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:24:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/semantic_router/legal_generation.py:55:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:64:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:71:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:80:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:98:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:102:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/semantic_router/legal_generation.py:106:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:5:80: E501 line too long (92 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:6:80: E501 line too long (89 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:8:1: F401 'json' imported but unused
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:9:1: F401 're' imported but unused
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:13:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:17:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:20:80: E501 line too long (91 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:22:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:29:59: W291 trailing whitespace
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:35:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:44:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:52:80: E501 line too long (85 > 79 characters)
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:54:13: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/logic_classifier.py:65:13: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:4:80: E501 line too long (86 > 79 characters)
+src/adaptive_routing/modules/semantic_router/utils/parser.py:12:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/semantic_router/utils/parser.py:22:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:22:80: E501 line too long (80 > 79 characters)
+src/adaptive_routing/modules/semantic_router/utils/parser.py:25:5: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/semantic_router/utils/parser.py:29:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/semantic_router/utils/parser.py:34:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/triage.py:1:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:2:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:3:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:4:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:5:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:5:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/triage.py:6:1: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:6:80: E501 line too long (112 > 79 characters)
+src/adaptive_routing/modules/triage.py:8:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/modules/triage.py:9:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/triage.py:17:1: E302 expected 2 blank lines, found 1
+src/adaptive_routing/modules/triage.py:20:80: E501 line too long (93 > 79 characters)
+src/adaptive_routing/modules/triage.py:20:94: W291 trailing whitespace
+src/adaptive_routing/modules/triage.py:22:80: E501 line too long (99 > 79 characters)
+src/adaptive_routing/modules/triage.py:25:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:25:80: E501 line too long (87 > 79 characters)
+src/adaptive_routing/modules/triage.py:47:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/triage.py:48:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:50:1: W293 blank line contains whitespace
+src/adaptive_routing/modules/triage.py:54:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:54:80: E501 line too long (90 > 79 characters)
+src/adaptive_routing/modules/triage.py:55:9: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:55:80: E501 line too long (88 > 79 characters)
+src/adaptive_routing/modules/triage.py:56:80: E501 line too long (95 > 79 characters)
+src/adaptive_routing/modules/triage.py:59:80: E501 line too long (82 > 79 characters)
+src/adaptive_routing/modules/triage.py:62:13: E266 too many leading '#' for block comment
+src/adaptive_routing/modules/triage.py:62:80: E501 line too long (83 > 79 characters)
+src/adaptive_routing/modules/triage.py:63:80: E501 line too long (111 > 79 characters)
+src/adaptive_routing/modules/triage.py:68:80: E501 line too long (119 > 79 characters)
