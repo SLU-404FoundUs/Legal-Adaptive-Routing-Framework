@@ -34,16 +34,17 @@ class TriageModule:
         )
         self._normalizer = normalizer or LinguisticNormalizer(self._engine)
 
-    def _process_request_(self, input_text: str, image_path: str = None):
+    def _process_request_(self, input_text: str, image_path: str = None, system_instructions: str = None):
         """
         @func_ _process_request_
         @params input_text : (str) Raw user input.
         @params image_path : (str) Optional path to image.
+        @params system_instructions : (str) Optional override for system instructions.
         @returns (dict) State dictionary with normalized text and language.
         @desc_ Orchestrates the normalization call, parses the combined output,
                and returns a result dict directly.
         """
-        raw_output = self._normalizer._normalize_text_(input_text, image_path)
+        raw_output = self._normalizer._normalize_text_(input_text, image_path, system_instructions=system_instructions)
         
         ## @logic_ Strip common LLM artifacts (like <think> tags) using utility
         cleaned_output = strip_llm_artifacts(raw_output)
@@ -70,5 +71,6 @@ class TriageModule:
         return {
             "original_prompt": input_text,
             "detected_language": detected_language,
-            "normalized_text": normalized_text
+            "normalized_text": normalized_text,
+            "raw_output": raw_output
         }

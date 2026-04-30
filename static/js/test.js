@@ -12,14 +12,18 @@ const MODULE_META = {
         desc: 'Normalizes multilingual input into formal English and detects the source language',
         badgeClass: 'badge-triage',
         icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`,
-        configKeys: [],
+        configKeys: ['triage_model', 'triage_instructions'],
+        instrKey: 'triage_instructions',
+        instrEl: 'triage-system-instructions',
     },
     router: {
         label: 'Router Module',
         desc: 'Classifies normalized text and determines the legal routing path (General / Reasoning / Casual)',
         badgeClass: 'badge-router',
         icon: `<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg>`,
-        configKeys: ['router_model'],
+        configKeys: ['router_model', 'router_instructions'],
+        instrKey: 'router_instructions',
+        instrEl: 'router-system-instructions',
     },
     general: {
         label: 'General LLM',
@@ -131,8 +135,15 @@ async function loadConfig() {
             effortEl.value = cfg[effortKey];
         }
 
-        // Show model in footer
         const modelKey = `${MODULE}_model`;
+
+        // Module model override input
+        const modelEl = document.getElementById(`${MODULE}-model`);
+        if (modelEl && cfg[modelKey]) {
+            modelEl.value = cfg[modelKey];
+        }
+
+        // Show model in footer
         const footerModel = document.getElementById('footer-model');
         if (footerModel && cfg[modelKey]) {
             footerModel.textContent = `Model: ${cfg[modelKey]}`;
@@ -187,7 +198,7 @@ function initSliders() {
     }
 
     // Module specific temperature sliders
-    ['general', 'reasoning', 'casual'].forEach(m => {
+    ['triage', 'general', 'reasoning', 'casual'].forEach(m => {
         const slider = document.getElementById(`${m}-temp`);
         const val    = document.getElementById(`${m}-temp-val`);
         if (slider && val) {
@@ -345,6 +356,23 @@ function renderMarkdown(text) {
     });
 }
 
+function renderRawOutput(text) {
+    if (!text) return '(empty)';
+    // Temporarily replace <think> tags to avoid escaping them
+    let temp = text.replace(/<think>/gi, '[[[THINK_START]]]')
+                   .replace(/<\/think>/gi, '[[[THINK_END]]]');
+    
+    // Escape the rest of the text so raw tags like <Detected Raw Language: ...> are visible
+    temp = escapeHtml(temp);
+    
+    // Restore the <think> tags
+    temp = temp.replace(/\[\[\[THINK_START\]\]\]/gi, '<think>')
+               .replace(/\[\[\[THINK_END\]\]\]/gi, '</think>');
+               
+    // Pass to renderMarkdown to process the <think> block and formatting
+    return renderMarkdown(temp);
+}
+
 // =============================================
 // Toast
 // =============================================
@@ -452,11 +480,30 @@ async function runTriage() {
     const raw = document.getElementById('triage-raw-input').value.trim();
     if (!raw) { showToast('Raw input is required', 'error'); setRunning(false); stopTimer(); return; }
 
+    const instrEl = document.getElementById('triage-system-instructions');
+    const tempEl = document.getElementById('triage-temp');
+    const maxTokensEl = document.getElementById('triage-max-tokens');
+    const effortEl = document.getElementById('triage-reasoning-effort');
+    const modelEl = document.getElementById('triage-model');
+
+    const systemInstructions = instrEl ? instrEl.value.trim() || null : null;
+    const temperature = tempEl ? parseFloat(tempEl.value) : null;
+    const maxTokens = maxTokensEl ? parseInt(maxTokensEl.value) : null;
+    const reasoningEffort = effortEl ? effortEl.value : null;
+    const model = modelEl ? modelEl.value.trim() || null : null;
+
     setFooterStatus('Normalizing…');
     const res  = await fetch('/api/test/triage', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ raw_input: raw })
+        body: JSON.stringify({ 
+            raw_input: raw,
+            system_instructions: systemInstructions,
+            temperature: temperature,
+            max_tokens: maxTokens,
+            reasoning_effort: reasoningEffort,
+            model: model
+        })
     });
     const data = await res.json();
     const area = getOutputArea();
@@ -475,7 +522,7 @@ async function runTriage() {
         <div class="triage-result-card">
             <div class="triage-result-header">
                 <div class="triage-status-icon">✓</div>
-                <span class="triage-result-title">Triage Complete</span>
+                <span class="triage-result-title">Triage Complete <span style="font-size: 0.75rem; color: var(--text-muted); font-weight: normal; margin-left: 8px;">(${escapeHtml(data.model_used || 'Unknown Model')})</span></span>
             </div>
             <div class="triage-result-body">
                 <div>
@@ -485,6 +532,10 @@ async function runTriage() {
                 <div>
                     <div class="triage-field-label">Original Input</div>
                     <div class="triage-normalized-text">${escapeHtml(data.original_prompt || raw)}</div>
+                </div>
+                <div>
+                    <div class="triage-field-label">Raw LLM Output</div>
+                    <div class="triage-normalized-text" style="font-family:var(--font-mono);font-size:0.8rem;background:var(--bg-tertiary);border:1px solid var(--border-subtle);">${renderRawOutput(data.raw_output)}</div>
                 </div>
                 <div>
                     <div class="triage-field-label">Normalized English Output</div>
@@ -501,13 +552,24 @@ async function runTriage() {
 async function runRouter() {
     const text      = document.getElementById('router-normalized-text').value.trim();
     const threshold = parseFloat(document.getElementById('router-threshold').value);
+    const modelEl   = document.getElementById('router-model');
+    const model     = modelEl ? modelEl.value.trim() || null : null;
+
+    const instrEl   = document.getElementById('router-system-instructions');
+    const systemInstructions = instrEl ? instrEl.value.trim() || null : null;
+
     if (!text) { showToast('Normalized text is required', 'error'); setRunning(false); stopTimer(); return; }
 
     setFooterStatus('Classifying…');
     const res  = await fetch('/api/test/router', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ normalized_text: text, threshold })
+        body: JSON.stringify({ 
+            normalized_text: text, 
+            threshold, 
+            model,
+            system_instructions: systemInstructions
+        })
     });
     const data = await res.json();
     const area = getOutputArea();
@@ -542,6 +604,7 @@ async function runRouter() {
                 <div class="route-badge ${routeClass}">
                     🔀 ${escapeHtml(route)}
                 </div>
+                <div style="font-size: 0.75rem; color: var(--text-muted); margin-left: 12px; font-weight: normal;">${escapeHtml(data.model_used || 'Unknown Model')}</div>
                 <div class="confidence-bar-wrap">
                     <div class="confidence-bar-track">
                         <div class="confidence-bar-fill" style="width:${pct}%"></div>
@@ -589,6 +652,7 @@ async function runLLM(moduleName) {
     const tempEl = document.getElementById(`${moduleName}-temp`);
     const maxTokensEl = document.getElementById(`${moduleName}-max-tokens`);
     const effortEl = document.getElementById(`${moduleName}-reasoning-effort`);
+    const modelEl = document.getElementById(`${moduleName}-model`);
 
     const userMessage = msgEl ? msgEl.value.trim() : '';
     if (!userMessage) { showToast('User message is required', 'error'); setRunning(false); stopTimer(); return; }
@@ -599,6 +663,7 @@ async function runLLM(moduleName) {
     const temperature = tempEl ? parseFloat(tempEl.value) : null;
     const maxTokens   = maxTokensEl ? parseInt(maxTokensEl.value) : null;
     const reasoningEffort = effortEl ? effortEl.value : null;
+    const model = modelEl ? modelEl.value.trim() || null : null;
 
     const area     = getOutputArea();
     const pipeline = createPipelineEl();
@@ -614,6 +679,7 @@ async function runLLM(moduleName) {
     responseCard.innerHTML = `
         <div class="llm-response-header">
             <span class="llm-response-route-chip ${routeChipClass}">${escapeHtml(routeLabel)}</span>
+            <span style="font-size:0.72rem;color:var(--text-muted);margin-left:12px;">Model: <span class="llm-model-used">...</span></span>
             <span style="font-size:0.72rem;color:var(--text-muted);margin-left:auto;">Response</span>
         </div>
         <div class="llm-response-body markdown-body" id="llm-response-body"></div>`;
@@ -630,7 +696,8 @@ async function runLLM(moduleName) {
                 rag_context: ragContext,
                 temperature: temperature,
                 max_tokens: maxTokens,
-                reasoning_effort: reasoningEffort
+                reasoning_effort: reasoningEffort,
+                model: model
             })
         });
 
@@ -658,6 +725,8 @@ async function runLLM(moduleName) {
                         area.appendChild(responseCard);
                         const bodyEl = document.getElementById('llm-response-body');
                         if (bodyEl) bodyEl.innerHTML = renderMarkdown(event.content);
+                        const modelEl = responseCard.querySelector('.llm-model-used');
+                        if (modelEl && event.model_used) modelEl.textContent = event.model_used;
                         gotResult = true;
                         setFooterStatus('Done');
                     } else if (event.type === 'error') {
@@ -682,6 +751,8 @@ async function runLLM(moduleName) {
                     area.appendChild(responseCard);
                     const bodyEl = document.getElementById('llm-response-body');
                     if (bodyEl) bodyEl.innerHTML = renderMarkdown(event.content);
+                    const modelEl = responseCard.querySelector('.llm-model-used');
+                    if (modelEl && event.model_used) modelEl.textContent = event.model_used;
                 }
             } catch {}
         }
@@ -723,10 +794,12 @@ async function runRetrieval() {
 
     const chunks = data.chunks || [];
     const countBadge = `<span class="retrieval-count-badge">📚 ${chunks.length} chunk${chunks.length !== 1 ? 's' : ''} retrieved</span>`;
+    const modelBadge = `<span style="font-size: 0.75rem; color: var(--text-muted); margin-left: 12px; font-weight: normal;">${escapeHtml(data.model_used || '')}</span>`;
 
     area.innerHTML += `
         <div class="retrieval-summary">
-            ${countBadge}
+            ${countBadge}${modelBadge}
+            <br>
             <span style="font-size:0.72rem;color:var(--text-muted);">Combined query: <em>${escapeHtml(data.combined_query || query)}</em></span>
         </div>`;
 

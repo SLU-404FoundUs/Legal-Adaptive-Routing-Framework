@@ -34,13 +34,18 @@ class RoutingClassifier:
 
         self._system_prompt = system_prompt or FrameworkConfig._ROUTER_INSTRUCTIONS
 
-    def _route_query_(self, query: str) -> dict:
+    def _route_query_(self, query: str, history: list = None, system_instructions: str = None) -> dict:
         """
         @func_ _route_query_
         @params query : (str) The user's input query.
+        @params history : (list, optional) Previous conversation turns.
+        @params system_instructions : (str, optional) Override for routing instructions.
         @returns (dict) The structured routing decision.
-        @desc_ Calls the LLM and parses the JSON response.
+        @desc_ Calls the LLM and parses the JSON response, optionally with history.
         """
+        ## @logic_ Instruction precedence: Override > Instance > Default
+        instructions = system_instructions or self._system_prompt
+
         ## @logic_ Snapshot current config for diagnostics
         _cfg = (
             f"[Router Config] model={FrameworkConfig._ROUTER_MODEL}, "
@@ -49,7 +54,17 @@ class RoutingClassifier:
         )
 
         try:
-            raw_response = self._handler._get_completion_(query, self._system_prompt)
+            if history:
+                ## @logic_ Construct message list for multi-turn routing
+                messages = [{"role": "system", "content": instructions}]
+                for msg in history:
+                    messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
+                messages.append({"role": "user", "content": query})
+                
+                raw_response = self._handler._get_chat_completion_(messages)
+            else:
+                ## @logic_ Single-turn fallback
+                raw_response = self._handler._get_completion_(query, instructions)
 
             ## @logic_ Guard: Detect empty/null responses
             if not raw_response or not str(raw_response).strip():

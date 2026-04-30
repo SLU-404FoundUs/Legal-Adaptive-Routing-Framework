@@ -18,19 +18,20 @@ class LinguisticNormalizer:
     def __init__(self, engine: LLMRequestEngine):
         self._engine = engine
 
-    def _normalize_text_(self, input_text: str, image_path: str = None) -> str:
+    def _normalize_text_(self, input_text: str, image_path: str = None, system_instructions: str = None) -> str:
         """
         @func_ _normalize_text_
         @params input_text : (str) The raw user query.
         @params image_path : (str, optional) Path to a supporting image.
+        @params system_instructions : (str, optional) Override system instructions for this request.
         @returns (str) The LLM's normalized English response.
         @desc_ Sends the input to the LLM with normalization instructions.
         """
-        system_instructions = FrameworkConfig._TRIAGE_INSTRUCTIONS
+        instructions = system_instructions if system_instructions is not None else FrameworkConfig._TRIAGE_INSTRUCTIONS
         images = [image_path] if image_path else None
         
         return self._engine._get_completion_(
             prompt=input_text,
-            sys_message=system_instructions,
+            sys_message=instructions,
             images=images
         )

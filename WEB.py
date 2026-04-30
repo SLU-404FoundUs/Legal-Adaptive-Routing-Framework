@@ -225,9 +225,16 @@ def chat():
             classification = {"route": "General-LLM", "confidence": 0.0, "search_signals": None}
             
             if router_module:
+                # Pass recent history (last 5 turns) for context-aware routing
+                routing_history = history[-5:] if history else None
+                
                 for attempt in range(1, MAX_RETRIES + 1):
                     try:
-                        classification = router_module._process_routing_(normalized_text, threshold=0.1)
+                        classification = router_module._process_routing_(
+                            normalized_text, 
+                            history=routing_history,
+                            threshold=0.1
+                        )
                         if classification.get("error") == "LLMEngine failed to acknowledge the input.":
                             yield json.dumps({"type": "step", "content": "Confidence below threshold — falling back to Casual conversation..."}) + "\n"
                             classification = {
@@ -482,6 +489,7 @@ def get_config():
         "router_max_tokens": FrameworkConfig._ROUTER_MAX_TOKENS,
         "router_use_system": FrameworkConfig._ROUTER_USE_SYSTEM,
         "router_reasoning": FrameworkConfig._ROUTER_REASONING,
+        "router_instructions": FrameworkConfig._ROUTER_INSTRUCTIONS,
         
         "general_model": FrameworkConfig._GENERAL_MODEL,
         "general_temp": FrameworkConfig._GENERAL_TEMP,
@@ -532,6 +540,7 @@ def save_config():
             router_use_system=data.get('router_use_system', FrameworkConfig._ROUTER_USE_SYSTEM),
             router_reasoning=data.get('router_reasoning', FrameworkConfig._ROUTER_REASONING),
             router_reasoning_effort=data.get('router_reasoning_effort', FrameworkConfig._ROUTER_REASONING_EFFORT),
+            router_instructions=data.get('router_instructions', FrameworkConfig._ROUTER_INSTRUCTIONS),
             
             general_model=data.get('general_model', FrameworkConfig._GENERAL_MODEL),
             general_temp=float(data.get('general_temp', FrameworkConfig._GENERAL_TEMP)),
@@ -578,6 +587,7 @@ def save_config():
         set_key(env_file, "ROUTER_USE_SYSTEM", str(FrameworkConfig._ROUTER_USE_SYSTEM))
         set_key(env_file, "ROUTER_REASONING", str(FrameworkConfig._ROUTER_REASONING))
         set_key(env_file, "ROUTER_REASONING_EFFORT", FrameworkConfig._ROUTER_REASONING_EFFORT)
+        set_key(env_file, "ROUTER_INSTRUCTIONS", FrameworkConfig._ROUTER_INSTRUCTIONS)
         
         set_key(env_file, "GENERAL_MODEL", FrameworkConfig._GENERAL_MODEL)
         set_key(env_file, "GENERAL_TEMP", str(FrameworkConfig._GENERAL_TEMP))
@@ -647,6 +657,7 @@ def export_config():
                 "use_system": FrameworkConfig._ROUTER_USE_SYSTEM,
                 "reasoning": FrameworkConfig._ROUTER_REASONING,
                 "reasoning_effort": FrameworkConfig._ROUTER_REASONING_EFFORT,
+                "instructions": FrameworkConfig._ROUTER_INSTRUCTIONS,
             },
             "general": {
                 "model": FrameworkConfig._GENERAL_MODEL,
@@ -721,7 +732,7 @@ def import_config():
         # Map nested config structure to flat kwargs
         module_map = {
             "triage": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
-            "router": ["model", "temp", "max_tokens", "use_system", "reasoning"],
+            "router": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
             "general": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
             "reasoning": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
             "casual": ["model", "temp", "max_tokens", "use_system", "reasoning", "instructions"],
@@ -795,12 +806,38 @@ def api_test_triage():
     """Test the Triage Module: normalizes raw multilingual input."""
     data = request.json
     raw_input = data.get('raw_input', '').strip()
+    system_instructions = data.get('system_instructions', None)
+    temperature = data.get('temperature', None)
+    max_tokens = data.get('max_tokens', None)
+    reasoning_effort = data.get('reasoning_effort', None)
+    model = data.get('model', None)
+
     if not raw_input:
         return jsonify({"error": "raw_input is required"}), 400
     if not triage_module:
         return jsonify({"error": "Triage module is not initialized"}), 500
     try:
-        result = triage_module._process_request_(raw_input)
+        if temperature is not None or max_tokens is not None or reasoning_effort is not None or model is not None:
+            from src.adaptive_routing.core.engine import LLMRequestEngine
+            from src.adaptive_routing.modules.triage import TriageModule
+            from src.adaptive_routing.modules.multihead_classifier.linguistic import LinguisticNormalizer
+            
+            engine = LLMRequestEngine(
+                api_key=FrameworkConfig._API_KEY,
+                model=model if model is not None else FrameworkConfig._TRIAGE_MODEL,
+                temperature=float(temperature) if temperature is not None else FrameworkConfig._TRIAGE_TEMP,
+                max_tokens=int(max_tokens) if max_tokens is not None else FrameworkConfig._TRIAGE_MAX_TOKENS,
+                use_system_role=FrameworkConfig._TRIAGE_USE_SYSTEM,
+                include_reasoning=FrameworkConfig._TRIAGE_REASONING,
+                reasoning_effort=reasoning_effort if reasoning_effort is not None else FrameworkConfig._TRIAGE_REASONING_EFFORT
+            )
+            normalizer = LinguisticNormalizer(engine=engine)
+            test_triage_module = TriageModule(engine=engine, normalizer=normalizer)
+            result = test_triage_module._process_request_(raw_input, system_instructions=system_instructions)
+            result["model_used"] = engine._model
+        else:
+            result = triage_module._process_request_(raw_input, system_instructions=system_instructions)
+            result["model_used"] = triage_module._engine._model
         return jsonify(result)
     except Exception as e:
         app_logger.error(f"[Test/Triage] Error: {e}")
@@ -813,12 +850,37 @@ def api_test_router():
     data = request.json
     normalized_text = data.get('normalized_text', '').strip()
     threshold = float(data.get('threshold', 0.1))
+    model = data.get('model', None)
+    system_instructions = data.get('system_instructions', None)
+
     if not normalized_text:
         return jsonify({"error": "normalized_text is required"}), 400
     if not router_module:
         return jsonify({"error": "Router module is not initialized"}), 500
     try:
-        result = router_module._process_routing_(normalized_text, threshold=threshold)
+        if model is not None or system_instructions is not None:
+            from src.adaptive_routing.core.engine import LLMRequestEngine
+            from src.adaptive_routing.modules.semantic_router.logic_classifier import RoutingClassifier
+            from src.adaptive_routing.modules.router import SemanticRouterModule
+            
+            engine = LLMRequestEngine(
+                api_key=FrameworkConfig._API_KEY,
+                model=model if model else FrameworkConfig._ROUTER_MODEL,
+                temperature=FrameworkConfig._ROUTER_TEMP,
+                max_tokens=FrameworkConfig._ROUTER_MAX_TOKENS,
+                use_system_role=FrameworkConfig._ROUTER_USE_SYSTEM,
+                include_reasoning=FrameworkConfig._ROUTER_REASONING,
+                reasoning_effort=FrameworkConfig._ROUTER_REASONING_EFFORT
+            )
+            classifier = RoutingClassifier(handler=engine, system_prompt=system_instructions)
+            test_router_module = SemanticRouterModule(classifier=classifier)
+            result = test_router_module._process_routing_(normalized_text, threshold=threshold)
+            if hasattr(test_router_module, '_classifier') and hasattr(test_router_module._classifier, '_handler'):
+                result['model_used'] = test_router_module._classifier._handler._model
+        else:
+            result = router_module._process_routing_(normalized_text, threshold=threshold)
+            if hasattr(router_module, '_classifier') and hasattr(router_module._classifier, '_handler'):
+                result['model_used'] = router_module._classifier._handler._model
         return jsonify(result)
     except Exception as e:
         app_logger.error(f"[Test/Router] Error: {e}")
@@ -844,6 +906,7 @@ def api_test_retrieval():
             "query": result.get("query", query),
             "combined_query": result.get("combined_query", query),
             "chunk_count": len(chunks),
+            "model_used": retrieval_module._embedding_manager._model if hasattr(retrieval_module, '_embedding_manager') else 'Unknown Embedding Model',
             "chunks": [
                 {
                     "text": c.get("chunk", ""),
@@ -858,7 +921,7 @@ def api_test_retrieval():
         return jsonify({"error": str(e)}), 500
 
 
-def _stream_llm_test(module_name, system_instructions, user_message, rag_context=None, temperature=None, max_tokens=None, reasoning_effort=None):
+def _stream_llm_test(module_name, system_instructions, user_message, rag_context=None, temperature=None, max_tokens=None, reasoning_effort=None, model=None):
     """
     Shared generator for LLM module test streaming.
     Temporarily overrides FrameworkConfig instructions, creates a fresh
@@ -887,6 +950,7 @@ def _stream_llm_test(module_name, system_instructions, user_message, rag_context
     
     prefix = config_prefix_map.get(module_name)
     route = route_map.get(module_name, "General-LLM")
+    prefix = route.split("-")[0].upper()
 
     try:
         yield json.dumps({"type": "step", "content": f"Initializing isolated {module_name.capitalize()} LLM engine..."}) + "\n"
@@ -895,7 +959,7 @@ def _stream_llm_test(module_name, system_instructions, user_message, rag_context
         # We fetch current snapshot values from FrameworkConfig
         engine = LLMRequestEngine(
             api_key=FrameworkConfig._API_KEY,
-            model=getattr(FrameworkConfig, f"_{prefix}_MODEL"),
+            model=model if model is not None else getattr(FrameworkConfig, f"_{prefix}_MODEL"),
             temperature=float(temperature) if temperature is not None else getattr(FrameworkConfig, f"_{prefix}_TEMP"),
             max_tokens=int(max_tokens) if max_tokens is not None else getattr(FrameworkConfig, f"_{prefix}_MAX_TOKENS"),
             use_system_role=getattr(FrameworkConfig, f"_{prefix}_USE_SYSTEM"),
@@ -933,7 +997,7 @@ def _stream_llm_test(module_name, system_instructions, user_message, rag_context
             {"role": "user", "content": final_user_content}
         ])
 
-        yield json.dumps({"type": "result", "content": response_text, "route": route}) + "\n"
+        yield json.dumps({"type": "result", "content": response_text, "route": route, "model_used": engine._model}) + "\n"
 
     except Exception as e:
         app_logger.error(f"[Test/{module_name}] Error: {e}")
@@ -950,12 +1014,13 @@ def api_test_general():
     temperature = data.get('temperature', None)
     max_tokens = data.get('max_tokens', None)
     reasoning_effort = data.get('reasoning_effort', None)
+    model = data.get('model', None)
     
     if not user_message:
         return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
                         mimetype='application/x-ndjson', status=400)
     return Response(
-        stream_with_context(_stream_llm_test("general", system_instructions, user_message, rag_context, temperature, max_tokens, reasoning_effort)),
+        stream_with_context(_stream_llm_test("general", system_instructions, user_message, rag_context, temperature, max_tokens, reasoning_effort, model)),
         mimetype='application/x-ndjson'
     )
 
@@ -970,12 +1035,13 @@ def api_test_reasoning():
     temperature = data.get('temperature', None)
     max_tokens = data.get('max_tokens', None)
     reasoning_effort = data.get('reasoning_effort', None)
+    model = data.get('model', None)
 
     if not user_message:
         return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
                         mimetype='application/x-ndjson', status=400)
     return Response(
-        stream_with_context(_stream_llm_test("reasoning", system_instructions, user_message, rag_context, temperature, max_tokens, reasoning_effort)),
+        stream_with_context(_stream_llm_test("reasoning", system_instructions, user_message, rag_context, temperature, max_tokens, reasoning_effort, model)),
         mimetype='application/x-ndjson'
     )
 
@@ -989,12 +1055,13 @@ def api_test_casual():
     temperature = data.get('temperature', None)
     max_tokens = data.get('max_tokens', None)
     reasoning_effort = data.get('reasoning_effort', None)
+    model = data.get('model', None)
 
     if not user_message:
         return Response(json.dumps({"type": "error", "content": "user_message is required"}) + "\n",
                         mimetype='application/x-ndjson', status=400)
     return Response(
-        stream_with_context(_stream_llm_test("casual", system_instructions, user_message, None, temperature, max_tokens, reasoning_effort)),
+        stream_with_context(_stream_llm_test("casual", system_instructions, user_message, None, temperature, max_tokens, reasoning_effort, model)),
         mimetype='application/x-ndjson'
     )
 

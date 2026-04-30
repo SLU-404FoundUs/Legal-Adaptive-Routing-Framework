@@ -43,7 +43,7 @@ The **Semantic Router Module** is the **second stage** of the Adaptive Routing p
 ┌─────────────────────────────────────────────────────────┐
 │              SemanticRouterModule (Facade)               │
 │                                                         │
-│  _process_routing_(text, …)       → classification dict │
+│  _process_routing_(text, history, …) → classification dict │
 │  _generate_response_(cls, text, …)→ single-turn result  │
 │  _generate_conversation_(cls, …)  → multi-turn result   │
 │                                                         │
@@ -101,16 +101,18 @@ router = SemanticRouterModule()
 ### `_process_routing_()`
 
 ```python
-def _process_routing_(self, normalized_text: str, threshold: float = None, persistence_level: int = 3) -> dict
+def _process_routing_(self, normalized_text: str, history: list = None, threshold: float = None, persistence_level: int = 3, system_instructions: str = None) -> dict
 ```
 
-**Classification-only** entry point. Evaluates the confidence threshold and loops `persistence_level` times. Does NOT generate any LLM response.
+**Classification-only** entry point. Evaluates the confidence threshold and loops `persistence_level` times. Supports conversation context for resolving ambiguities.
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `normalized_text` | `str` | Yes | Standardized English query (typically output from `TriageModule`) |
+| `history` | `list[dict]` | No | Previous conversation turns `[{role, content}, ...]` to provide context. Default: `None` |
 | `threshold` | `float` | No | Confidence threshold (0.0 to 1.0) to accept a route. Default: `None` |
-| `persistence_level`| `int` | No | Retries to reach acceptable confidence. Includes a 1-second backoff delay between retries to avoid API rate limits. Default: `3` |
+| `persistence_level`| `int` | No | Retries to reach acceptable confidence. Includes a 1-second backoff delay. Default: `3` |
+| `system_instructions`| `str` | No | Override for the routing system prompt. Default: `None` (uses Config) |
 
 **Returns**: `dict` — See [Classification Output Schema](#classification-output-schema)
 
@@ -245,12 +247,14 @@ RoutingClassifier(
 ### `_route_query_()`
 
 ```python
-def _route_query_(self, query: str) -> dict
+def _route_query_(self, query: str, history: list = None, system_instructions: str = None) -> dict
 ```
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `query` | `str` | Yes | The normalized user query |
+| `history` | `list[dict]` | No | Previous conversation turns for context-aware routing |
+| `system_instructions`| `str` | No | Override for the routing system prompt. |
 
 **Returns**: `dict` — Classification result (see below)
 
@@ -547,6 +551,31 @@ conversation.append({"role": "assistant", "content": response1})
 # Follow-up
 conversation.append({"role": "user", "content": "How does it compare to the Philippines?"})
 response2 = generator._dispatch_conversation_(conversation, "General-LLM")
+
+### Context-Aware Routing (Follow-ups)
+
+Using history to resolve vague queries during the classification step:
+
+```python
+from src.adaptive_routing import SemanticRouterModule
+
+router = SemanticRouterModule()
+
+# Mock history
+history = [
+    {"role": "user", "content": "What is the minimum wage in Hong Kong?"},
+    {"role": "assistant", "content": "The statutory minimum wage is HK$40 per hour."}
+]
+
+# Vague follow-up
+vague_query = "Why is it that low?"
+
+# Route WITH history context
+result = router._process_routing_(vague_query, history=history)
+
+print(result["classification"]["route"])      # → "General-LLM" (Context-aware)
+print(result["classification"]["search_signals"]) # → null (Triggers RAG context reuse)
+```
 ```
 
 ---

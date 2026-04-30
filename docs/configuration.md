@@ -97,6 +97,7 @@ Controls the **RoutingClassifier** — the LLM that classifies queries into `Gen
 | `_ROUTER_USE_SYSTEM` | `ROUTER_USE_SYSTEM` | `bool` | `False` | System role support |
 | `_ROUTER_REASONING` | `ROUTER_REASONING` | `bool` | `False` | Include reasoning in response |
 | `_ROUTER_REASONING_EFFORT` | `ROUTER_REASONING_EFFORT` | `str` | `"medium"` | Effort level for reasoning models |
+| `_ROUTER_INSTRUCTIONS` | `ROUTER_INSTRUCTIONS` | `str` | *(see code)* | System instructions for routing and history awareness |
 
 > **Tip**: Keep `_ROUTER_TEMP` at `0.0` for consistent, reproducible routing decisions.
 

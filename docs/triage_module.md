@@ -104,7 +104,7 @@ triage = TriageModule(api_key="sk-or-v1-your-key")
 ### `_process_request_()`
 
 ```python
-def _process_request_(self, input_text: str, image_path: str = None) -> dict
+def _process_request_(self, input_text: str, image_path: str = None, system_instructions: str = None) -> dict
 ```
 
 The **main entry point** for all triage operations. Normalizes the input text and returns structured state.
@@ -113,6 +113,7 @@ The **main entry point** for all triage operations. Normalizes the input text an
 |:---|:---|:---|:---|
 | `input_text` | `str` | Yes | Raw user input in any supported language |
 | `image_path` | `str` | No | Path to an image file or URL for multimodal normalization |
+| `system_instructions` | `str` | No | Override for the normalization system prompt. |
 
 **Returns**: `dict` — See [Return Schema](#return-schema)
 
@@ -163,13 +164,14 @@ LinguisticNormalizer(handler: LLMRequestEngine)
 ### `_normalize_text_()`
 
 ```python
-def _normalize_text_(self, raw_input: str, image_path: str = None) -> str
+def _normalize_text_(self, raw_input: str, image_path: str = None, system_instructions: str = None) -> str
 ```
 
 | Parameter | Type | Required | Description |
 |:---|:---|:---|:---|
 | `raw_input` | `str` | Yes | The raw user input string |
 | `image_path` | `str` | No | Path/URL to an image for multimodal processing |
+| `system_instructions`| `str` | No | Override for the normalization system prompt. |
 
 **Returns**: `str` — Normalized English text followed by a `<Detected Raw Language: ...>` tag.
 

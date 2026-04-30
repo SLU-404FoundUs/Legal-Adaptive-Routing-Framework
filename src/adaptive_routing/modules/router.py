@@ -23,21 +23,23 @@ class SemanticRouterModule:
         self._classifier = classifier or RoutingClassifier(api_key)
         self._generator = generator or LegalGenerator(api_key)
 
-    def _process_routing_(self, normalized_text: str, threshold: float = None, persistence_level: int = 3) -> dict:
+    def _process_routing_(self, normalized_text: str, history: list = None, threshold: float = None, persistence_level: int = 3, system_instructions: str = None) -> dict:
         """
         @func_ _process_routing_
         @params normalized_text : (str) Standardized user query.
+        @params history : (list, optional) Previous conversation turns.
         @params threshold : (float, optional) Confidence threshold (0.0 to 1.0).
         @params persistence_level : (int) Number of attempts to reach acceptable threshold.
+        @params system_instructions : (str, optional) Override for routing instructions.
         @returns (dict) Classification result containing route, confidence, and signals.
-        @desc_ Delegates to RoutingClassifier._route_query_() with optional retry logic.
+        @desc_ Delegates to RoutingClassifier._route_query_() with optional retry logic and history context.
         """
         if threshold is None:
-            return self._classifier._route_query_(normalized_text)
+            return self._classifier._route_query_(normalized_text, history=history, system_instructions=system_instructions)
             
         ## @iter_ persistence_level : Retrying classification if confidence is low
         for attempt in range(persistence_level):
-            classification = self._classifier._route_query_(normalized_text)
+            classification = self._classifier._route_query_(normalized_text, history=history, system_instructions=system_instructions)
             confidence = classification.get("confidence", 0.0)
             
             if confidence >= threshold:

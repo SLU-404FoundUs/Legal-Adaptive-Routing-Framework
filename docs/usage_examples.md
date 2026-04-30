@@ -131,6 +131,29 @@ response_data = router._generate_response_(classification_data, normalized_text)
 print(response_data['response_text'])
 ```
 
+### 4. Overriding Module Instructions at Runtime
+For testing new routing rules or specialized logic, you can pass `system_instructions` directly to the routing methods. This overrides both the instance prompt and the global configuration.
+
+```python
+from src.adaptive_routing import SemanticRouterModule
+
+router = SemanticRouterModule()
+
+custom_rules = (
+    "ROLE: Strict Legal Intent Router\n"
+    "TASK: Only route to Reasoning-LLM if the query mentions a specific labor dispute.\n"
+    "Else, always use General-LLM."
+)
+
+# Pass override instructions directly to the process method
+result = router._process_routing_(
+    "I was terminated without notice.", 
+    system_instructions=custom_rules
+)
+
+print(f"Custom Route: {result['classification']['route']}")
+```
+
 ### 3. Advanced Conversation / Multi-turn Support
 Track interactions iteratively across a conversational session.
 ```python

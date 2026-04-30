@@ -990,6 +990,7 @@ async function loadConfig() {
         document.getElementById('cfg_router_use_system').checked = !!data.router_use_system;
         // reasoning fixed false — hidden input already set
         document.getElementById('cfg_router_reasoning_effort').value = data.router_reasoning_effort || 'medium';
+        setInstructionValue('router', data.router_instructions || '');
 
         // General
         document.getElementById('cfg_general_model').value = data.general_model || '';
@@ -1045,7 +1046,7 @@ function updateCharCount(module) {
 }
 
 // Attach char counters
-['triage', 'general', 'reasoning', 'casual'].forEach(mod => {
+['triage', 'router', 'general', 'reasoning', 'casual'].forEach(mod => {
     const ta = document.getElementById(`cfg_${mod}_instructions`);
     if (ta) {
         ta.addEventListener('input', () => updateCharCount(mod));
@@ -1099,6 +1100,7 @@ DOM.saveConfigBtn.addEventListener('click', async () => {
         router_use_system: document.getElementById('cfg_router_use_system').checked,
         router_reasoning: false, // Fixed OFF per QA requirement
         router_reasoning_effort: document.getElementById('cfg_router_reasoning_effort').value,
+        router_instructions: document.getElementById('cfg_router_instructions').value,
 
         general_model: document.getElementById('cfg_general_model').value,
         general_temp: parseFloat(document.getElementById('cfg_general_temp').value) || 0,

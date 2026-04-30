@@ -79,6 +79,85 @@
                                 downstream routing. Try pasting Tagalog, Taglish, or mixed-language text.
                             </span>
                         </div>
+
+                        <div class="test-field">
+                            <div
+                                style="display:flex; align-items:center; justify-content:space-between; margin-bottom:4px;">
+                                <label class="test-label">Hyperparameters</label>
+                                <button class="btn btn-ghost" style="font-size:0.65rem; padding:2px 8px;"
+                                    onclick="resetToDefaults('triage')">
+                                    Reset to Defaults
+                                </button>
+                            </div>
+                            <div
+                                style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                                <div class="test-field" style="grid-column:span 2">
+                                    <label class="test-label" for="triage-model">
+                                        Model
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <input type="text" id="triage-model" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;">
+                                </div>
+                                <div class="test-field">
+                                    <label class="test-label" for="triage-temp">
+                                        Temperature
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <div class="test-slider-row">
+                                        <input type="range" id="triage-temp" class="test-slider" min="0" max="1"
+                                            step="0.05" value="0.7">
+                                        <span class="test-slider-value" id="triage-temp-val">0.70</span>
+                                    </div>
+                                </div>
+                                <div class="test-field">
+                                    <label class="test-label" for="triage-max-tokens">
+                                        Max Tokens
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <input type="number" id="triage-max-tokens" class="test-textarea"
+                                        style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;"
+                                        value="2048" min="1" max="8192">
+                                </div>
+                                <div class="test-field" style="grid-column:span 2">
+                                    <label class="test-label" for="triage-reasoning-effort">
+                                        Reasoning Effort
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <select id="triage-reasoning-effort" class="test-textarea" style="min-height:36px; padding:6px 10px; font-size:0.8rem;">
+                                        <option value="none">None</option>
+                                        <option value="minimal">Minimal</option>
+                                        <option value="low">Low</option>
+                                        <option value="medium" selected>Medium</option>
+                                        <option value="high">High</option>
+                                        <option value="xhigh">X-High</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="test-expander open" id="triage-instr-expander">
+                            <div class="test-expander-header" onclick="toggleExpander('triage-instr-expander')">
+                                <span class="test-expander-title">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                    System Instructions
+                                    <span class="test-label-badge" style="margin-left:2px;">Override</span>
+                                </span>
+                                <span class="test-expander-chevron">▶</span>
+                            </div>
+                            <div class="test-expander-body">
+                                <textarea id="triage-system-instructions" class="test-textarea mono xl"
+                                    placeholder="System instructions will be loaded from configuration..."
+                                    rows="8"></textarea>
+                                <span class="test-hint" style="margin-top:6px;display:block;">
+                                    Edits here only affect this test run — the saved config is <strong>not
+                                        modified</strong>.
+                                </span>
+                            </div>
+                        </div>
                     </div>
 
                     <!-- ==================== ROUTER INPUTS ==================== -->
@@ -99,6 +178,14 @@
                         </div>
 
                         <div class="test-field">
+                            <label class="test-label" for="router-model">
+                                Model
+                                <span class="test-label-badge optional">Override</span>
+                            </label>
+                            <input type="text" id="router-model" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;">
+                        </div>
+
+                        <div class="test-field">
                             <label class="test-label" for="router-threshold">
                                 Confidence Threshold
                                 <span class="test-label-badge optional">Optional</span>
@@ -112,6 +199,30 @@
                                 Minimum confidence score required to accept a route. If the model's confidence is below
                                 this, the router will retry (up to 3 attempts) before falling back.
                             </span>
+                        </div>
+
+                        <div class="test-expander open" id="router-instr-expander">
+                            <div class="test-expander-header" onclick="toggleExpander('router-instr-expander')">
+                                <span class="test-expander-title">
+                                    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
+                                        <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
+                                    </svg>
+                                    System Instructions
+                                    <span class="test-label-badge" style="margin-left:2px;">Override</span>
+                                </span>
+                                <span class="test-expander-chevron">▶</span>
+                            </div>
+                            <div class="test-expander-body">
+                                <textarea id="router-system-instructions" class="test-textarea mono xl"
+                                    placeholder="System instructions will be loaded from configuration..."
+                                    rows="8"></textarea>
+                                <span class="test-hint" style="margin-top:6px;display:block;">
+                                    Edits here only affect this test run — the saved config is <strong>not
+                                        modified</strong>.
+                                </span>
+                            </div>
                         </div>
                     </div>
 
@@ -153,6 +264,13 @@
                             </div>
                             <div
                                 style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                                <div class="test-field" style="grid-column:span 2">
+                                    <label class="test-label" for="general-model">
+                                        Model
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <input type="text" id="general-model" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;">
+                                </div>
                                 <div class="test-field">
                                     <label class="test-label" for="general-temp">
                                         Temperature
@@ -249,6 +367,13 @@
                             </div>
                             <div
                                 style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                                <div class="test-field" style="grid-column:span 2">
+                                    <label class="test-label" for="reasoning-model">
+                                        Model
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <input type="text" id="reasoning-model" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;">
+                                </div>
                                 <div class="test-field">
                                     <label class="test-label" for="reasoning-temp">
                                         Temperature
@@ -339,6 +464,13 @@
                             </div>
                             <div
                                 style="display:grid; grid-template-columns:1fr 1fr; gap:16px; background:var(--bg-tertiary); padding:12px; border-radius:var(--radius-sm); border:1px solid var(--border-subtle);">
+                                <div class="test-field" style="grid-column:span 2">
+                                    <label class="test-label" for="casual-model">
+                                        Model
+                                        <span class="test-label-badge optional">Override</span>
+                                    </label>
+                                    <input type="text" id="casual-model" class="test-textarea" style="min-height:36px; padding:6px 10px; font-family:var(--font-mono); font-size:0.8rem;">
+                                </div>
                                 <div class="test-field">
                                     <label class="test-label" for="casual-temp">
                                         Temperature

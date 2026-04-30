@@ -244,7 +244,7 @@ from src.adaptive_routing import (
 | Module | Method | Purpose |
 |:---|:---|:---|
 | `TriageModule` | `_process_request_(text, image?)` | Normalize multilingual input → English |
-| `SemanticRouterModule` | `_process_routing_(text, threshold?, persistence_level?)` | Classify intent → returns `{route, confidence, search_signals}` |
+| `SemanticRouterModule` | `_process_routing_(text, history?, threshold?, persistence_level?, system_instructions?)` | Classify intent with context awareness |
 | `SemanticRouterModule` | `_generate_response_(classification, text, context?, is_follow_up?)` | Generation with follow-up awareness |
 | `SemanticRouterModule` | `_generate_conversation_(classification, messages, context?, is_follow_up?)` | Multi-turn generation with follow-up awareness |
 | `LegalRetrievalModule` | `_process_retrieval_(query, signals?, top_k?)` | Retrieve legal chunks (supports signal-guided keywords) |
