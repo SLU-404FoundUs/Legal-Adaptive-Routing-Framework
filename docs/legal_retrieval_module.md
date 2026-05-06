@@ -3,9 +3,11 @@
 > **Orchestrator**: `src/adaptive_routing/modules/retrieval.py`  
 > **Sub-components**:  
 > - `src/adaptive_routing/modules/legal_retrieval/embedding.py`  
-> - `src/adaptive_routing/modules/legal_retrieval/retriever.py`
+> - `src/adaptive_routing/modules/legal_retrieval/retriever.py`  
+> - `src/adaptive_routing/modules/legal_retrieval/ranker.py`  
+> **Core dependency**: `src/adaptive_routing/core/reranker.py`
 
-The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (RAG)** pipeline. It ingests legal documents, converts them into vector embeddings, stores them in a FAISS index, and retrieves the most semantically relevant chunks for any given query. This module is essential for grounding LLM responses in actual legal text.
+The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (RAG)** pipeline with a **two-stage cascade architecture**. It ingests legal documents, converts them into vector embeddings, stores them in a FAISS index, retrieves the most semantically relevant chunks, and then applies **Soft-Boosting Coarse Ranking** followed by **Precision Reranking** via `cohere/rerank-4-pro` to surface the exact statutory provision for the query.
 
 ---
 
@@ -21,6 +23,13 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
   - [_save_index_()](#_save_index_)
   - [_load_index_()](#_load_index_)
   - [build_and_save_index()](#build_and_save_index)
+- [LegalRanker (Sub-component)](#legalranker-sub-component)
+  - [Constructor](#legalranker-constructor)
+  - [_retrieval_classifier_()](#_retrieval_classifier_)
+  - [_rerank_selection_()](#_rerank_selection_)
+- [RerankEngine (Core)](#rerankengine-core)
+  - [Constructor](#rerankengine-constructor)
+  - [_rerank_()](#_rerank_)
 - [EmbeddingManager (Sub-component)](#embeddingmanager-sub-component)
   - [Constructor](#embeddingmanager-constructor)
   - [_chunk_text_()](#_chunk_text_)
@@ -45,24 +54,44 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 ## Architecture Overview
 
 ```
-┌──────────────────────────────────────────────────────────────┐
-│                  LegalRetrievalModule                        │
-│                     (Orchestrator)                           │
-│                                                              │
-│  ┌────────────────────────┐    ┌──────────────────────────┐  │
-│  │   EmbeddingManager     │    │    LegalRetriever        │  │
-│  │                        │    │                          │  │
-│  │  - Text chunking       │    │  - Context retrieval     │  │
-│  │  - Embedding via API   │◀───│  - Delegates to          │  │
-│  │  - FAISS index mgmt    │    │    EmbeddingManager      │  │
-│  │  - Save/load index     │    │    ._search_()           │  │
-│  └────────────────────────┘    └──────────────────────────┘  │
-│                                                              │
-│  ┌────────────────────────────────────────────────────────┐  │
-│  │               Hybrid Vector & BM25 Store               │  │
-│  │         (IndexFlatL2 Core + BM25 Keyword Index)        │  │
-│  └────────────────────────────────────────────────────────┘  │
-└──────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                   LegalRetrievalModule                          │
+│                      (Orchestrator)                             │
+│                                                                 │
+│  ┌─────────────────────┐    ┌───────────────────────────────┐   │
+│  │  EmbeddingManager   │    │    LegalRetriever             │   │
+│  │                     │    │                               │   │
+│  │  - Text chunking    │    │  - Context retrieval          │   │
+│  │  - Embedding via    │◀───│  - Delegates to               │   │
+│  │    API              │    │    EmbeddingManager._search_() │   │
+│  │  - FAISS index mgmt │    │                               │   │
+│  └─────────────────────┘    └───────────────────────────────┘   │
+│                                                                 │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │            Hybrid Vector & BM25 Store                   │    │
+│  │      (IndexFlatL2 Core + BM25 Keyword Index)            │    │
+│  └─────────────────────────────────────────────────────────┘    │
+│                          ▼                                      │
+│  ┌─────────────────────────────────────────────────────────┐    │
+│  │              LegalRanker (Two-Stage Cascade)             │    │
+│  │                                                         │    │
+│  │  Stage 1: Soft-Boosting Coarse Ranker                   │    │
+│  │    - Multi-corpus evaluation via RerankEngine            │    │
+│  │    - Dominant corpus detection                           │    │
+│  │    - BOOST_FACTOR applied to above-mean chunks           │    │
+│  │                                                         │    │
+│  │  Stage 2: Precision Reranker                             │    │
+│  │    - Deep token-level comparison on top-N candidates     │    │
+│  │    - Surfaces exact statutory provision                   │    │
+│  │                                                         │    │
+│  │  ┌───────────────────────────────────────────────────┐   │    │
+│  │  │  RerankEngine (Core)                              │   │    │
+│  │  │  - OpenRouter /api/v1/rerank API client           │   │    │
+│  │  │  - cohere/rerank-4-pro (configurable)             │   │    │
+│  │  │  - Retry logic & error handling                   │   │    │
+│  │  └───────────────────────────────────────────────────┘   │    │
+│  └─────────────────────────────────────────────────────────┘    │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
 **Data flow — Ingestion:**
@@ -71,12 +100,14 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 3. Content is sent to OpenRouter `/embeddings` endpoint → `_get_embeddings_()`
 4. Embeddings added to FAISS `IndexFlatL2` index
 
-**Data flow — Retrieval:**
+**Data flow — Retrieval (Two-Stage Cascade):**
 1. Query → `_process_retrieval_()` → `LegalRetriever._retrieve_context_()`
 2. Signal-Guided Search: If search signals (keywords) are provided by the Semantic Router, they are combined with the query.
 3. Hybrid Search: FAISS nearest-neighbor search + BM25 keyword search → results combined via Reciprocal Rank Fusion (RRF)
-4. Context Reuse: If the user query is a follow-up (no new signals), the system can reuse the last retrieved context.
-5. Results are deduplicated and parent context is injected if available
+4. **Retrieval Layer** (Stage 1): `LegalRanker._retrieval_classifier_()` — Chunks grouped by corpus, scored via `RerankEngine`, dominant corpus identified, above-mean chunks boosted by `BOOST_FACTOR`
+5. **Selection Layer** (Stage 2): `LegalRanker._rerank_selection_()` — Top-N boosted candidates precision-reranked for exact statutory match
+6. Context Reuse: If the user query is a follow-up (no new signals), the system can reuse the last retrieved context.
+7. Results are deduplicated and parent context is injected if available
 
 ---
 
@@ -92,6 +123,7 @@ LegalRetrievalModule(
     api_key: str = None,
     embedding_manager: EmbeddingManager = None,
     retriever: LegalRetriever = None,
+    ranker: LegalRanker = None,
     index_path: str = None,
     chunks_path: str = None
 )
@@ -102,6 +134,7 @@ LegalRetrievalModule(
 | `api_key` | `str` | `FrameworkConfig._API_KEY` | OpenRouter API key for embedding generation |
 | `embedding_manager` | `EmbeddingManager` | Auto-created with Retrieval config | Custom embedding manager instance |
 | `retriever` | `LegalRetriever` | Auto-created with the embedding manager | Custom retriever instance |
+| `ranker` | `LegalRanker` | Auto-created with default RerankEngine | Custom ranker for two-stage cascade |
 | `index_path` | `str` | `FrameworkConfig._RETRIEVAL_INDEX_PATH` | Path to a pre-built `.faiss` index file |
 | `chunks_path` | `str` | `FrameworkConfig._RETRIEVAL_CHUNKS_PATH` | Path to linked `.json` chunks file |
 
@@ -115,6 +148,15 @@ LegalRetrievalModule(
 | Chunk Size | _RETRIEVAL_CHUNK_SIZE | 5000 characters |
 | Chunk Overlap | _RETRIEVAL_CHUNK_OVERLAP | 300 characters |
 | Top K | `_RETRIEVAL_TOP_K` | `5` results |
+
+**Default reranker configuration** (from `FrameworkConfig`):
+
+| Parameter | Config Source | Default Value |
+|:---|:---|:---|
+| Rerank Model | `_RETRIEVAL_RERANK_MODEL` | `"cohere/rerank-4-pro"` |
+| Domain Confidence | `_RETRIEVAL_DOMAIN_CONFIDENCE` | `0.35` |
+| Boost Factor | `_RETRIEVAL_BOOST_FACTOR` | `1.25` |
+| Rerank Top N | `_RETRIEVAL_RERANK_TOP_N` | `10` candidates |
 
 **Basic instantiation:**
 
@@ -178,26 +220,32 @@ The **main entry point** for retrieval. Returns the most relevant document chunk
 ```python
 {
     "query": str,                      # The original query string
-    "retrieved_chunks": [              # List of relevant chunks, ranked by similarity
+    "combined_query": str,             # Query enriched with search signals
+    "retrieved_chunks": [              # List of relevant chunks, reranked by cascade
         {
             "chunk": str,              # The raw text chunk or parent context from the index
             "metadata": dict,          # Dictionary tracking jurisdiction, title, source_file, category, and parent_context
-            "score": float             # RRF (Reciprocal Rank Fusion) score (higher = more similar)
+            "score": float,            # Boosted relevance score from the coarse ranker (higher = more relevant)
+            "source": str              # Corpus origin (e.g., "Philippines", "Hong Kong")
         },
         ...
-    ]
+    ],
+    "dominant_corpus": str | None,     # The corpus whose top chunk scored highest
+    "reranked_best": str | None        # The single best chunk selected by the precision reranker
 }
 ```
 
-**Understanding scores**: The `score` value is an RRF (Reciprocal Rank Fusion) score combining FAISS L2 distance and BM25 relevance ranking. **Higher scores indicate higher semantic and keyword similarity.**
+**Understanding scores**: After the two-stage cascade, the `score` value reflects the **reranker relevance score** with optional soft-boosting applied. **Higher scores indicate higher semantic relevance.** Chunks from the dominant corpus that score above the corpus mean receive a `BOOST_FACTOR` (default 1.25x) multiplier.
 
 | Score Range | Interpretation |
 |:---|:---|
-| `> 0.03` | High similarity |
-| `0.015 – 0.03` | Moderate similarity |
-| `< 0.015` | Low similarity |
+| `> 0.50` | High relevance |
+| `0.35 – 0.50` | Moderate relevance |
+| `< 0.35` | Below domain confidence threshold |
 
-> **Note**: Score thresholds depend on the retrieval algorithm parameters. The system automatically bypasses explicit cosine similarity thresholds when RRF scoring is detected to preserve optimal hybrid results. 
+> **Note**: If the top score across all corpora falls below `DOMAIN_CONFIDENCE` (default 0.35), the system issues a domain refusal and returns the raw FAISS results without reranking.
+>
+> **Soft-Boosting**: The system remains Labor-Code-First while maintaining visibility into Tax or Social Security chunks. For cross-domain queries — such as tax-exempt separation pay — the system pulls evidence from both corpora rather than blocking entire datasets.
 > 
 > **Parent Context Injection**: During retrieval, if a chunk contains a `parent_context` metadata key, the retriever will automatically deduplicate results and inject the broader contiguous parent text as the retrieval chunk, rather than just the isolated line.
 
@@ -442,6 +490,107 @@ def _load_index_(self, index_path: str, chunks_path: str)
 **Load**: Reads them back, replacing the current in-memory state.
 
 **Raises**: `InvalidInputError` on save if no index exists.
+
+---
+
+## LegalRanker (Sub-component)
+
+**Import**: `from src.adaptive_routing.modules.legal_retrieval.ranker import LegalRanker`
+
+Implements the two-stage cascade architecture for multi-corpus legal retrieval. This is the core intelligence layer that translates raw FAISS+BM25 results into precision-ranked legal provisions.
+
+### LegalRanker Constructor
+
+```python
+LegalRanker(rerank_engine: RerankEngine = None)
+```
+
+| Parameter | Type | Default | Description |
+|:---|:---|:---|:---|
+| `rerank_engine` | `RerankEngine` | Auto-created with `FrameworkConfig._RETRIEVAL_RERANK_MODEL` | The rerank engine to use for cross-encoding |
+
+### `_retrieval_classifier_()`
+
+```python
+def _retrieval_classifier_(self, query: str, faiss_results_dict: dict) -> tuple
+```
+
+**Stage 1 — Soft-Boosting Coarse Ranker.** Evaluates all chunks across multiple corpora simultaneously, identifies the dominant corpus (highest max-score), and applies `BOOST_FACTOR` exclusively to chunks from that corpus that independently exceed the corpus mean.
+
+| Parameter | Type | Description |
+|:---|:---|:---|
+| `query` | `str` | The user's legal question |
+| `faiss_results_dict` | `dict` | Mapping of `corpus_name → list[str]` (chunk texts grouped by jurisdiction) |
+
+**Returns**: `tuple(sorted_pool, status)`
+- `sorted_pool`: `list[dict]` — Each dict contains `{"chunk": str, "score": float, "source": str}`
+- `status`: `str` — `"PASS"` or `"DOMAIN_REFUSAL"`
+
+**Mechanism:**
+1. All chunks from all corpora are sent to the reranker in a single batch
+2. The corpus with the highest individual chunk score is identified as **dominant**
+3. The mean score for the dominant corpus is calculated
+4. Only chunks from the dominant corpus that score **above** the mean receive the `BOOST_FACTOR` multiplier
+5. All chunks are globally re-sorted by boosted score
+6. If the top score falls below `DOMAIN_CONFIDENCE`, returns `DOMAIN_REFUSAL`
+
+### `_rerank_selection_()`
+
+```python
+def _rerank_selection_(self, query: str, boosted_pool: list) -> tuple
+```
+
+**Stage 2 — Precision Reranker.** Deep token-level comparison on the top-N candidates from the boosted pool. Solves the Precision Gap — e.g., distinguishing Article 283 (Redundancy) from Article 282 (Serious Misconduct).
+
+| Parameter | Type | Description |
+|:---|:---|:---|
+| `query` | `str` | The user's legal question |
+| `boosted_pool` | `list[dict]` | Sorted output from `_retrieval_classifier_()` |
+
+**Returns**: `tuple(best_chunk, status)`
+- `best_chunk`: `str | None` — The single highest-scoring chunk text
+- `status`: `str` — `"PASS"` or `"DOMAIN_REFUSAL"`
+
+---
+
+## RerankEngine (Core)
+
+**Import**: `from src.adaptive_routing.core.reranker import RerankEngine`
+
+A thin API client for the OpenRouter `/api/v1/rerank` endpoint — mirrors the `LLMRequestEngine` pattern but targets the rerank endpoint.
+
+### RerankEngine Constructor
+
+```python
+RerankEngine(api_key: str = None, model: str = None)
+```
+
+| Parameter | Type | Default | Description |
+|:---|:---|:---|:---|
+| `api_key` | `str` | `FrameworkConfig._API_KEY` | OpenRouter API key |
+| `model` | `str` | `FrameworkConfig._RETRIEVAL_RERANK_MODEL` | Reranker model identifier |
+
+### `_rerank_()`
+
+```python
+def _rerank_(self, query: str, documents: list, top_n: int = None) -> list[dict]
+```
+
+| Parameter | Type | Description |
+|:---|:---|:---|
+| `query` | `str` | The search query to rerank documents against |
+| `documents` | `list[str]` | Document texts to rerank |
+| `top_n` | `int` | Optional: Number of most relevant documents to return |
+
+**Returns**: `list[dict]` — Sorted results, each containing `{"index": int, "relevance_score": float, "text": str}`
+
+**API endpoint**: `POST https://openrouter.ai/api/v1/rerank`
+
+**Exceptions:**
+- `AuthenticationError` — Invalid API key (HTTP 401)
+- `APIResponseError` — HTTP errors, empty results
+- `APIConnectionError` — Network failure, timeouts
+- `InvalidInputError` — Empty document list
 
 ---
 

@@ -189,6 +189,10 @@ Controls the **EmbeddingManager** and **LegalRetriever** — the document embedd
 | `_RETRIEVAL_SCORE_THRESHOLD` | `RETRIEVAL_SCORE_THRESHOLD` | `float` | `0.0` | Minimum cosine similarity score to include a chunk result |
 | `_RETRIEVAL_INDEX_PATH` | `RETRIEVAL_INDEX_PATH` | `str` | `None` | Path to a pre-built FAISS `.faiss` file |
 | `_RETRIEVAL_CHUNKS_PATH` | `RETRIEVAL_CHUNKS_PATH` | `str` | `None` | Path to a pre-built chunks `.json` file |
+| `_RETRIEVAL_RERANK_MODEL` | `RETRIEVAL_RERANK_MODEL` | `str` | `"cohere/rerank-4-pro"` | Cross-encoder model for two-stage cascade reranking |
+| `_RETRIEVAL_DOMAIN_CONFIDENCE` | `RETRIEVAL_DOMAIN_CONFIDENCE` | `float` | `0.35` | Minimum relevance score floor; below this triggers domain refusal |
+| `_RETRIEVAL_BOOST_FACTOR` | `RETRIEVAL_BOOST_FACTOR` | `float` | `1.25` | Score multiplier for above-mean chunks from the dominant corpus |
+| `_RETRIEVAL_RERANK_TOP_N` | `RETRIEVAL_RERANK_TOP_N` | `int` | `10` | Number of top candidates passed to the precision reranker |
 
 **Pre-built index auto-loading:**
 
@@ -206,6 +210,19 @@ When these are set, `LegalRetrievalModule` will automatically load the index at 
 RETRIEVAL_CHUNK_SIZE=1024
 RETRIEVAL_CHUNK_OVERLAP=128
 RETRIEVAL_TOP_K=10
+```
+
+**Tuning reranker parameters:**
+
+```env
+# Use a different reranker model
+RETRIEVAL_RERANK_MODEL=cohere/rerank-v3.5
+# Raise confidence floor to reduce noise
+RETRIEVAL_DOMAIN_CONFIDENCE=0.50
+# Increase boost strength for dominant corpus
+RETRIEVAL_BOOST_FACTOR=1.50
+# Widen the precision reranker candidate pool
+RETRIEVAL_RERANK_TOP_N=15
 ```
 
 ---

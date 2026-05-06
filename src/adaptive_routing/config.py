@@ -298,3 +298,9 @@ class FrameworkConfig:
     ## @const_ _RETRIEVAL_INDEX_PATH : Paths for vector store persistence.
     _RETRIEVAL_INDEX_PATH = os.getenv("RETRIEVAL_INDEX_PATH", None)
     _RETRIEVAL_CHUNKS_PATH = os.getenv("RETRIEVAL_CHUNKS_PATH", None)
+
+    ## @const_ _RETRIEVAL_RERANK_MODEL : Two-stage cascade reranker settings.
+    _RETRIEVAL_RERANK_MODEL = os.getenv("RETRIEVAL_RERANK_MODEL", "cohere/rerank-4-pro")
+    _RETRIEVAL_DOMAIN_CONFIDENCE = float(os.getenv("RETRIEVAL_DOMAIN_CONFIDENCE", "0.35"))
+    _RETRIEVAL_BOOST_FACTOR = float(os.getenv("RETRIEVAL_BOOST_FACTOR", "1.25"))
+    _RETRIEVAL_RERANK_TOP_N = int(os.getenv("RETRIEVAL_RERANK_TOP_N", "10"))

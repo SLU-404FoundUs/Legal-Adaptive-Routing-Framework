@@ -272,21 +272,28 @@ def chat():
 
             if route != "Casual-LLM":
                 if signals is not None:
-                    yield json.dumps({"type": "step", "content": "Retrieving context via Hybrid Search (BM25 + Semantic)..."}) + "\n"
+                    yield json.dumps({"type": "step", "content": "Retrieving context via Hybrid Search (BM25 + Semantic) → Cascade Reranking..."}) + "\n"
                     
                     if retrieval_module:
                         try:
                             retrieval_output = retrieval_module._process_retrieval_(normalized_text, signals=signals)
                             retrieved_chunks = retrieval_output.get("retrieved_chunks", [])
+                            dominant_corpus = retrieval_output.get("dominant_corpus")
+                            reranked_best = retrieval_output.get("reranked_best")
                             
                             if retrieved_chunks:
+                                # Surface reranking cascade metadata
+                                if dominant_corpus:
+                                    yield json.dumps({"type": "step", "content": f"Reranker dominant corpus: {dominant_corpus}"}) + "\n"
+                                
                                 yield json.dumps({
                                     "type": "rag_context",
                                     "title": "Legal Sources Retrieved",
                                     "chunks": [{
                                         "text": chunk.get("chunk", ""), 
                                         "metadata": chunk.get("metadata", {}), 
-                                        "score": float(chunk.get("score", 0.0))
+                                        "score": float(chunk.get("score", 0.0)),
+                                        "source": chunk.get("source", "Unknown")
                                     } for chunk in retrieved_chunks[:5]]
                                 }) + "\n"
                                 context_str = "\n".join([c.get("chunk", "") for c in retrieved_chunks])
@@ -906,12 +913,16 @@ def api_test_retrieval():
             "query": result.get("query", query),
             "combined_query": result.get("combined_query", query),
             "chunk_count": len(chunks),
+            "dominant_corpus": result.get("dominant_corpus"),
+            "reranked_best": result.get("reranked_best"),
             "model_used": retrieval_module._embedding_manager._model if hasattr(retrieval_module, '_embedding_manager') else 'Unknown Embedding Model',
+            "rerank_model": FrameworkConfig._RETRIEVAL_RERANK_MODEL,
             "chunks": [
                 {
                     "text": c.get("chunk", ""),
                     "metadata": c.get("metadata", {}),
-                    "score": float(c.get("score", 0.0))
+                    "score": float(c.get("score", 0.0)),
+                    "source": c.get("source", "Unknown")
                 }
                 for c in chunks
             ]
@@ -1067,4 +1078,28 @@ def api_test_casual():
 
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5220)
+    def get_ip():
+        import socket
+        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        try:
+            # This doesn't need to be reachable
+            s.connect(('10.255.255.255', 1))
+            IP = s.getsockname()[0]
+        except Exception:
+            IP = '127.0.0.1'
+        finally:
+            s.close()
+        return IP
+
+    local_ip = get_ip()
+    port = 5220
+    
+    print(f"\n" + "="*60)
+    print(f" 🚀 AGAPAY STUDIO IS LIVE")
+    print(f" 🔗 Local:   http://127.0.0.1:{port}")
+    print(f" 🌐 Network: http://{local_ip}:{port}")
+    print("="*60 + "\n")
+    
+    # host='0.0.0.0' allows access from other devices on the same network
+    app.run(host='0.0.0.0', debug=True, port=port)
+

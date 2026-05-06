@@ -1,8 +1,8 @@
 # Core Engine & Exceptions Reference
 
-> **Files**: `src/adaptive_routing/core/engine.py`, `src/adaptive_routing/core/exceptions.py`
+> **Files**: `src/adaptive_routing/core/engine.py`, `src/adaptive_routing/core/reranker.py`, `src/adaptive_routing/core/exceptions.py`
 
-The **Core Engine** is the foundational networking layer of the framework. It handles all communication with the OpenRouter API, including authentication, payload construction, multimodal support, and structured error handling.
+The **Core Engine** is the foundational networking layer of the framework. It handles all communication with the OpenRouter API, including authentication, payload construction, multimodal support, reranking, and structured error handling.
 
 ---
 
@@ -16,6 +16,9 @@ The **Core Engine** is the foundational networking layer of the framework. It ha
     - [_encode_image_()](#_encode_image_)
   - [System Role Behavior](#system-role-behavior)
   - [Reasoning Mode](#reasoning-mode)
+- [RerankEngine](#rerankengine)
+  - [Constructor](#rerankengine-constructor)
+  - [_rerank_()](#_rerank_)
 - [Exception Hierarchy](#exception-hierarchy)
   - [AdaptiveRoutingError (Base)](#adaptiveroutingerror-base)
   - [AuthenticationError](#authenticationerror)
@@ -246,6 +249,90 @@ This falls under the Hong Kong Employment Ordinance, Chapter 57...
 </think>
 
 Based on the Employment Ordinance...
+```
+
+---
+
+## RerankEngine
+
+**Import**: `from src.adaptive_routing.core.reranker import RerankEngine`
+
+A unified interface for the OpenRouter `/api/v1/rerank` endpoint. Used by the `LegalRanker` sub-component for two-stage cascade reranking. Mirrors the `LLMRequestEngine` pattern (headers, retry logic, error handling) but targets the rerank API.
+
+### RerankEngine Constructor
+
+```python
+RerankEngine(
+    api_key: str = None,
+    model: str = None
+)
+```
+
+| Parameter | Type | Default | Description |
+|:---|:---|:---|:---|
+| `api_key` | `str` | `FrameworkConfig._API_KEY` | OpenRouter API key. Raises `AuthenticationError` if missing. |
+| `model` | `str` | `FrameworkConfig._RETRIEVAL_RERANK_MODEL` | Reranker model identifier (e.g., `"cohere/rerank-4-pro"`). |
+
+**Validation on construction:**
+- `api_key` must be a non-empty string → raises `AuthenticationError`
+- `model` must be a non-empty string → raises `InvalidInputError`
+
+**Example:**
+
+```python
+from src.adaptive_routing.core.reranker import RerankEngine
+
+reranker = RerankEngine(
+    model="cohere/rerank-4-pro"
+)
+```
+
+---
+
+### `_rerank_()`
+
+```python
+def _rerank_(self, query: str, documents: list[str], top_n: int = None) -> list[dict]
+```
+
+Reranks a list of documents against a query using the OpenRouter rerank API.
+
+| Parameter | Type | Required | Description |
+|:---|:---|:---|:---|
+| `query` | `str` | Yes | The search query to rerank against |
+| `documents` | `list[str]` | Yes | Document texts to rerank |
+| `top_n` | `int` | No | Number of most relevant documents to return |
+
+**Returns**: `list[dict]` — Sorted by `relevance_score` descending:
+
+```python
+[
+    {"index": 0, "relevance_score": 0.98, "text": "Paris is the capital..."},
+    {"index": 1, "relevance_score": 0.12, "text": "Berlin is the capital..."}
+]
+```
+
+**API endpoint**: `POST https://openrouter.ai/api/v1/rerank`
+
+**Exceptions:**
+- `AuthenticationError` — Invalid API key (HTTP 401)
+- `APIResponseError` — HTTP errors, empty results, insufficient credits (HTTP 402)
+- `APIConnectionError` — Network failures, timeouts
+- `InvalidInputError` — Empty document list
+
+**Example:**
+
+```python
+reranker = RerankEngine()
+results = reranker._rerank_(
+    query="What are the grounds for illegal dismissal?",
+    documents=[
+        "Article 279 of the Philippine Labor Code provides that...",
+        "The Hong Kong Employment Ordinance, Section 31I, states that..."
+    ],
+    top_n=1
+)
+print(results[0]["text"])  # Most relevant document
 ```
 
 ---
