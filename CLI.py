@@ -72,7 +72,8 @@ from src.adaptive_routing import (
     FrameworkConfig, 
     TriageModule, 
     SemanticRouterModule, 
-    LegalRetrievalModule
+    LegalRetrievalModule,
+    SafetyAuditModule
 )
 from src.adaptive_routing.modules.legal_retrieval.utils import legal_indexing
 
@@ -512,6 +513,17 @@ def main():
             else:
                 print_status_box("Index Sync", "Synced", "green")
 
+            # Initialize Safety Audit Module
+            safety_audit = None
+            if FrameworkConfig._VERIFICATION_ENABLED:
+                try:
+                    safety_audit = SafetyAuditModule()
+                    print_status_box("Safety Audit", f"Loaded (persistence={FrameworkConfig._VERIFICATION_PERSISTENCE})", "green")
+                except Exception as audit_err:
+                    print_status_box("Safety Audit", f"Failed (non-fatal): {audit_err}", "yellow")
+            else:
+                print_status_box("Safety Audit", "Disabled", "yellow")
+
     except Exception as e:
         print_error_box(
             "Initialization Failed",
@@ -691,46 +703,97 @@ def main():
                 context_str = None # No context for casual routes
 
             # ──────────────────────────────────────────────────
-            # Stage 4: Generation (Multi-Turn)
+            # Stage 4: Generation + Adherence Audit Loop
             # ──────────────────────────────────────────────────
             history.append({"role": "user", "content": normalized_text})
 
             response = ""
             accepted = False
-            with console.status("[dim]🤖 Generating response...[/dim]", spinner="bouncingBar"):
-                for attempt in range(1, MAX_RETRIES + 1):
-                    try:
-                        gen_result = router._generate_conversation_(
-                            classification=classification,
-                            messages=history,
-                            context=context_str,
-                            is_follow_up=(signals is None and route != "Casual-LLM")
-                        )
-                        if gen_result.get("error"):
-                            raise Exception(gen_result["error"])
-                        raw_response = gen_result.get("response_text")
-                        logging.info(f"[Generation] attempt={attempt} raw_response_type={type(raw_response).__name__!r} raw_response_value={raw_response!r}")
-                        response = raw_response or "No response generated."
-                        accepted = gen_result.get("accepted", True)
-                        break
-                    except Exception as e:
-                        logging.error(f"Generation error on attempt {attempt}: {e}")
-                        if _is_rate_limited_(e) and attempt < MAX_RETRIES:
-                            console.status(f"[yellow]⏳ [Generator] Rate-limited. Retrying... ({attempt}/{MAX_RETRIES})[/yellow]")
-                            time.sleep(BASE_DELAY * attempt)
-                        else:
-                            console.print()
-                            print_error_box("Generation Failed", str(e), hint="Check cli_errors.log for full details.")
-                            response = "I am currently unable to process your query due to a technical error."
-                            accepted = False
+            audit_passed = False
+            is_follow_up = (signals is None and route != "Casual-LLM")
+            persistence_limit = FrameworkConfig._VERIFICATION_PERSISTENCE if safety_audit else 1
+
+            for audit_attempt in range(1, persistence_limit + 1):
+                # 4a. Generate (with rate-limit retries)
+                with console.status("[dim]🤖 Generating response...[/dim]", spinner="bouncingBar"):
+                    for attempt in range(1, MAX_RETRIES + 1):
+                        try:
+                            gen_result = router._generate_conversation_(
+                                classification=classification,
+                                messages=history,
+                                context=context_str,
+                                is_follow_up=is_follow_up
+                            )
+                            if gen_result.get("error"):
+                                raise Exception(gen_result["error"])
+                            raw_response = gen_result.get("response_text")
+                            logging.info(f"[Generation] attempt={attempt} raw_response_type={type(raw_response).__name__!r} raw_response_value={raw_response!r}")
+                            response = raw_response or "No response generated."
+                            accepted = gen_result.get("accepted", True)
                             break
+                        except Exception as e:
+                            logging.error(f"Generation error on attempt {attempt}: {e}")
+                            if _is_rate_limited_(e) and attempt < MAX_RETRIES:
+                                console.status(f"[yellow]⏳ [Generator] Rate-limited. Retrying... ({attempt}/{MAX_RETRIES})[/yellow]")
+                                time.sleep(BASE_DELAY * attempt)
+                            else:
+                                console.print()
+                                print_error_box("Generation Failed", str(e), hint="Check cli_errors.log for full details.")
+                                response = "I am currently unable to process your query due to a technical error."
+                                accepted = False
+                                break
+
+                # 4b. Safety Audit (skip for Casual or if audit module disabled)
+                if not safety_audit or route == "Casual-LLM" or not response:
+                    audit_passed = True
+                    break
+
+                with console.status(f"[cyan]🔍 Running safety audit (attempt {audit_attempt}/{persistence_limit})...[/cyan]", spinner="dots"):
+                    audit_result = safety_audit._run_audit_(
+                        normalized_query=normalized_text,
+                        response_text=response,
+                        route=route
+                    )
+
+                verdict = audit_result.get("verdict", "NON_COMPLIANT")
+                audit_confidence = audit_result.get("confidence", 0.0)
+                audit_explanation = audit_result.get("explanation")
+
+                verdict_color = "green" if verdict == "COMPLIANT" else "red"
+                console.print(f"  [cyan]🔍 Audit[/cyan]   │  [{verdict_color} bold]{verdict}[/] (Confidence: {audit_confidence:.4f}) {f'| {audit_explanation}' if audit_explanation else ''}")
+
+                if verdict == "COMPLIANT":
+                    audit_passed = True
+                    break
+                else:
+                    # Remove failed response from history before regeneration
+                    if history and history[-1].get("role") == "assistant":
+                        history.pop()
+
+                    if audit_attempt < persistence_limit:
+                        logging.warning(
+                            f"Safety audit NON_COMPLIANT (attempt {audit_attempt}/{persistence_limit}, "
+                            f"confidence={audit_confidence}) — regenerating..."
+                        )
+                        console.print(f"  [yellow]⚠ Audit[/yellow]   │  Response did not meet safety standards — regenerating ({audit_attempt}/{persistence_limit})...")
+                    else:
+                        logging.warning(f"Safety audit exhausted all {persistence_limit} attempts. Applying safeguard.")
+                        console.print(f"  [red]✗ Audit[/red]   │  All {persistence_limit} generation attempts exhausted — applying safeguard.")
+
+            # Handle safeguard override
+            if not audit_passed and safety_audit:
+                response = safety_audit._build_safeguard_message_()
+                accepted = False
 
             history.append({"role": "assistant", "content": response})
 
             # ──────────────────────────────────────────────────
             # Output
             # ──────────────────────────────────────────────────
-            status_line = "[green bold]✓ Accepted[/]" if accepted else "[red bold]✗ Requires Review / Error[/]"
+            if audit_passed:
+                status_line = "[green bold]✓ Accepted[/]" if accepted else "[red bold]✗ Requires Review / Error[/]"
+            else:
+                status_line = "[red bold]✗ Safeguard Applied[/]"
             
             md_response = Markdown(response)
             

@@ -15,7 +15,7 @@ import threading
 from datetime import datetime
 from flask import Flask, render_template, request, Response, stream_with_context, send_file, jsonify
 from dotenv import load_dotenv
-from src.adaptive_routing import FrameworkConfig, TriageModule, SemanticRouterModule, LegalRetrievalModule
+from src.adaptive_routing import FrameworkConfig, TriageModule, SemanticRouterModule, LegalRetrievalModule, SafetyAuditModule
 from src.adaptive_routing.modules.legal_retrieval.utils import legal_indexing
 load_dotenv()
 
@@ -101,6 +101,17 @@ try:
         )
         app_logger.info("FAISS index built and saved successfully.")
         
+    # Initialize Safety Audit Module
+    safety_audit = None
+    if FrameworkConfig._VERIFICATION_ENABLED:
+        try:
+            safety_audit = SafetyAuditModule()
+            app_logger.info(f"Safety Audit Module loaded — persistence={FrameworkConfig._VERIFICATION_PERSISTENCE}")
+        except Exception as audit_init_err:
+            app_logger.warning(f"Safety Audit Module failed to initialize (non-fatal): {audit_init_err}")
+    else:
+        app_logger.info("Safety Audit Module is disabled via VERIFICATION_ENABLED=False.")
+
     app_logger.info("Modules initialized successfully.")
     
     # Check sync status on startup
@@ -118,6 +129,7 @@ except Exception as e:
     triage_module = None
     router_module = None
     retrieval_module = None
+    safety_audit = None
 
 # In-memory session storage
 # Format: { "session_id": { "route": "...", "history": [...] } }
@@ -314,43 +326,113 @@ def chat():
                 yield json.dumps({"type": "step", "content": "Casual conversation detected — skipping legal retrieval..."}) + "\n"
                 context_str = None
 
-            # 5. Generation Step (with persistence for rate-limits)
+            # 5. Generation + Adherence Audit Loop
             yield json.dumps({"type": "step", "content": "Generating response..."}) + "\n"
             
             # Add the user's clean message to history before generation
             history.append({"role": "user", "content": normalized_text})
             
             response_text = ""
-            if router_module:
-                for attempt in range(1, MAX_RETRIES + 1):
-                    try:
-                        result = router_module._generate_conversation_(
-                            classification=classification,
-                            messages=history,
-                            context=context_str,
-                            is_follow_up=(signals is None and route != "Casual-LLM")
-                        )
-                        response_text = result.get("response_text", "")
-                        accepted = result.get("accepted", False)
-                        
-                        if not accepted:
-                            yield json.dumps({"type": "step", "content": "Confidence below threshold — requesting clarification..."}) + "\n"
-                        break
-                    except Exception as gen_err:
-                        if _is_rate_limited_(gen_err) and attempt < MAX_RETRIES:
-                            delay = BASE_DELAY * attempt
-                            app_logger.warning(f"Generation rate-limited (attempt {attempt}/{MAX_RETRIES}), retrying in {delay}s...")
-                            yield json.dumps({"type": "step", "content": f"Rate-limited — retrying generation ({attempt}/{MAX_RETRIES})..."}) + "\n"
-                            time.sleep(delay)
-                        else:
-                            app_logger.error(f"Generation failed after {attempt} attempt(s): {gen_err}")
-                            response_text = "I am currently unable to process your query due to a technical error. Please try again."
+            audit_passed = False
+            persistence_limit = FrameworkConfig._VERIFICATION_PERSISTENCE if safety_audit else 1
+            is_follow_up = (signals is None and route != "Casual-LLM")
+
+            for audit_attempt in range(1, persistence_limit + 1):
+                # 5a. Generate (with existing rate-limit retries)
+                if router_module:
+                    for attempt in range(1, MAX_RETRIES + 1):
+                        try:
+                            result = router_module._generate_conversation_(
+                                classification=classification,
+                                messages=history,
+                                context=context_str,
+                                is_follow_up=is_follow_up
+                            )
+                            response_text = result.get("response_text", "")
+                            accepted = result.get("accepted", False)
+                            
+                            if not accepted:
+                                yield json.dumps({"type": "step", "content": "Confidence below threshold — requesting clarification..."}) + "\n"
                             break
-            else:
-                response_text = "I am currently unable to process your query due to a technical error."
+                        except Exception as gen_err:
+                            if _is_rate_limited_(gen_err) and attempt < MAX_RETRIES:
+                                delay = BASE_DELAY * attempt
+                                app_logger.warning(f"Generation rate-limited (attempt {attempt}/{MAX_RETRIES}), retrying in {delay}s...")
+                                yield json.dumps({"type": "step", "content": f"Rate-limited — retrying generation ({attempt}/{MAX_RETRIES})..."}) + "\n"
+                                time.sleep(delay)
+                            else:
+                                app_logger.error(f"Generation failed after {attempt} attempt(s): {gen_err}")
+                                response_text = "I am currently unable to process your query due to a technical error. Please try again."
+                                break
+                else:
+                    response_text = "I am currently unable to process your query due to a technical error."
+
+                # 5b. Safety Audit (skip for Casual routes or if audit module disabled)
+                if not safety_audit or route == "Casual-LLM" or not response_text:
+                    audit_passed = True
+                    break
+
+                yield json.dumps({"type": "step", "content": f"Running safety audit (attempt {audit_attempt}/{persistence_limit})..."}) + "\n"
+                
+                audit_result = safety_audit._run_audit_(
+                    normalized_query=normalized_text,
+                    response_text=response_text,
+                    route=route
+                )
+                
+                # Resolve strictness label for the frontend
+                strictness_val = audit_result.get("strictness", 0.50)
+                if strictness_val < 0.40:
+                    strictness_label = "LOW"
+                elif strictness_val >= 0.60:
+                    strictness_label = "HIGH"
+                else:
+                    strictness_label = "MEDIUM"
+                
+                # Stream audit metadata to frontend
+                yield json.dumps({
+                    "type": "verification",
+                    "attempt": audit_attempt,
+                    "persistence": persistence_limit,
+                    "verdict": audit_result.get("verdict"),
+                    "confidence": audit_result.get("confidence"),
+                    "explanation": audit_result.get("explanation"),
+                    "strictness": strictness_val,
+                    "strictness_label": strictness_label,
+                    "route": audit_result.get("route")
+                }) + "\n"
+                
+                if audit_result.get("verdict") == "COMPLIANT":
+                    audit_passed = True
+                    break
+                else:
+                    # Remove failed response from history before regeneration
+                    if history and history[-1].get("role") == "assistant":
+                        history.pop()
+                    
+                    if audit_attempt < persistence_limit:
+                        app_logger.warning(
+                            f"Safety audit NON_COMPLIANT (attempt {audit_attempt}/{persistence_limit}, "
+                            f"confidence={audit_result.get('confidence')}) — regenerating..."
+                        )
+                        yield json.dumps({"type": "step", "content": f"Response did not meet safety standards — regenerating ({audit_attempt}/{persistence_limit})..."}) + "\n"
+                    else:
+                        app_logger.warning(
+                            f"Safety audit exhausted all {persistence_limit} attempts. Applying safeguard."
+                        )
+                        yield json.dumps({"type": "step", "content": "All generation attempts exhausted — applying safeguard..."}) + "\n"
 
             # 6. Finalize response
-            if response_text:
+            if audit_passed and response_text:
+                history.append({"role": "assistant", "content": response_text})
+                SESSIONS[session_id]["route"] = route
+                yield json.dumps({"type": "result", "content": response_text, "route": route}) + "\n"
+            elif not audit_passed and safety_audit:
+                safeguard_msg = safety_audit._build_safeguard_message_()
+                history.append({"role": "assistant", "content": safeguard_msg})
+                SESSIONS[session_id]["route"] = route
+                yield json.dumps({"type": "result", "content": safeguard_msg, "route": route}) + "\n"
+            elif response_text:
                 history.append({"role": "assistant", "content": response_text})
                 SESSIONS[session_id]["route"] = route
                 yield json.dumps({"type": "result", "content": response_text, "route": route}) + "\n"
@@ -521,11 +603,20 @@ def get_config():
         "casual_reasoning": FrameworkConfig._CASUAL_REASONING,
         "casual_reasoning_effort": FrameworkConfig._CASUAL_REASONING_EFFORT,
         "casual_instructions": FrameworkConfig._CASUAL_INSTRUCTIONS,
+
+        "verification_enabled": FrameworkConfig._VERIFICATION_ENABLED,
+        "verification_strictness_casual": FrameworkConfig._VERIFICATION_STRICTNESS_CASUAL,
+        "verification_strictness_general": FrameworkConfig._VERIFICATION_STRICTNESS_GENERAL,
+        "verification_strictness_reasoning": FrameworkConfig._VERIFICATION_STRICTNESS_REASONING,
+        "verification_deep_audit_temp": FrameworkConfig._VERIFICATION_DEEP_AUDIT_TEMP,
+        "verification_reasoning": FrameworkConfig._VERIFICATION_REASONING,
+        "verification_reasoning_effort": FrameworkConfig._VERIFICATION_REASONING_EFFORT,
+        "verification_instructions": FrameworkConfig._VERIFICATION_INSTRUCTIONS,
     })
 
 @app.route('/api/config', methods=['POST'])
 def save_config():
-    global triage_module, router_module, retrieval_module
+    global triage_module, router_module, retrieval_module, safety_audit
     data = request.json
     
     try:
@@ -572,6 +663,15 @@ def save_config():
             casual_reasoning=data.get('casual_reasoning', FrameworkConfig._CASUAL_REASONING),
             casual_reasoning_effort=data.get('casual_reasoning_effort', FrameworkConfig._CASUAL_REASONING_EFFORT),
             casual_instructions=data.get('casual_instructions', FrameworkConfig._CASUAL_INSTRUCTIONS),
+
+            verification_enabled=data.get('verification_enabled', FrameworkConfig._VERIFICATION_ENABLED),
+            verification_strictness_casual=float(data.get('verification_strictness_casual', FrameworkConfig._VERIFICATION_STRICTNESS_CASUAL)),
+            verification_strictness_general=float(data.get('verification_strictness_general', FrameworkConfig._VERIFICATION_STRICTNESS_GENERAL)),
+            verification_strictness_reasoning=float(data.get('verification_strictness_reasoning', FrameworkConfig._VERIFICATION_STRICTNESS_REASONING)),
+            verification_deep_audit_temp=float(data.get('verification_deep_audit_temp', FrameworkConfig._VERIFICATION_DEEP_AUDIT_TEMP)),
+            verification_reasoning=data.get('verification_reasoning', FrameworkConfig._VERIFICATION_REASONING),
+            verification_reasoning_effort=data.get('verification_reasoning_effort', FrameworkConfig._VERIFICATION_REASONING_EFFORT),
+            verification_instructions=data.get('verification_instructions', FrameworkConfig._VERIFICATION_INSTRUCTIONS),
         )
         
         from dotenv import set_key
@@ -620,6 +720,15 @@ def save_config():
         set_key(env_file, "CASUAL_REASONING_EFFORT", FrameworkConfig._CASUAL_REASONING_EFFORT)
         set_key(env_file, "CASUAL_INSTRUCTIONS", FrameworkConfig._CASUAL_INSTRUCTIONS)
         
+        set_key(env_file, "VERIFICATION_ENABLED", str(FrameworkConfig._VERIFICATION_ENABLED))
+        set_key(env_file, "VERIFICATION_STRICTNESS_CASUAL", str(FrameworkConfig._VERIFICATION_STRICTNESS_CASUAL))
+        set_key(env_file, "VERIFICATION_STRICTNESS_GENERAL", str(FrameworkConfig._VERIFICATION_STRICTNESS_GENERAL))
+        set_key(env_file, "VERIFICATION_STRICTNESS_REASONING", str(FrameworkConfig._VERIFICATION_STRICTNESS_REASONING))
+        set_key(env_file, "VERIFICATION_DEEP_AUDIT_TEMP", str(FrameworkConfig._VERIFICATION_DEEP_AUDIT_TEMP))
+        set_key(env_file, "VERIFICATION_REASONING", str(FrameworkConfig._VERIFICATION_REASONING))
+        set_key(env_file, "VERIFICATION_REASONING_EFFORT", FrameworkConfig._VERIFICATION_REASONING_EFFORT)
+        set_key(env_file, "VERIFICATION_INSTRUCTIONS", FrameworkConfig._VERIFICATION_INSTRUCTIONS)
+        
         # Re-initialize modules to pick up changes immediately
         triage_module = TriageModule()
         router_module = SemanticRouterModule()
@@ -632,6 +741,17 @@ def save_config():
         retrieval_module = LegalRetrievalModule()
         if os.path.exists(index_file) and os.path.exists(chunks_file):
             retrieval_module._load_index_(index_file, chunks_file)
+        
+        # Re-initialize Safety Audit Module with new settings
+        if FrameworkConfig._VERIFICATION_ENABLED:
+            try:
+                safety_audit = SafetyAuditModule()
+                app_logger.info("Safety Audit Module re-initialized with updated config.")
+            except Exception as audit_reinit_err:
+                app_logger.warning(f"Safety Audit Module re-init failed (non-fatal): {audit_reinit_err}")
+                safety_audit = None
+        else:
+            safety_audit = None
             
         app_logger.info("Configuration updated, saved to .env, and modules re-initialized.")
         return json.dumps({"status": "success", "message": "Configuration updated successfully."})

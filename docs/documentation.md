@@ -178,7 +178,8 @@ Each module has its own comprehensive documentation with API reference, usage ex
 | 3 | **Triage Module** | [triage_module.md](triage_module.md) | `TriageModule` — linguistic normalization, language detection, state management |
 | 4 | **Semantic Router** | [semantic_router_module.md](semantic_router_module.md) | `SemanticRouterModule` — intent classification, dual-engine generation, contact details routing |
 | 5 | **Legal Retrieval (RAG)** | [legal_retrieval_module.md](legal_retrieval_module.md) | `LegalRetrievalModule` — document ingestion, hybrid index (FAISS+BM25), reciprocal rank fusion (RRF) |
-| 6 | **Usage Examples** | [usage_examples.md](usage_examples.md) | Centralized usage examples across all framework modules |
+| 6 | **Safety Audit Module** | [safety_audit.md](../src/adaptive_routing/modules/safety_audit/safety_audit.md) | `SafetyAuditModule` — LLM evaluation, route strictness, and safeguards |
+| 7 | **Usage Examples** | [usage_examples.md](usage_examples.md) | Centralized usage examples across all framework modules |
 
 ---
 
@@ -216,12 +217,16 @@ src/
         │                                    #   → docs/semantic_router_module.md
         │
         ├── retrieval.py                     # LegalRetrievalModule (Orchestrator)
-        └── legal_retrieval/                 # RAG sub-components
-            ├── embedding.py                 #   EmbeddingManager (chunking + FAISS)
-            ├── retriever.py                 #   LegalRetriever (context search)
-            └── utils/                       #   Developer Utilities
-                └── legal_indexing.py        #     Indexing/Sync helpers
-                                             #   → docs/legal_retrieval_module.md
+        ├── legal_retrieval/                 # RAG sub-components
+        │   ├── embedding.py                 #   EmbeddingManager (chunking + FAISS)
+        │   ├── retriever.py                 #   LegalRetriever (context search)
+        │   └── utils/                       #   Developer Utilities
+        │       └── legal_indexing.py        #     Indexing/Sync helpers
+        │                                    #   → docs/legal_retrieval_module.md
+        │
+        └── safety_audit/                    # Safety Audit Components
+            ├── response_audit.py            #   ResponseAuditor
+                                             #   → src/adaptive_routing/modules/safety_audit/safety_audit.md
 ```
 
 ---

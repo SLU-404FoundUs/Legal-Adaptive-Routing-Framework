@@ -595,6 +595,35 @@ body {
     opacity: 0.8;
 }
 
+/* --- Verification (Safety Audit) Badges --- */
+.verification-badge {
+    display: inline-block;
+    padding: 1px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    vertical-align: middle;
+}
+.verification-pass {
+    background: rgba(52, 211, 153, 0.15);
+    color: var(--accent-green);
+    border: 1px solid rgba(52, 211, 153, 0.3);
+}
+.verification-fail {
+    background: rgba(248, 113, 113, 0.15);
+    color: var(--accent-red);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+}
+.verification-reason {
+    display: inline;
+    margin-left: 4px;
+    font-size: 0.72rem;
+    color: var(--text-tertiary);
+    font-style: italic;
+}
+
 /* --- Message timestamp (shown on restored conversations) --- */
 .msg-timestamp {
     font-size: 0.65rem;

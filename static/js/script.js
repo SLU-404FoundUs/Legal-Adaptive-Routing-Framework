@@ -240,6 +240,7 @@ const MODULE_LABELS = {
     general: 'General Response',
     reasoning: 'Reasoning (Legal Logic)',
     casual: 'Casual Response',
+    verification: 'Safety Audit Layer',
 };
 
 window.openInstructionsModal = function(module) {
@@ -460,7 +461,7 @@ DOM.chatForm.addEventListener('submit', async (e) => {
                         assistantText = data.content;
                     }
                     // Capture all pipeline events for history
-                    if (['step', 'data', 'rag_context', 'result', 'error'].includes(data.type)) {
+                    if (['step', 'data', 'rag_context', 'verification', 'result', 'error'].includes(data.type)) {
                         pipelineEvents.push({ ...data, timestamp: new Date().toISOString() });
                     }
                 } catch (parseErr) {
@@ -566,6 +567,33 @@ function handleStreamEvent(data, pipelineDiv, bubbleDiv) {
         genStep.className = 'pipe-step active';
         genStep.innerHTML = `<span class="step-icon"><div class="pipe-spinner"></div></span><span class="step-text">Reading context and generating...</span>`;
         pipelineDiv.appendChild(genStep);
+        scrollToBottom();
+    }
+    else if (data.type === 'verification') {
+        markPreviousStepDone(pipelineDiv);
+
+        const isPass = data.verdict === 'COMPLIANT';
+        const verdictLabel = isPass ? 'PASS' : 'FAIL';
+        const verdictClass = isPass ? 'verification-pass' : 'verification-fail';
+        const icon = isPass ? '✓' : '✗';
+        const attemptText = data.persistence > 1 ? ` (${data.attempt}/${data.persistence})` : '';
+
+        // Build details data for the modal
+        const detailsData = {
+            'Verdict': data.verdict || 'N/A',
+            'Confidence': typeof data.confidence === 'number' ? data.confidence.toFixed(4) : 'N/A',
+            'Strictness': data.strictness_label ? `${data.strictness_label} (${data.strictness?.toFixed(2)})` : 'N/A',
+            'Route': data.route || 'N/A',
+            'Attempt': `${data.attempt || '?'} / ${data.persistence || '?'}`,
+            'Explanation': data.explanation || 'No explanation provided.',
+        };
+        const encodedDetails = encodeURIComponent(JSON.stringify(detailsData));
+        const detailsLink = `<span class="details-link" onclick="window.openDetailsModal('Safety Audit Result', '${encodedDetails}')">(View details)</span>`;
+
+        const step = document.createElement('div');
+        step.className = `pipe-step ${isPass ? 'done' : 'error'}`;
+        step.innerHTML = `<span class="step-icon">${icon}</span><span class="step-text">Safety Audit: <span class="verification-badge ${verdictClass}">${verdictLabel}</span>${attemptText} ${detailsLink}</span>`;
+        pipelineDiv.appendChild(step);
         scrollToBottom();
     }
     else if (data.type === 'result') {
@@ -1018,6 +1046,21 @@ async function loadConfig() {
         document.getElementById('cfg_casual_reasoning_effort').value = data.casual_reasoning_effort || 'medium';
         setInstructionValue('casual', data.casual_instructions || '');
 
+        // Verification (Safety Audit)
+        const verEnabled = document.getElementById('cfg_verification_enabled');
+        if (verEnabled) verEnabled.checked = !!data.verification_enabled;
+        const verCasual = document.getElementById('cfg_verification_strictness_casual');
+        if (verCasual) verCasual.value = data.verification_strictness_casual ?? 0.30;
+        const verGeneral = document.getElementById('cfg_verification_strictness_general');
+        if (verGeneral) verGeneral.value = data.verification_strictness_general ?? 0.50;
+        const verReasoning = document.getElementById('cfg_verification_strictness_reasoning');
+        if (verReasoning) verReasoning.value = data.verification_strictness_reasoning ?? 0.65;
+        const verTemp = document.getElementById('cfg_verification_deep_audit_temp');
+        if (verTemp) verTemp.value = data.verification_deep_audit_temp ?? 0.1;
+        const verReasoningToggle = document.getElementById('cfg_verification_reasoning');
+        if (verReasoningToggle) verReasoningToggle.checked = !!data.verification_reasoning;
+        setInstructionValue('verification', data.verification_instructions || '');
+
         // Initial visibility
         updateEffortVisibility();
 
@@ -1046,7 +1089,7 @@ function updateCharCount(module) {
 }
 
 // Attach char counters
-['triage', 'router', 'general', 'reasoning', 'casual'].forEach(mod => {
+['triage', 'router', 'general', 'reasoning', 'casual', 'verification'].forEach(mod => {
     const ta = document.getElementById(`cfg_${mod}_instructions`);
     if (ta) {
         ta.addEventListener('input', () => updateCharCount(mod));
@@ -1125,6 +1168,14 @@ DOM.saveConfigBtn.addEventListener('click', async () => {
         casual_reasoning: document.getElementById('cfg_casual_reasoning').checked,
         casual_reasoning_effort: document.getElementById('cfg_casual_reasoning_effort').value,
         casual_instructions: document.getElementById('cfg_casual_instructions').value,
+
+        verification_enabled: document.getElementById('cfg_verification_enabled')?.checked ?? true,
+        verification_strictness_casual: parseFloat(document.getElementById('cfg_verification_strictness_casual')?.value) || 0.30,
+        verification_strictness_general: parseFloat(document.getElementById('cfg_verification_strictness_general')?.value) || 0.50,
+        verification_strictness_reasoning: parseFloat(document.getElementById('cfg_verification_strictness_reasoning')?.value) || 0.65,
+        verification_deep_audit_temp: parseFloat(document.getElementById('cfg_verification_deep_audit_temp')?.value) || 0.1,
+        verification_reasoning: document.getElementById('cfg_verification_reasoning')?.checked ?? false,
+        verification_instructions: document.getElementById('cfg_verification_instructions')?.value || '',
     };
 
     DOM.saveConfigBtn.textContent = 'Saving...';

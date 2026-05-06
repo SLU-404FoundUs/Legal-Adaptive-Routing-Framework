@@ -304,3 +304,37 @@ class FrameworkConfig:
     _RETRIEVAL_DOMAIN_CONFIDENCE = float(os.getenv("RETRIEVAL_DOMAIN_CONFIDENCE", "0.35"))
     _RETRIEVAL_BOOST_FACTOR = float(os.getenv("RETRIEVAL_BOOST_FACTOR", "1.25"))
     _RETRIEVAL_RERANK_TOP_N = int(os.getenv("RETRIEVAL_RERANK_TOP_N", "10"))
+
+    ## @const_ _VERIFICATION : Response Adherence Audit Layer settings.
+    _VERIFICATION_ENABLED = os.getenv("VERIFICATION_ENABLED", "True").lower() == "true"
+    _VERIFICATION_STRICTNESS_CASUAL = float(os.getenv("VERIFICATION_STRICTNESS_CASUAL", "0.30"))
+    _VERIFICATION_STRICTNESS_GENERAL = float(os.getenv("VERIFICATION_STRICTNESS_GENERAL", "0.50"))
+    _VERIFICATION_STRICTNESS_REASONING = float(os.getenv("VERIFICATION_STRICTNESS_REASONING", "0.65"))
+    _VERIFICATION_PERSISTENCE = int(os.getenv("VERIFICATION_PERSISTENCE", "3"))
+    _VERIFICATION_DEEP_AUDIT_MODEL = os.getenv("VERIFICATION_DEEP_AUDIT_MODEL", "google/gemma-4-26b-a4b-it")
+    _VERIFICATION_DEEP_AUDIT_TEMP = float(os.getenv("VERIFICATION_DEEP_AUDIT_TEMP", "0.1"))
+    _VERIFICATION_DEEP_AUDIT_MAX_TOKENS = int(os.getenv("VERIFICATION_DEEP_AUDIT_MAX_TOKENS", "300"))
+    _VERIFICATION_REASONING = os.getenv("VERIFICATION_REASONING", "False").lower() == "true"
+    _VERIFICATION_REASONING_EFFORT = os.getenv("VERIFICATION_REASONING_EFFORT", "low")
+    _VERIFICATION_INSTRUCTIONS = os.getenv("VERIFICATION_INSTRUCTIONS", (
+        "ROLE: Response Adherence Auditor\n"
+        "TASK: Determine whether the AI RESPONSE directly and contextually addresses the USER QUERY.\n\n"
+        "EVALUATION CRITERIA:\n"
+        "1. RELEVANCE: Does the response answer the specific question or concern raised by the user?\n"
+        "2. SCOPE: Does the response stay within Philippine/Hong Kong labor law and migrant worker concerns?\n"
+        "3. DRIFT: Does the response contain significant tangential content unrelated to the user's query?\n"
+        "4. COMPLETENESS: Does the response provide a substantive answer, not just a deflection or refusal?\n\n"
+        "VERDICT RULES:\n"
+        "- Output PASS if the response directly addresses the user's query within scope.\n"
+        "- Output FAIL if the response does NOT address the query, is off-topic, or contains significant drift.\n"
+        "- A response that acknowledges it cannot fully answer but stays on-topic is still a PASS.\n"
+        "- A follow-up clarification that elaborates on a previous topic is a PASS.\n\n"
+        "OUTPUT FORMAT (JSON only, no markdown):\n"
+        "{\"verdict\": \"PASS\" | \"FAIL\", \"confidence\": float (0.0-1.0), \"reason\": \"1 sentence explanation\"}\n\n"
+        "CONSTRAINTS:\n"
+        "- Output JSON only. No additional text.\n"
+        "- Do NOT evaluate factual correctness of legal claims.\n"
+        "- Do NOT evaluate whether the response used specific legal sources.\n"
+        "- Focus ONLY on whether the response addresses what the user asked."
+    ))
+

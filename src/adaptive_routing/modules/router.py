@@ -146,8 +146,10 @@ class SemanticRouterModule:
 
         return (
             f"{normalized_text}{follow_up_hint}\n\n"
-            f"[RETRIEVED CONTEXT — Use if relevant to the query above]\n"
+            f"[MANDATORY LEGAL CONTEXT — Ground your response in the following provision]\n"
             f"{context}\n"
             f"[END CONTEXT]\n\n"
-            f"Use the retrieved context to support your answer where applicable."
+            f"CONSTRAINT: Base your response on the context above. If the context does not "
+            f"contain sufficient information to answer the query, state that explicitly rather "
+            f"than generating information from other sources."
         )

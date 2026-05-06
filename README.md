@@ -77,6 +77,9 @@ LegalAdaptiveRoutingFramework/
 │           ├── legal_retrieval/        # RAG Components
 │           │   ├── embedding.py
 │           │   └── retriever.py
+│           ├── safety_audit/           # Safety Components
+│           │   ├── response_audit.py
+│           │   └── safety_audit.md     # Module Documentation
 │           ├── retrieval.py    # Legal Retrieval Facade
 │           ├── router.py       # Router Facade
 │           └── triage.py       # Triage Facade
