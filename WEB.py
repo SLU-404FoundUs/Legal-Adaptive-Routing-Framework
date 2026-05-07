@@ -377,7 +377,8 @@ def chat():
                 audit_result = safety_audit._run_audit_(
                     normalized_query=normalized_text,
                     response_text=response_text,
-                    route=route
+                    route=route,
+                    history=history[-5:] if history else None
                 )
                 
                 # Resolve strictness label for the frontend

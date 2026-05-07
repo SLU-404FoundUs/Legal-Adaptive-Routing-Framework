@@ -47,7 +47,7 @@ class ResponseAuditor:
             f"reasoning={FrameworkConfig._VERIFICATION_REASONING}"
         )
 
-    def _evaluate_(self, query, response):
+    def _evaluate_(self, query, response, history=None):
         """
         @func_ _evaluate_
         @params query : (str) The user's normalized inquiry.
@@ -59,10 +59,22 @@ class ResponseAuditor:
         @desc_ Sends the query-response pair to the audit LLM, strips <think> blocks,
                and parses the JSON verdict. On failure, returns a conservative FAIL.
         """
-        audit_prompt = (
-            f"USER QUERY:\n{query}\n\n"
-            f"AI RESPONSE:\n{response}"
-        )
+        if history:
+            history_text = "[CONVERSATION HISTORY]\n"
+            for msg in history:
+                role_str = "USER" if msg.get("role") == "user" else "ASSISTANT"
+                history_text += f"{role_str}: {msg.get('content', '')}\n"
+            
+            audit_prompt = (
+                f"{history_text}\n"
+                f"[CURRENT USER QUERY]:\n{query}\n\n"
+                f"[AI RESPONSE TO AUDIT]:\n{response}"
+            )
+        else:
+            audit_prompt = (
+                f"USER QUERY:\n{query}\n\n"
+                f"AI RESPONSE:\n{response}"
+            )
 
         try:
             raw_output = self._engine._get_completion_(audit_prompt, self._system_prompt)

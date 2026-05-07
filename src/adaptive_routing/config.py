@@ -26,9 +26,9 @@ class FrameworkConfig:
     _API_KEY = os.getenv("OPENROUTER_API_KEY", "")
     
     ## @const_ _TRIAGE_MODEL : Linguistic Normalizer model.
-    _TRIAGE_MODEL = os.getenv("TRIAGE_MODEL", "qwen/qwen-turbo")
-    _TRIAGE_TEMP = float(os.getenv("TRIAGE_TEMP", "0.6"))
-    _TRIAGE_MAX_TOKENS = int(os.getenv("TRIAGE_MAX_TOKENS", "2000"))
+    _TRIAGE_MODEL = os.getenv("TRIAGE_MODEL", "google/gemma-4-26b-a4b-it")
+    _TRIAGE_TEMP = float(os.getenv("TRIAGE_TEMP", "0.3"))
+    _TRIAGE_MAX_TOKENS = int(os.getenv("TRIAGE_MAX_TOKENS", "2500"))
     _TRIAGE_USE_SYSTEM = os.getenv("TRIAGE_USE_SYSTEM", "True").lower() == "true"
     _TRIAGE_REASONING = os.getenv("TRIAGE_REASONING", "False").lower() == "true"
     _TRIAGE_REASONING_EFFORT = os.getenv("TRIAGE_REASONING_EFFORT", "medium")
@@ -46,10 +46,10 @@ class FrameworkConfig:
     ))
 
     ## @const_ _ROUTER_MODEL : Semantic Router Classifier model.
-    _ROUTER_MODEL = os.getenv("ROUTER_MODEL", "qwen/qwen-turbo")
+    _ROUTER_MODEL = os.getenv("ROUTER_MODEL", "google/gemini-2.5-flash-lite")
     _ROUTER_TEMP = float(os.getenv("ROUTER_TEMP", "0.1"))
-    _ROUTER_MAX_TOKENS = int(os.getenv("ROUTER_MAX_TOKENS", "250"))
-    _ROUTER_USE_SYSTEM = os.getenv("ROUTER_USE_SYSTEM", "TRUE").lower() == "true"
+    _ROUTER_MAX_TOKENS = int(os.getenv("ROUTER_MAX_TOKENS", "2000"))
+    _ROUTER_USE_SYSTEM = os.getenv("ROUTER_USE_SYSTEM", "True").lower() == "true"
     _ROUTER_REASONING = os.getenv("ROUTER_REASONING", "False").lower() == "true"
     _ROUTER_REASONING_EFFORT = os.getenv("ROUTER_REASONING_EFFORT", "medium")
 
@@ -88,11 +88,11 @@ class FrameworkConfig:
                 )
 
     ## @const_ _GENERAL_MODEL : Information generation model settings.
-    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-4-26b-a4b-it")
+    _GENERAL_MODEL = os.getenv("GENERAL_MODEL", "google/gemma-4-31b-it")
     _GENERAL_TEMP = float(os.getenv("GENERAL_TEMP", "1.4"))
     _GENERAL_MAX_TOKENS = int(os.getenv("GENERAL_MAX_TOKENS", "2500"))
     _GENERAL_USE_SYSTEM = os.getenv("GENERAL_USE_SYSTEM", "True").lower() == "true"
-    _GENERAL_REASONING = os.getenv("GENERAL_REASONING", "False").lower() == "true"
+    _GENERAL_REASONING = os.getenv("GENERAL_REASONING", "True").lower() == "true"
     _GENERAL_REASONING_EFFORT = os.getenv("GENERAL_REASONING_EFFORT", "medium")
     _GENERAL_INSTRUCTIONS = os.getenv("GENERAL_INSTRUCTIONS", (
         "ROLE: Legal Information Assistant\n"
@@ -122,12 +122,12 @@ class FrameworkConfig:
     ))
 
     ## @const_ _REASONING_MODEL : Reasoning/Advice generation model settings.
-    _REASONING_MODEL = os.getenv("REASONING_MODEL", "deepseek/deepseek-chat-v3.1")
-    _REASONING_TEMP = float(os.getenv("REASONING_TEMP", "1"))
-    _REASONING_MAX_TOKENS = int(os.getenv("REASONING_MAX_TOKENS", "4000"))
+    _REASONING_MODEL = os.getenv("REASONING_MODEL", "deepseek/deepseek-v3.2")
+    _REASONING_TEMP = float(os.getenv("REASONING_TEMP", "0.6"))
+    _REASONING_MAX_TOKENS = int(os.getenv("REASONING_MAX_TOKENS", "8000"))
     _REASONING_USE_SYSTEM = os.getenv("REASONING_USE_SYSTEM", "True").lower() == "true"
     _REASONING_REASONING = os.getenv("REASONING_REASONING", "True").lower() == "true"
-    _REASONING_REASONING_EFFORT = os.getenv("REASONING_REASONING_EFFORT", "medium")
+    _REASONING_REASONING_EFFORT = os.getenv("REASONING_REASONING_EFFORT", "high")
     _REASONING_INSTRUCTIONS = os.getenv("REASONING_INSTRUCTIONS", (
         "ROLE: Legal AI Assistant (Philippine & HK Labor Law Focus)\n\n"
         "PERSONA: You are Atty. Veritas AI, a legal information assistant from Saint Louis University. Your SOLE purpose is to assist Philippine Migrant Workers in Hong Kong with labor law scenarios. Be deeply empathetic; if the user's situation involves distress, abuse, or financial hardship, provide warm emotional support and reassurance first.\n\n"
@@ -266,7 +266,7 @@ class FrameworkConfig:
     ## @const_ _CASUAL_MODEL : Casual/Greeting model settings.
     _CASUAL_MODEL = os.getenv("CASUAL_MODEL", "qwen/qwen-turbo")
     _CASUAL_TEMP = float(os.getenv("CASUAL_TEMP", "0.8"))
-    _CASUAL_MAX_TOKENS = int(os.getenv("CASUAL_MAX_TOKENS", "200"))
+    _CASUAL_MAX_TOKENS = int(os.getenv("CASUAL_MAX_TOKENS", "1000"))
     _CASUAL_USE_SYSTEM = os.getenv("CASUAL_USE_SYSTEM", "True").lower() == "true"
     _CASUAL_REASONING = os.getenv("CASUAL_REASONING", "False").lower() == "true"
     _CASUAL_REASONING_EFFORT = os.getenv("CASUAL_REASONING_EFFORT", "medium")
@@ -311,7 +311,7 @@ class FrameworkConfig:
     _VERIFICATION_STRICTNESS_GENERAL = float(os.getenv("VERIFICATION_STRICTNESS_GENERAL", "0.50"))
     _VERIFICATION_STRICTNESS_REASONING = float(os.getenv("VERIFICATION_STRICTNESS_REASONING", "0.65"))
     _VERIFICATION_PERSISTENCE = int(os.getenv("VERIFICATION_PERSISTENCE", "3"))
-    _VERIFICATION_DEEP_AUDIT_MODEL = os.getenv("VERIFICATION_DEEP_AUDIT_MODEL", "google/gemma-4-26b-a4b-it")
+    _VERIFICATION_DEEP_AUDIT_MODEL = os.getenv("VERIFICATION_DEEP_AUDIT_MODEL", "google/gemma-3-12b-it")
     _VERIFICATION_DEEP_AUDIT_TEMP = float(os.getenv("VERIFICATION_DEEP_AUDIT_TEMP", "0.1"))
     _VERIFICATION_DEEP_AUDIT_MAX_TOKENS = int(os.getenv("VERIFICATION_DEEP_AUDIT_MAX_TOKENS", "300"))
     _VERIFICATION_REASONING = os.getenv("VERIFICATION_REASONING", "False").lower() == "false"

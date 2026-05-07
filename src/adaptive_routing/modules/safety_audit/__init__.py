@@ -64,7 +64,7 @@ class SafetyAuditModule:
         suffix = ROUTE_STRICTNESS_MAP.get(route, "GENERAL")
         return getattr(FrameworkConfig, f"_VERIFICATION_STRICTNESS_{suffix}", 0.50)
 
-    def _run_audit_(self, normalized_query, response_text, route):
+    def _run_audit_(self, normalized_query, response_text, route, history=None):
         """
         @func_ _run_audit_
         @params normalized_query : (str) The user's normalized inquiry from Triage.
@@ -99,7 +99,7 @@ class SafetyAuditModule:
         strictness = self._get_strictness_for_route_(route)
 
         ## @logic_ Delegate to internal auditor for the LLM evaluation
-        audit_result = self._auditor._evaluate_(normalized_query, response_text)
+        audit_result = self._auditor._evaluate_(normalized_query, response_text, history=history)
 
         ## @logic_ Map raw verdict (PASS/FAIL) to framework verdict (COMPLIANT/NON_COMPLIANT)
         raw_verdict = audit_result.get("verdict", "FAIL")
