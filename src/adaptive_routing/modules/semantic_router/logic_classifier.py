@@ -55,13 +55,14 @@ class RoutingClassifier:
 
         try:
             if history:
-                ## @logic_ Construct message list for multi-turn routing
-                messages = [{"role": "system", "content": instructions}]
+                ## @logic_ Combine history into a single prompt to prevent persona drift
+                history_text = "[CONVERSATION HISTORY]\n"
                 for msg in history:
-                    messages.append({"role": msg.get("role", "user"), "content": msg.get("content", "")})
-                messages.append({"role": "user", "content": query})
+                    role_str = "USER" if msg.get("role") == "user" else "ASSISTANT"
+                    history_text += f"{role_str}: {msg.get('content', '')}\n"
                 
-                raw_response = self._handler._get_chat_completion_(messages)
+                combined_query = f"{history_text}\n[CURRENT QUERY]\n{query}"
+                raw_response = self._handler._get_completion_(combined_query, instructions)
             else:
                 ## @logic_ Single-turn fallback
                 raw_response = self._handler._get_completion_(query, instructions)
