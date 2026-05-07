@@ -63,7 +63,7 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 │  │                     │    │                               │   │
 │  │  - Text chunking    │    │  - Context retrieval          │   │
 │  │  - Embedding via    │◀───│  - Delegates to               │   │
-│  │    API              │    │    EmbeddingManager._search_() │   │
+│  │    API              │    │   EmbeddingManager._search_() │   │
 │  │  - FAISS index mgmt │    │                               │   │
 │  └─────────────────────┘    └───────────────────────────────┘   │
 │                                                                 │
@@ -73,23 +73,23 @@ The **Legal Retrieval Module** implements the **Retrieval-Augmented Generation (
 │  └─────────────────────────────────────────────────────────┘    │
 │                          ▼                                      │
 │  ┌─────────────────────────────────────────────────────────┐    │
-│  │              LegalRanker (Two-Stage Cascade)             │    │
+│  │              LegalRanker (Two-Stage Cascade)            │    │
 │  │                                                         │    │
 │  │  Stage 1: Soft-Boosting Coarse Ranker                   │    │
-│  │    - Multi-corpus evaluation via RerankEngine            │    │
-│  │    - Dominant corpus detection                           │    │
-│  │    - BOOST_FACTOR applied to above-mean chunks           │    │
+│  │    - Multi-corpus evaluation via RerankEngine           │    │
+│  │    - Dominant corpus detection                          │    │
+│  │    - BOOST_FACTOR applied to above-mean chunks          │    │
 │  │                                                         │    │
-│  │  Stage 2: Precision Reranker                             │    │
-│  │    - Deep token-level comparison on top-N candidates     │    │
-│  │    - Surfaces exact statutory provision                   │    │
+│  │  Stage 2: Precision Reranker                            │    │
+│  │    - Deep token-level comparison on top-N candidates    │    │
+│  │    - Surfaces exact statutory provision                 │    │
 │  │                                                         │    │
-│  │  ┌───────────────────────────────────────────────────┐   │    │
-│  │  │  RerankEngine (Core)                              │   │    │
-│  │  │  - OpenRouter /api/v1/rerank API client           │   │    │
-│  │  │  - cohere/rerank-4-pro (configurable)             │   │    │
-│  │  │  - Retry logic & error handling                   │   │    │
-│  │  └───────────────────────────────────────────────────┘   │    │
+│  │  ┌───────────────────────────────────────────────────┐  │    │
+│  │  │  RerankEngine (Core)                              │  │    │
+│  │  │  - OpenRouter /api/v1/rerank API client           │  │    │
+│  │  │  - cohere/rerank-4-pro (configurable)             │  │    │
+│  │  │  - Retry logic & error handling                   │  │    │
+│  │  └───────────────────────────────────────────────────┘  │    │
 │  └─────────────────────────────────────────────────────────┘    │
 └─────────────────────────────────────────────────────────────────┘
 ```
