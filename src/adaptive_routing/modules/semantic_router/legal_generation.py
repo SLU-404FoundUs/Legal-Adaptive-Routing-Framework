@@ -64,29 +64,37 @@ class LegalGenerator:
             return [{"role": "system", "content": system_prompt}] + messages[1:]
         return [{"role": "system", "content": system_prompt}] + messages
 
-    def _dispatch_(self, query: str, route: str) -> str:
+    def _dispatch_(self, query: str, route: str, detected_language: str = "Unknown") -> str:
         """
         @func_ _dispatch_
         @params query : (str) The user query.
         @params route : (str) Target route ("Casual-LLM", "General-LLM", "Reasoning-LLM").
+        @params detected_language : (str) Origin language detected by triage.
         @returns (str) The LLM response.
         @desc_ Single-turn generation dispatch.
         """
         if route == "Casual-LLM":
             system_prompt = FrameworkConfig._CASUAL_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             return self._casual_engine._get_completion_(query, system_prompt)
         elif route == "Reasoning-LLM":
             system_prompt = FrameworkConfig._REASONING_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             return self._reasoning_engine._get_completion_(query, system_prompt)
         else:
             system_prompt = FrameworkConfig._GENERAL_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             return self._general_engine._get_completion_(query, system_prompt)
 
-    def _dispatch_conversation_(self, messages: list, route: str) -> str:
+    def _dispatch_conversation_(self, messages: list, route: str, detected_language: str = "Unknown") -> str:
         """
         @func_ _dispatch_conversation_
         @params messages : (list) Conversation history.
         @params route : (str) Target route.
+        @params detected_language : (str) Origin language detected by triage.
         @returns (str) The LLM response.
         @desc_ Multi-turn generation dispatch with system prompt injection.
         """
@@ -95,13 +103,19 @@ class LegalGenerator:
 
         if route == "Casual-LLM":
             system_prompt = FrameworkConfig._CASUAL_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             full_messages = self._build_messages_with_system_(messages, system_prompt)
             return self._casual_engine._get_chat_completion_(full_messages)
         elif route == "Reasoning-LLM":
             system_prompt = FrameworkConfig._REASONING_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             full_messages = self._build_messages_with_system_(messages, system_prompt)
             return self._reasoning_engine._get_chat_completion_(full_messages)
         else:
             system_prompt = FrameworkConfig._GENERAL_INSTRUCTIONS
+            if detected_language and detected_language.lower() != "unknown":
+                system_prompt += f"\n\n[MANDATORY LANGUAGE INSTRUCTION: You MUST output your final response entirely in {detected_language}, matching the user's original language. Preserve English legal terms if they do not translate cleanly.]"
             full_messages = self._build_messages_with_system_(messages, system_prompt)
             return self._general_engine._get_chat_completion_(full_messages)

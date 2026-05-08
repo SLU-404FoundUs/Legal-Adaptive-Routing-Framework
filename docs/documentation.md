@@ -268,16 +268,16 @@ from src.adaptive_routing import (
 | Variable | Module | Default | Description |
 |:---|:---|:---|:---|
 | `OPENROUTER_API_KEY` | All | *(required)* | OpenRouter API credential |
-| `TRIAGE_MODEL` | Triage | `qwen/qwen-turbo` | Normalization LLM |
+| `TRIAGE_MODEL` | Triage | `google/gemma-4-26b-a4b-it` | Normalization LLM |
 | `TRIAGE_TEMP` | Triage | `0.6` | Temperature |
 | `TRIAGE_MAX_TOKENS` | Triage | `2000` | Max tokens |
-| `ROUTER_MODEL` | Router | `qwen/qwen-turbo` | Classification LLM |
+| `ROUTER_MODEL` | Router | `google/gemini-2.5-flash-lite` | Classification LLM |
 | `ROUTER_TEMP` | Router | `0.1` | Temperature |
 | `ROUTER_MAX_TOKENS` | Router | `250` | Max tokens |
-| `GENERAL_MODEL` | Generation | `google/gemma-4-26b-a4b-it` | General info LLM |
+| `GENERAL_MODEL` | Generation | `google/gemma-4-31b-it` | General info LLM |
 | `GENERAL_TEMP` | Generation | `1.4` | Temperature |
 | `GENERAL_MAX_TOKENS` | Generation | `2500` | Max tokens |
-| `REASONING_MODEL` | Generation | `deepseek/deepseek-chat-v3.1` | Reasoning LLM |
+| `REASONING_MODEL` | Generation | `deepseek/deepseek-v3.2` | Reasoning LLM |
 | `REASONING_TEMP` | Generation | `1.0` | Temperature |
 | `REASONING_MAX_TOKENS` | Generation | `4000` | Max tokens |
 | `CASUAL_MODEL` | Generation | `qwen/qwen-turbo` | Casual / small-talk LLM |

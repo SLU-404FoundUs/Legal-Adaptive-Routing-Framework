@@ -722,7 +722,8 @@ def main():
                                 classification=classification,
                                 messages=history,
                                 context=context_str,
-                                is_follow_up=is_follow_up
+                                is_follow_up=is_follow_up,
+                                detected_language=detected_language
                             )
                             if gen_result.get("error"):
                                 raise Exception(gen_result["error"])

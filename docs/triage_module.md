@@ -81,7 +81,7 @@ TriageModule(
 
 | Parameter | Config Source | Default Value |
 |:---|:---|:---|
-| Model | `_TRIAGE_MODEL` | `"qwen/qwen3-4b:free"` |
+| Model | `_TRIAGE_MODEL` | `"google/gemma-4-26b-a4b-it"` |
 | Temperature | `_TRIAGE_TEMP` | `0.6` |
 | Max Tokens | `_TRIAGE_MAX_TOKENS` | `1500` |
 | System Role | `_TRIAGE_USE_SYSTEM` | `True` |

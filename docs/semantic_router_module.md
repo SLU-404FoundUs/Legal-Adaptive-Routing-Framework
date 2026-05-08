@@ -236,7 +236,7 @@ RoutingClassifier(
 
 | Parameter | Config Source | Default Value |
 |:---|:---|:---|
-| Model | `_ROUTER_MODEL` | `"google/gemma-3-12b-it:free"` |
+| Model | `_ROUTER_MODEL` | `"google/gemini-2.5-flash-lite"` |
 | Temperature | `_ROUTER_TEMP` | `0.0` |
 | Max Tokens | `_ROUTER_MAX_TOKENS` | `200` |
 | System Role | `_ROUTER_USE_SYSTEM` | `False` |
@@ -358,7 +358,7 @@ LegalGenerator(
 
 | Parameter | Config Source | Default Value |
 |:---|:---|:---|
-| Model | `_CASUAL_MODEL` | `"google/gemma-3-12b-it:free"` |
+| Model | `_CASUAL_MODEL` | `"qwen/qwen-turbo"` |
 | Temperature | `_CASUAL_TEMP` | `0.8` |
 | Max Tokens | `_CASUAL_MAX_TOKENS` | `200` |
 | System Role | `_CASUAL_USE_SYSTEM` | `True` |
@@ -368,7 +368,7 @@ LegalGenerator(
 
 | Parameter | Config Source | Default Value |
 |:---|:---|:---|
-| Model | `_GENERAL_MODEL` | `"google/gemma-3-12b-it:free"` |
+| Model | `_GENERAL_MODEL` | `"google/gemma-4-31b-it"` |
 | Temperature | `_GENERAL_TEMP` | `0.5` |
 | Max Tokens | `_GENERAL_MAX_TOKENS` | `1000` |
 | System Role | `_GENERAL_USE_SYSTEM` | `False` |
@@ -378,7 +378,7 @@ LegalGenerator(
 
 | Parameter | Config Source | Default Value |
 |:---|:---|:---|
-| Model | `_REASONING_MODEL` | `"google/gemma-3-12b-it:free"` |
+| Model | `_REASONING_MODEL` | `"deepseek/deepseek-v3.2"` |
 | Temperature | `_REASONING_TEMP` | `0.7` |
 | Max Tokens | `_REASONING_MAX_TOKENS` | `2000` |
 | System Role | `_REASONING_USE_SYSTEM` | `False` |

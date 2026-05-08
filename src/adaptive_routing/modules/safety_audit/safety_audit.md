@@ -17,7 +17,7 @@ Located in `__init__.py`, this class acts as the single entry point for external
 - **Delegation:** Passes the evaluation task to `ResponseAuditor`.
 
 ### 2. `ResponseAuditor` (Audit Engine)
-Located in `response_audit.py`, this is the pure evaluation engine that interfaces directly with the Audit LLM (e.g., Gemma 4). 
+Located in `response_audit.py`, this is the pure evaluation engine that interfaces directly with the Audit LLM (e.g., Gemma 3). 
 
 **Key Responsibilities:**
 - **LLM Prompting:** Constructs the audit prompt using the user's query and the generated AI response.

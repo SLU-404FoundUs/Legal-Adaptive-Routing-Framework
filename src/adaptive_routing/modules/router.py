@@ -56,13 +56,14 @@ class SemanticRouterModule:
             "confidence": 0.0
         }
 
-    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, is_follow_up: bool = False) -> dict:
+    def _generate_response_(self, classification: dict, normalized_text: str, context: str = None, is_follow_up: bool = False, detected_language: str = "Unknown") -> dict:
         """
         @func_ _generate_response_
         @params classification : (dict) Output from _process_routing_.
         @params normalized_text : (str) The user's normalized query.
         @params context : (str, optional) RAG-retrieved legal context.
         @params is_follow_up : (bool) Whether this is a follow-up query.
+        @params detected_language : (str) Origin language detected by triage.
         @returns (dict) Contains 'classification', 'accepted', and 'response_text'.
         @desc_ Single-turn generation using the classified route.
         """
@@ -80,7 +81,7 @@ class SemanticRouterModule:
 
         ## @logic_ Build the query payload and dispatch
         query = self._build_augmented_query_(normalized_text, context, route, is_follow_up=is_follow_up)
-        response_text = self._generator._dispatch_(query, route)
+        response_text = self._generator._dispatch_(query, route, detected_language=detected_language)
 
         return {
             "classification": classification,
@@ -88,13 +89,14 @@ class SemanticRouterModule:
             "response_text": response_text
         }
 
-    def _generate_conversation_(self, classification: dict, messages: list, context: str = None, is_follow_up: bool = False) -> dict:
+    def _generate_conversation_(self, classification: dict, messages: list, context: str = None, is_follow_up: bool = False, detected_language: str = "Unknown") -> dict:
         """
         @func_ _generate_conversation_
         @params classification : (dict) Output from _process_routing_.
         @params messages : (list[dict]) Full conversation history.
         @params context : (str, optional) RAG-retrieved legal context.
         @params is_follow_up : (bool) Whether this is a follow-up query.
+        @params detected_language : (str) Origin language detected by triage.
         @returns (dict) Contains 'classification', 'accepted', and 'response_text'.
         @desc_ Multi-turn generation using the classified route and history.
         """
@@ -121,7 +123,7 @@ class SemanticRouterModule:
             if last_user_msg:
                 last_user_msg["content"] = self._build_augmented_query_(last_user_msg["content"], context, route, is_follow_up=is_follow_up)
 
-        response_text = self._generator._dispatch_conversation_(messages, route)
+        response_text = self._generator._dispatch_conversation_(messages, route, detected_language=detected_language)
 
         return {
             "classification": classification,

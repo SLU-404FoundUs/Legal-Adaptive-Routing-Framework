@@ -68,7 +68,7 @@ Controls the **Linguistic Normalizer** — the LLM that translates Tagalog/Tagli
 
 | Attribute | Env Variable | Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| `_TRIAGE_MODEL` | `TRIAGE_MODEL` | `str` | `"qwen/qwen-turbo"` | LLM model for text normalization |
+| `_TRIAGE_MODEL` | `TRIAGE_MODEL` | `str` | `"google/gemma-4-26b-a4b-it"` | LLM model for text normalization |
 | `_TRIAGE_TEMP` | `TRIAGE_TEMP` | `float` | `0.6` | Creativity level (0.0 = deterministic, 2.0 = max creative) |
 | `_TRIAGE_MAX_TOKENS` | `TRIAGE_MAX_TOKENS` | `int` | `2000` | Maximum response length in tokens |
 | `_TRIAGE_USE_SYSTEM` | `TRIAGE_USE_SYSTEM` | `bool` | `True` | Whether to use the `system` role in API requests |
@@ -91,7 +91,7 @@ Controls the **RoutingClassifier** — the LLM that classifies queries into `Gen
 
 | Attribute | Env Variable | Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| `_ROUTER_MODEL` | `ROUTER_MODEL` | `str` | `"qwen/qwen-turbo"` | LLM model for route classification |
+| `_ROUTER_MODEL` | `ROUTER_MODEL` | `str` | `"google/gemini-2.5-flash-lite"` | LLM model for route classification |
 | `_ROUTER_TEMP` | `ROUTER_TEMP` | `float` | `0.1` | Temperature (0.0 for deterministic routing) |
 | `_ROUTER_MAX_TOKENS` | `ROUTER_MAX_TOKENS` | `int` | `200` | Max tokens (routing output is compact JSON) |
 | `_ROUTER_USE_SYSTEM` | `ROUTER_USE_SYSTEM` | `bool` | `False` | System role support |
@@ -109,7 +109,7 @@ Controls the **General-LLM** — used for standard legal information queries (de
 
 | Attribute | Env Variable | Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| `_GENERAL_MODEL` | `GENERAL_MODEL` | `str` | `"google/gemma-4-26b-a4b-it"` | LLM model for general responses |
+| `_GENERAL_MODEL` | `GENERAL_MODEL` | `str` | `"google/gemma-4-31b-it"` | LLM model for general responses |
 | `_GENERAL_TEMP` | `GENERAL_TEMP` | `float` | `1.4` | Temperature for response variety |
 | `_GENERAL_MAX_TOKENS` | `GENERAL_MAX_TOKENS` | `int` | `2500` | Max response length |
 | `_GENERAL_USE_SYSTEM` | `GENERAL_USE_SYSTEM` | `bool` | `True` | System role support |
@@ -139,7 +139,7 @@ Controls the **Reasoning-LLM** — used for complex legal analysis, scenario-bas
 
 | Attribute | Env Variable | Type | Default | Description |
 |:---|:---|:---|:---|:---|
-| `_REASONING_MODEL` | `REASONING_MODEL` | `str` | `"deepseek/deepseek-chat-v3.1"` | LLM model for reasoning tasks |
+| `_REASONING_MODEL` | `REASONING_MODEL` | `str` | `"deepseek/deepseek-v3.2"` | LLM model for reasoning tasks |
 | `_REASONING_TEMP` | `REASONING_TEMP` | `float` | `1.0` | Higher temperature for nuanced analysis |
 | `_REASONING_MAX_TOKENS` | `REASONING_MAX_TOKENS` | `int` | `4000` | Extended token limit for detailed analysis |
 | `_REASONING_USE_SYSTEM` | `REASONING_USE_SYSTEM` | `bool` | `True` | System role support |

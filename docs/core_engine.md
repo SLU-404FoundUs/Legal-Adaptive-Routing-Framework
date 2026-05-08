@@ -55,7 +55,7 @@ LLMRequestEngine(
 | Parameter | Type | Default | Description |
 |:---|:---|:---|:---|
 | `api_key` | `str` | `FrameworkConfig._API_KEY` | OpenRouter API key. Raises `AuthenticationError` if missing. |
-| `model` | `str` | `FrameworkConfig._DEFAULT_MODEL` | OpenRouter model identifier (e.g., `"google/gemma-3-12b-it:free"`). |
+| `model` | `str` | `FrameworkConfig._DEFAULT_MODEL` | OpenRouter model identifier (e.g., `"google/gemma-4-26b-a4b-it"`). |
 | `temperature` | `float` | `FrameworkConfig._TEMPERATURE` (0.7) | Controls randomness. Range: `0.0` to `2.0`. Raises `InvalidInputError` if out of range. |
 | `max_tokens` | `int` | `FrameworkConfig._MAX_TOKENS` (1500) | Maximum response length. Must be positive. |
 | `use_system_role` | `bool` | `FrameworkConfig._USE_SYSTEM_ROLE` (True) | If `True`, system instructions are sent as a `system` role message. If `False`, they are prepended to the user prompt. |
@@ -75,7 +75,7 @@ from src.adaptive_routing.core.engine import LLMRequestEngine
 
 engine = LLMRequestEngine(
     api_key="sk-or-v1-your-key",
-    model="google/gemma-3-12b-it:free",
+    model="google/gemma-4-26b-a4b-it",
     temperature=0.5,
     max_tokens=1000
 )
@@ -228,7 +228,7 @@ The `use_system_role` parameter controls how system instructions are delivered t
 
 **When to use `False`:**
 - Some models on OpenRouter don't support the `system` role natively
-- The Router module uses `False` by default since its model (`gemma-3-12b-it`) works better with instructions in the user prompt
+- The Router module uses `False` by default since its model (`google/gemini-2.5-flash-lite`) works better with instructions in the user prompt
 
 ---
 
@@ -498,7 +498,7 @@ from src.adaptive_routing.core.engine import LLMRequestEngine
 
 # Summarization engine with low temperature
 summarizer = LLMRequestEngine(
-    model="google/gemma-3-12b-it:free",
+    model="google/gemma-4-26b-a4b-it",
     temperature=0.2,
     max_tokens=500,
     use_system_role=True
@@ -535,7 +535,7 @@ result = triage._process_request_("User query here")
 
 ```python
 engine = LLMRequestEngine(
-    model="google/gemma-3-12b-it:free",
+    model="google/gemma-4-26b-a4b-it",
     use_system_role=True
 )
 

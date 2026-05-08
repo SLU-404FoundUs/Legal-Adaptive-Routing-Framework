@@ -346,7 +346,8 @@ def chat():
                                 classification=classification,
                                 messages=history,
                                 context=context_str,
-                                is_follow_up=is_follow_up
+                                is_follow_up=is_follow_up,
+                                detected_language=detected_language
                             )
                             response_text = result.get("response_text", "")
                             accepted = result.get("accepted", False)
