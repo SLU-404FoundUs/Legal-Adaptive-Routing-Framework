@@ -698,3 +698,11 @@ response = router._generator._dispatch_("Some query", "General-LLM")
 general_eng = router._generator._general_engine
 reasoning_eng = router._generator._reasoning_engine
 ```
+
+---
+
+<div align="center">
+  <a href="triage_module.md">⏮️ Previous Stage: Triage</a> |
+  <a href="documentation.md">🔙 Back to Main Documentation</a> | 
+  <a href="legal_retrieval_module.md">⏭️ Next Stage: Legal Retrieval</a>
+</div>

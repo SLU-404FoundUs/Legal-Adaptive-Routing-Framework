@@ -7,6 +7,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/downloads/)
 [![OpenRouter](https://img.shields.io/badge/OpenRouter-API-orange.svg)](https://openrouter.ai/)
 [![Documentation](https://img.shields.io/badge/docs-Documentation-green.svg)](docs/documentation.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![Agentic AI](https://img.shields.io/badge/Agentic-AI-purple.svg)](#-ai-disclaimer)
 
 *Saint Louis University | Team 404FoundUs*
 

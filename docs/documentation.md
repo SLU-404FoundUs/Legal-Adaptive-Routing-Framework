@@ -151,7 +151,14 @@ OPENROUTER_API_KEY=sk-or-v1-your-api-key-here
 ### 3. Basic Usage
 
 ```python
+from src.adaptive_routing.config import FrameworkConfig
 from src.adaptive_routing import TriageModule, SemanticRouterModule, LegalRetrievalModule
+
+# Optional: Customize the framework configuration at runtime
+FrameworkConfig._update_settings_(
+    general_strictness=0.75,
+    router_temp=0.1
+)
 
 # Initialize modules
 triage = TriageModule()
@@ -178,8 +185,9 @@ Each module has its own comprehensive documentation with API reference, usage ex
 | 3 | **Triage Module** | [triage_module.md](triage_module.md) | `TriageModule` — linguistic normalization, language detection, state management |
 | 4 | **Semantic Router** | [semantic_router_module.md](semantic_router_module.md) | `SemanticRouterModule` — intent classification, dual-engine generation, contact details routing |
 | 5 | **Legal Retrieval (RAG)** | [legal_retrieval_module.md](legal_retrieval_module.md) | `LegalRetrievalModule` — document ingestion, hybrid index (FAISS+BM25), reciprocal rank fusion (RRF) |
-| 6 | **Safety Audit Module** | [safety_audit.md](../src/adaptive_routing/modules/safety_audit/safety_audit.md) | `SafetyAuditModule` — LLM evaluation, route strictness, and safeguards |
+| 6 | **Safety Audit Module** | [safety_audit_module.md](safety_audit_module.md) | `SafetyAuditModule` — LLM evaluation, route strictness, and safeguards |
 | 7 | **Usage Examples** | [usage_examples.md](usage_examples.md) | Centralized usage examples across all framework modules |
+| 8 | **Quick Implementation** | [quick_implementation.md](quick_implementation.md) | A complete pipeline implementation script bringing all modules together |
 
 ---
 

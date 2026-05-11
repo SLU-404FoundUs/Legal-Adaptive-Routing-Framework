@@ -1035,7 +1035,14 @@ hk_module = LegalRetrievalModule(
     chunks_path="Faiss/hk_index.json"
 )
 ph_module = LegalRetrievalModule(
-    index_path="Faiss/ph_index.faiss",
     chunks_path="Faiss/ph_index.json"
 )
 ```
+
+---
+
+<div align="center">
+  <a href="semantic_router_module.md">⏮️ Previous Stage: Semantic Router</a> |
+  <a href="documentation.md">🔙 Back to Main Documentation</a> | 
+  <a href="safety_audit_module.md">⏭️ Next Stage: Safety Audit</a>
+</div>

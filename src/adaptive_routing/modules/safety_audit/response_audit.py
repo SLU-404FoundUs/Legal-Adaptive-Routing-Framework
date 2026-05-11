@@ -47,11 +47,13 @@ class ResponseAuditor:
             f"reasoning={FrameworkConfig._VERIFICATION_REASONING}"
         )
 
-    def _evaluate_(self, query, response, history=None):
+    def _evaluate_(self, query, response, history=None, system_instructions=None):
         """
         @func_ _evaluate_
         @params query : (str) The user's normalized inquiry.
         @params response : (str) The LLM-generated response to audit.
+        @params history : (list, optional) The conversation history.
+        @params system_instructions : (str, optional) Override for audit system instructions.
         @returns (dict) Structured verdict with keys: verdict, confidence, explanation.
                  verdict is 'PASS' or 'FAIL'.
                  confidence is a float (0.0–1.0).
@@ -77,7 +79,8 @@ class ResponseAuditor:
             )
 
         try:
-            raw_output = self._engine._get_completion_(audit_prompt, self._system_prompt)
+            active_system_prompt = system_instructions or self._system_prompt
+            raw_output = self._engine._get_completion_(audit_prompt, active_system_prompt)
             logger.info(f"[ResponseAuditor] Raw output: {raw_output[:300]}")
 
             ## @logic_ Strip <think> blocks — reasoning must NOT affect the verdict

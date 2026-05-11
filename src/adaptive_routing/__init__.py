@@ -8,7 +8,7 @@
 from src.adaptive_routing.modules.triage import TriageModule
 from src.adaptive_routing.modules.router import SemanticRouterModule
 from src.adaptive_routing.modules.retrieval import LegalRetrievalModule
-from src.adaptive_routing.modules.safety_audit import SafetyAuditModule
+from src.adaptive_routing.modules.safety import SafetyAuditModule
 from src.adaptive_routing.config import FrameworkConfig
 
 __all__ = ["TriageModule", "SemanticRouterModule", "LegalRetrievalModule", "SafetyAuditModule", "FrameworkConfig"]

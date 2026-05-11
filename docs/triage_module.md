@@ -428,3 +428,10 @@ normalized_text = triage_result["normalized_text"]
 router_result = router._process_routing_(normalized_text)
 print(router_result["response_text"])
 ```
+
+---
+
+<div align="center">
+  <a href="documentation.md">🔙 Back to Main Documentation</a> | 
+  <a href="semantic_router_module.md">⏭️ Next Stage: Semantic Router</a>
+</div>
