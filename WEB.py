@@ -86,7 +86,7 @@ def _is_rate_limited_(error):
 app = Flask(__name__)
 
 # --- Directories ---
-CONVERSATIONS_DIR = os.path.join(os.getcwd(), "localfiles", "conversations")
+CONVERSATIONS_DIR = os.path.join(CONFIG_DIR, "localfiles", "conversations")
 os.makedirs(CONVERSATIONS_DIR, exist_ok=True)
 
 # --- Configuration ---
@@ -101,18 +101,24 @@ try:
     retrieval_module = LegalRetrievalModule()
     
     # Check and Build Initial FAISS Index if missing
-    index_dir = os.path.join(os.getcwd(), "localfiles", "legal-basis")
+    index_dir = os.path.join(CONFIG_DIR, "localfiles", "legal-basis")
     index_file = os.path.join(index_dir, "combined_index.faiss")
     chunks_file = os.path.join(index_dir, "combined_index.json")
+    corpus_path = os.path.join(CONFIG_DIR, "legal-corpus")
     
     if os.path.exists(index_file) and os.path.exists(chunks_file):
         app_logger.info("Loading existing FAISS index...")
         retrieval_module._load_index_(index_file, chunks_file)
     else:
+        if not os.path.exists(corpus_path):
+            msg = f"Missing 'legal-corpus' folder. Please place it inside: {CONFIG_DIR}"
+            app_logger.warning(msg)
+            raise Exception("legal-corpus directory not found.")
+            
         app_logger.info("Building initial FAISS index for all jurisdictions (this may take a while)...")
         os.makedirs(index_dir, exist_ok=True)
         retrieval_module.build_and_save_index(
-            corpus_dir="legal-corpus",
+            corpus_dir=corpus_path,
             output_dir=index_dir,
             index_prefix="combined_index"
         )
@@ -133,7 +139,7 @@ try:
     
     # Check sync status on startup
     sync_info = legal_indexing.verify_index_integrity(
-        corpus_dir="legal-corpus",
+        corpus_dir=corpus_path,
         chunks_path=chunks_file
     )
     if not sync_info["is_synced"]:

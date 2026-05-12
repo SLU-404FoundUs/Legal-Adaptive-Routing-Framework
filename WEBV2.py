@@ -92,7 +92,7 @@ else:
     app = Flask(__name__)
 
 # --- Directories ---
-CONVERSATIONS_DIR = os.path.join(os.getcwd(), "localfiles", "conversations")
+CONVERSATIONS_DIR = os.path.join(CONFIG_DIR, "localfiles", "conversations")
 os.makedirs(CONVERSATIONS_DIR, exist_ok=True)
 
 # --- Configuration ---
@@ -101,58 +101,76 @@ FrameworkConfig._update_settings_(
     )
 
 # Initialize Modules
-try:
-    triage_module = TriageModule()
-    router_module = SemanticRouterModule()
-    retrieval_module = LegalRetrievalModule()
-    
-    # Check and Build Initial FAISS Index if missing
-    index_dir = os.path.join(os.getcwd(), "localfiles", "legal-basis")
-    index_file = os.path.join(index_dir, "combined_index.faiss")
-    chunks_file = os.path.join(index_dir, "combined_index.json")
-    
-    if os.path.exists(index_file) and os.path.exists(chunks_file):
-        app_logger.info("Loading existing FAISS index...")
-        retrieval_module._load_index_(index_file, chunks_file)
-    else:
-        app_logger.info("Building initial FAISS index for all jurisdictions (this may take a while)...")
-        os.makedirs(index_dir, exist_ok=True)
-        retrieval_module.build_and_save_index(
-            corpus_dir="legal-corpus",
-            output_dir=index_dir,
-            index_prefix="combined_index"
-        )
-        app_logger.info("FAISS index built and saved successfully.")
+triage_module = None
+router_module = None
+retrieval_module = None
+safety_audit = None
+
+def initialize_ai_modules(status_callback=None):
+    global triage_module, router_module, retrieval_module, safety_audit
+    try:
+        if status_callback: status_callback("Initializing Triage Module...")
+        triage_module = TriageModule()
+        if status_callback: status_callback("Initializing Router Module...")
+        router_module = SemanticRouterModule()
+        if status_callback: status_callback("Initializing Retrieval Module...")
+        retrieval_module = LegalRetrievalModule()
         
-    # Initialize Safety Audit Module
-    safety_audit = None
-    if FrameworkConfig._VERIFICATION_ENABLED:
-        try:
-            safety_audit = SafetyAuditModule()
-            app_logger.info(f"Safety Audit Module loaded — persistence={FrameworkConfig._VERIFICATION_PERSISTENCE}")
-        except Exception as audit_init_err:
-            app_logger.warning(f"Safety Audit Module failed to initialize (non-fatal): {audit_init_err}")
-    else:
-        app_logger.info("Safety Audit Module is disabled via VERIFICATION_ENABLED=False.")
+        # Check and Build Initial FAISS Index if missing
+        index_dir = os.path.join(CONFIG_DIR, "localfiles", "legal-basis")
+        index_file = os.path.join(index_dir, "combined_index.faiss")
+        chunks_file = os.path.join(index_dir, "combined_index.json")
+        corpus_path = os.path.join(CONFIG_DIR, "legal-corpus")
+        
+        if os.path.exists(index_file) and os.path.exists(chunks_file):
+            app_logger.info("Loading existing FAISS index...")
+            if status_callback: status_callback("Loading FAISS Index...")
+            retrieval_module._load_index_(index_file, chunks_file)
+        else:
+            if not os.path.exists(corpus_path):
+                msg = f"Missing 'legal-corpus' folder. Please place it inside: {CONFIG_DIR}"
+                app_logger.warning(msg)
+                if status_callback: status_callback(f"⚠️ {msg}")
+                raise Exception("legal-corpus directory not found.")
+                
+            app_logger.info("Building initial FAISS index for all jurisdictions (this may take a while)...")
+            if status_callback: status_callback("Building FAISS Index (This may take several minutes)...")
+            os.makedirs(index_dir, exist_ok=True)
+            retrieval_module.build_and_save_index(
+                corpus_dir=corpus_path,
+                output_dir=index_dir,
+                index_prefix="combined_index"
+            )
+            app_logger.info("FAISS index built and saved successfully.")
+            
+        # Initialize Safety Audit Module
+        if status_callback: status_callback("Initializing Safety Audit Module...")
+        if FrameworkConfig._VERIFICATION_ENABLED:
+            try:
+                safety_audit = SafetyAuditModule()
+                app_logger.info(f"Safety Audit Module loaded — persistence={FrameworkConfig._VERIFICATION_PERSISTENCE}")
+            except Exception as audit_init_err:
+                app_logger.warning(f"Safety Audit Module failed to initialize (non-fatal): {audit_init_err}")
+        else:
+            app_logger.info("Safety Audit Module is disabled via VERIFICATION_ENABLED=False.")
 
-    app_logger.info("Modules initialized successfully.")
-    
-    # Check sync status on startup
-    sync_info = legal_indexing.verify_index_integrity(
-        corpus_dir="legal-corpus",
-        chunks_path=chunks_file
-    )
-    if not sync_info["is_synced"]:
-        app_logger.warning(f"Index is out of sync. {sync_info['missing_count']} documents missing.")
-    else:
-        app_logger.info("Index is fully synced with corpus.")
+        app_logger.info("Modules initialized successfully.")
+        
+        # Check sync status on startup
+        if status_callback: status_callback("Verifying Index Integrity...")
+        sync_info = legal_indexing.verify_index_integrity(
+            corpus_dir=corpus_path,
+            chunks_path=chunks_file
+        )
+        if not sync_info["is_synced"]:
+            app_logger.warning(f"Index is out of sync. {sync_info['missing_count']} documents missing.")
+        else:
+            app_logger.info("Index is fully synced with corpus.")
 
-except Exception as e:
-    app_logger.error(f"Error initializing modules: {e}")
-    triage_module = None
-    router_module = None
-    retrieval_module = None
-    safety_audit = None
+    except Exception as e:
+        app_logger.error(f"Error initializing modules: {e}")
+        if status_callback: status_callback(f"Error initializing modules: {e}")
+
 
 # In-memory session storage
 # Format: { "session_id": { "route": "...", "history": [...] } }
@@ -1223,6 +1241,12 @@ def api_test_casual():
 
 
 if __name__ == '__main__':
+    import threading
+    import webbrowser
+    import tkinter as tk
+    from tkinter import ttk
+    import sys
+
     def get_ip():
         import socket
         s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -1239,12 +1263,85 @@ if __name__ == '__main__':
     local_ip = get_ip()
     port = 5220
     
-    print(f"\n" + "="*60)
-    print(f" 🚀 AGAPAY STUDIO IS LIVE")
-    print(f" 🔗 Local:   http://127.0.0.1:{port}")
-    print(f" 🌐 Network: http://{local_ip}:{port}")
-    print("="*60 + "\n")
+    # --- Setup Tkinter GUI ---
+    root = tk.Tk()
+    root.title("Agapay Studio Server")
+    root.geometry("450x300")
     
-    # host='0.0.0.0' allows access from other devices on the same network
-    app.run(host='0.0.0.0', debug=True, port=port)
+    # Modern Minimalistic Styling
+    BG_COLOR = "#0D1117"
+    TEXT_COLOR = "#C9D1D9"
+    ACCENT_COLOR = "#58A6FF"
+    MUTED_COLOR = "#8B949E"
+    FONT_FAMILY = "Helvetica Neue"
+    
+    root.configure(bg=BG_COLOR)
+    root.eval('tk::PlaceWindow . center')
+    
+    # Header
+    header = tk.Label(root, text="AGAPAY STUDIO", font=(FONT_FAMILY, 20, "bold"), bg=BG_COLOR, fg="#FFFFFF")
+    header.pack(pady=(30, 5))
+    
+    # Status display
+    status_var = tk.StringVar()
+    status_var.set("Starting up...")
+    status_label = tk.Label(root, textvariable=status_var, font=(FONT_FAMILY, 11), bg=BG_COLOR, fg=MUTED_COLOR)
+    status_label.pack(pady=(0, 20))
+
+    local_url = f"http://127.0.0.1:{port}"
+    network_url = f"http://{local_ip}:{port}"
+    
+    def open_browser(url):
+        webbrowser.open(url)
+        
+    frame = tk.Frame(root, bg=BG_COLOR)
+    frame.pack(pady=10)
+    
+    # Local IP display
+    tk.Label(frame, text="LOCAL", font=(FONT_FAMILY, 11, "bold"), bg=BG_COLOR, fg=MUTED_COLOR).grid(row=0, column=0, sticky="e", padx=(10, 15), pady=8)
+    local_link = tk.Label(frame, text=local_url, font=(FONT_FAMILY, 12), bg=BG_COLOR, fg=ACCENT_COLOR, cursor="hand2")
+    local_link.grid(row=0, column=1, sticky="w", padx=10, pady=8)
+    local_link.bind("<Button-1>", lambda e: open_browser(local_url))
+    
+    # Network IP display
+    tk.Label(frame, text="NETWORK", font=(FONT_FAMILY, 11, "bold"), bg=BG_COLOR, fg=MUTED_COLOR).grid(row=1, column=0, sticky="e", padx=(10, 15), pady=8)
+    network_link = tk.Label(frame, text=network_url, font=(FONT_FAMILY, 12), bg=BG_COLOR, fg=ACCENT_COLOR, cursor="hand2")
+    network_link.grid(row=1, column=1, sticky="w", padx=10, pady=8)
+    network_link.bind("<Button-1>", lambda e: open_browser(network_url))
+    
+    def stop_server():
+        root.destroy()
+        sys.exit(0)
+        
+    # Custom modern flat button using Label for cross-platform consistency
+    def on_enter(e):
+        btn_label.config(bg='#F85149', fg='#FFFFFF')
+    def on_leave(e):
+        btn_label.config(bg='#21262D', fg=TEXT_COLOR)
+
+    btn_label = tk.Label(root, text="STOP SERVER", font=(FONT_FAMILY, 11, "bold"), 
+                         bg="#21262D", fg=TEXT_COLOR, padx=20, pady=10, cursor="hand2")
+    btn_label.pack(pady=25)
+    btn_label.bind("<Enter>", on_enter)
+    btn_label.bind("<Leave>", on_leave)
+    btn_label.bind("<Button-1>", lambda e: stop_server())
+    
+    def update_status(message):
+        root.after(0, lambda: status_var.set(message))
+
+    # Run Flask in a background thread to allow Tkinter to use the main thread
+    def run_flask():
+        # Initialize AI modules here so it doesn't block Tkinter UI
+        initialize_ai_modules(status_callback=update_status)
+        update_status("Server Running! ✅")
+        # Important: reloader must be disabled when running in a background thread
+        app.run(host='0.0.0.0', port=port, debug=False, use_reloader=False)
+
+    flask_thread = threading.Thread(target=run_flask, daemon=True)
+    flask_thread.start()
+
+    # Handle window close button (X)
+    root.protocol("WM_DELETE_WINDOW", stop_server)
+    
+    root.mainloop()
 
