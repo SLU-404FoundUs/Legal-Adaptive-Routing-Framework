@@ -83,7 +83,13 @@ def _is_rate_limited_(error):
     err_str = str(error).lower()
     return "429" in err_str or "rate" in err_str or "rate-limited" in err_str or "too many requests" in err_str
 
-app = Flask(__name__)
+import sys
+if getattr(sys, 'frozen', False):
+    template_folder = os.path.join(sys._MEIPASS, 'templates')
+    static_folder = os.path.join(sys._MEIPASS, 'static')
+    app = Flask(__name__, template_folder=template_folder, static_folder=static_folder)
+else:
+    app = Flask(__name__)
 
 # --- Directories ---
 CONVERSATIONS_DIR = os.path.join(os.getcwd(), "localfiles", "conversations")
