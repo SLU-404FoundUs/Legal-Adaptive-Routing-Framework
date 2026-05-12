@@ -128,10 +128,10 @@ def initialize_ai_modules(status_callback=None):
             retrieval_module._load_index_(index_file, chunks_file)
         else:
             if not os.path.exists(corpus_path):
-                msg = f"Missing 'legal-corpus' folder. Please place it inside: {CONFIG_DIR}"
+                msg = f"Missing 'legal-corpus' folder. Please download the pre-built 'combined_index.faiss' and 'combined_index.json' legal-basis files and place them inside {index_dir}, or place the 'legal-corpus' folder inside {CONFIG_DIR} to build the index from scratch."
                 app_logger.warning(msg)
                 if status_callback: status_callback(f"⚠️ {msg}")
-                raise Exception("legal-corpus directory not found.")
+                raise Exception("legal-corpus directory not found. Please download the pre-built FAISS and JSON legal-basis files.")
                 
             app_logger.info("Building initial FAISS index for all jurisdictions (this may take a while)...")
             if status_callback: status_callback("Building FAISS Index (This may take several minutes)...")
