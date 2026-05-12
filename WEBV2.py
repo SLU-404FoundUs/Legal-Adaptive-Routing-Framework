@@ -1265,7 +1265,7 @@ if __name__ == '__main__':
     
     # --- Setup Tkinter GUI ---
     root = tk.Tk()
-    root.title("Agapay Studio Server")
+    root.title("Veritas Studio Server")
     root.geometry("450x300")
     
     # Modern Minimalistic Styling
@@ -1279,7 +1279,7 @@ if __name__ == '__main__':
     root.eval('tk::PlaceWindow . center')
     
     # Header
-    header = tk.Label(root, text="AGAPAY STUDIO", font=(FONT_FAMILY, 20, "bold"), bg=BG_COLOR, fg="#FFFFFF")
+    header = tk.Label(root, text="VERITAS STUDIO", font=(FONT_FAMILY, 20, "bold"), bg=BG_COLOR, fg="#FFFFFF")
     header.pack(pady=(30, 5))
     
     # Status display
