@@ -122,16 +122,19 @@ def initialize_ai_modules(status_callback=None):
         chunks_file = os.path.join(index_dir, "combined_index.json")
         corpus_path = os.path.join(CONFIG_DIR, "legal-corpus")
         
+        os.makedirs(index_dir, exist_ok=True)
+        os.makedirs(corpus_path, exist_ok=True)
+        
         if os.path.exists(index_file) and os.path.exists(chunks_file):
             app_logger.info("Loading existing FAISS index...")
             if status_callback: status_callback("Loading FAISS Index...")
             retrieval_module._load_index_(index_file, chunks_file)
         else:
-            if not os.path.exists(corpus_path):
-                msg = f"Missing 'legal-corpus' folder. Please download the pre-built 'combined_index.faiss' and 'combined_index.json' legal-basis files and place them inside {index_dir}, or place the 'legal-corpus' folder inside {CONFIG_DIR} to build the index from scratch."
+            if not os.listdir(corpus_path):
+                msg = f"Empty 'legal-corpus' folder. Please download the pre-built 'combined_index.faiss' and 'combined_index.json' legal-basis files and place them inside {index_dir}, or place your documents inside {corpus_path} to build the index from scratch."
                 app_logger.warning(msg)
                 if status_callback: status_callback(f"⚠️ {msg}")
-                raise Exception("legal-corpus directory not found. Please download the pre-built FAISS and JSON legal-basis files.")
+                raise Exception("legal-corpus directory is empty. Please download the pre-built FAISS and JSON legal-basis files.")
                 
             app_logger.info("Building initial FAISS index for all jurisdictions (this may take a while)...")
             if status_callback: status_callback("Building FAISS Index (This may take several minutes)...")
@@ -1313,15 +1316,42 @@ if __name__ == '__main__':
         root.destroy()
         sys.exit(0)
         
-    # Custom modern flat button using Label for cross-platform consistency
+    def open_appdata():
+        import subprocess
+        import platform
+        system = platform.system()
+        if system == "Windows":
+            os.startfile(CONFIG_DIR)
+        elif system == "Darwin":
+            subprocess.Popen(["open", CONFIG_DIR])
+        else:
+            subprocess.Popen(["xdg-open", CONFIG_DIR])
+            
+    buttons_frame = tk.Frame(root, bg=BG_COLOR)
+    buttons_frame.pack(pady=20)
+    
+    # Open AppData Button
+    def on_appdata_enter(e):
+        appdata_btn.config(bg='#238636', fg='#FFFFFF')
+    def on_appdata_leave(e):
+        appdata_btn.config(bg='#21262D', fg=TEXT_COLOR)
+
+    appdata_btn = tk.Label(buttons_frame, text="OPEN APPDATA", font=(FONT_FAMILY, 11, "bold"), 
+                           bg="#21262D", fg=TEXT_COLOR, padx=15, pady=10, cursor="hand2")
+    appdata_btn.pack(side="left", padx=10)
+    appdata_btn.bind("<Enter>", on_appdata_enter)
+    appdata_btn.bind("<Leave>", on_appdata_leave)
+    appdata_btn.bind("<Button-1>", lambda e: open_appdata())
+
+    # Stop Server Button
     def on_enter(e):
         btn_label.config(bg='#F85149', fg='#FFFFFF')
     def on_leave(e):
         btn_label.config(bg='#21262D', fg=TEXT_COLOR)
 
-    btn_label = tk.Label(root, text="STOP SERVER", font=(FONT_FAMILY, 11, "bold"), 
-                         bg="#21262D", fg=TEXT_COLOR, padx=20, pady=10, cursor="hand2")
-    btn_label.pack(pady=25)
+    btn_label = tk.Label(buttons_frame, text="STOP SERVER", font=(FONT_FAMILY, 11, "bold"), 
+                         bg="#21262D", fg=TEXT_COLOR, padx=15, pady=10, cursor="hand2")
+    btn_label.pack(side="left", padx=10)
     btn_label.bind("<Enter>", on_enter)
     btn_label.bind("<Leave>", on_leave)
     btn_label.bind("<Button-1>", lambda e: stop_server())
