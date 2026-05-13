@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "RULE II",
+  "title": "Definition of Terms",
+  "content": "This section defines key terms used in the Revised POEA Rules and Regulations related to overseas employment of Filipino workers. It includes definitions for Accreditation, Administration (POEA), Administrator, Authentication, Contracted worker, Derogatory record, DOLE, Domestic worker, DFA, Documentation cost, Employer, Employment Contract/Offer of Employment, Foreign Placement Agency, Foreign Service Contractor/Staffing Agency, Jobs Fair, Jobsite, Joint and Several Liability, LAC, LOA, License, Licensed Recruitment Agency, Master Employment Contract, NBI, NLRC, Non-licensee, Overseas Employment Certificate (OEC), Overseas Filipino Worker or Migrant Worker, OWWA, PAOS, PDOS, PEOS, Placement Fee, POLO, Principal, POCB, Recruitment Agreement, Recruitment and Placement, Registration of Worker, Regular/Documented Overseas Filipino Worker, Returning Worker or Balik-Manggagawa, SEC, Service Fee, Special Recruitment Authority, Standard Employment Contract, TESDA, and Underage Migrant Worker. These definitions establish the framework for the administration, recruitment, placement, and protection of Filipino overseas workers.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "Revised POEA Rules And Regulations.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

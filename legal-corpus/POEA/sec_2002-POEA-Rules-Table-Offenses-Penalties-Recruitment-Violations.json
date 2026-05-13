@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "2002-POEA-Rules-Table-Offenses-Penalties-Recruitment-Violations",
+  "title": "Table of Offenses and Penalties of Recruitment Violations",
+  "content": "This table categorizes recruitment violations into Serious, Less Serious, and Light offenses with corresponding penalties for first to fourth offenses. Serious offenses include deploying under-age workers, misrepresentation for licensing, recruitment in harmful jobs, unauthorized transfer of ownership, charging placement fees in 'no-placement fee' countries, and overcharging placement fees, punishable by cancellation of license on first offense. Less Serious offenses include charging fees before employment, failure to issue receipts, misrepresentation in recruitment, obstructing inspections, altering contracts without approval, withholding documents, unauthorized recruitment activities, appointing agents without approval, falsifying travel documents, deploying workers without processed documents, deploying to unaccredited principals, withholding salaries without justification, allowing disqualified persons in agency management, failure to reimburse worker expenses, failure to provide pre-departure orientation, and non-compliance with other undertakings, with penalties ranging from suspension to cancellation of license depending on offense count. Light offenses include failure to deploy workers timely, conflicts of interest in agency management, inducing workers to transfer employment improperly, influencing employment decisions, coercing workers to accept prejudicial arrangements, disregarding legal orders, and failure to submit required reports, with penalties from reprimand to cancellation of license. Additional serious offenses include commission of crimes, unjust refusal to allow worker departure, submission of false information, breach of contract, embezzlement, and violation of sacred trust, with penalties including suspension and permanent disqualification from overseas employment program participation.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "2002 POEA Rules on Overseas Employment of OFWs Primer.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

@@ -100,11 +100,29 @@ try:
     router_module = SemanticRouterModule()
     retrieval_module = LegalRetrievalModule()
     
-    # Check and Build Initial FAISS Index if missing
-    index_dir = os.path.join(CONFIG_DIR, "localfiles", "legal-basis")
+    # Detect corpus path - prioritize local project directory for development
+    local_corpus = os.path.join(os.getcwd(), "legal-corpus")
+    local_index_dir = os.path.join(os.getcwd(), "localfiles", "legal-basis")
+    
+    # Check if local corpus exists and has content
+    has_local_content = False
+    if os.path.exists(local_corpus):
+        for root, dirs, files in os.walk(local_corpus):
+            if any(f.endswith('.json') for f in files):
+                has_local_content = True
+                break
+    
+    if has_local_content:
+        corpus_path = local_corpus
+        index_dir = local_index_dir
+        app_logger.info(f"Detected local dataset at: {corpus_path}")
+    else:
+        corpus_path = os.path.join(CONFIG_DIR, "legal-corpus")
+        index_dir = os.path.join(CONFIG_DIR, "localfiles", "legal-basis")
+        app_logger.info(f"Falling back to system corpus path: {corpus_path}")
+
     index_file = os.path.join(index_dir, "combined_index.faiss")
     chunks_file = os.path.join(index_dir, "combined_index.json")
-    corpus_path = os.path.join(CONFIG_DIR, "legal-corpus")
     
     if os.path.exists(index_file) and os.path.exists(chunks_file):
         app_logger.info("Loading existing FAISS index...")

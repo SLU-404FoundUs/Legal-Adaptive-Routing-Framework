@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "Sections 91-105",
+  "title": "Authentication/Verification/Attestation of Documents and Accreditation of Principal/Employer and Enrollment of Ship",
+  "content": "This set of sections (91 to 105) outlines the procedures and requirements for verification, authentication, and attestation of documents related to principals/employers and the accreditation process for principals/employers and enrollment of ships under the Philippine Overseas Employment Administration (POEA) rules. It includes: verification of documents by POLO or Philippine Embassies/Consulates; attestation by the Administration; documentary requirements for verification, accreditation, and renewal; application and validity of accreditation; enrollment of ships; assignment of representatives; multiple accreditations; transfer of accreditation and enrollment; and handling of outstanding obligations and transfer due to sale or change of management. Key provisions include the requirement for escrow deposits by principals/employers, limits on accreditation duration (up to 4 years), and conditions for cancellation or revocation of accreditation. The rules ensure proper regulation and accountability of principals/employers and licensed manning agencies in the recruitment and deployment of Filipino seafarers.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "2016 Rules Seabased.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

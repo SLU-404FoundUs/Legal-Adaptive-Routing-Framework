@@ -1,0 +1,16 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "SECTION 95",
+  "title": "Accreditation of Principals/Employers",
+  "content": "The Administration shall accredit principals/employers. This authority may be delegated to the POLO in countries/territories where it has jurisdiction. The following rules govern accreditation:\n- All documents for accreditation shall be verified by the POLO.\n- In the absence of the POLO, documents shall be authenticated by the Philippine Embassy/consulate with jurisdiction over the jobsite.\n- If no Philippine Embassy or Consulate exists at the jobsite, the principal/employer may submit documents to the Administration for attestation.\n\nVerification refers to the procedure conducted by the Labor Attaché to ensure employment rights, benefits, and welfare of Filipino migrant workers are protected. The Labor Attaché ensures employment contracts comply with Philippine and host country laws and that documentary requirements for overseas employment are met.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "Revised POEA Rules And Regulations.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "benefits",
+      "general"
+    ]
+  }
+}

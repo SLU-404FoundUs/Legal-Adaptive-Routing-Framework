@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "RULE III SECTION 123",
+  "title": "Classification of Offenses and Schedule of Penalties",
+  "content": "SECTION 123. Classification of Offenses. - Administrative offenses are classified into serious, less serious and light, depending on their gravity. The Administration shall impose the appropriate administrative penalties for every recruitment violation.\n\nA. Serious Offenses and Penalties:\n1. Deploying seafarer below 18 years or minimum age for overseas employment.\n   Penalty: Cancellation/revocation of license plus fine PhP500,000 to PhP1,000,000.\n2. Misrepresentation to secure or renew license (false info/documents).\n3. Recruitment/placement in jobs harmful to public health, morality, or dignity of the Philippines.\n4. Misrepresentation in job order processing for non-existent or different work/employer.\n5. Misrepresentation in recruitment/placement (false notices, info, documents).\n   Penalty for 2-5: Cancellation of License.\n6. Transfer/change of ownership of licensed single proprietorship.\n7. Charging/accepting fees or bonds from applicant seafarers.\n8. Allowing non-Filipino to head/manage licensed manning agency.\n9. Charging/accepting money for compulsory insurance premium.\n10. Collecting unauthorized or excess processing/documentation fees.\n    Penalties vary from cancellation to cancellation plus refund.\n11. Falsifying/altering travel documents related to recruitment/deployment.\n\nB. Less Serious Offenses and Penalties:\n1. Obstructing inspection by Secretary, Administrator or authorized reps.\n2. Altering employment contracts without Administration approval.\n3. Withholding/denying travel or pertinent documents for unauthorized reasons.\n4. Recruitment outside licensed place without prior authorization.\n5. Appointing agents/employees without notice to Administration.\n6. Withholding seafarer's salaries, remittances, SSS contributions, or shortchanging without just cause.\n7. Allowing disqualified persons to participate in agency management/operation.\n8. Failure to reimburse seafarer's expenses for documentation/processing when deployment fails without seafarer's fault.\n9. Failure to comply with undertakings submitted to Administration.\n10. Imposing compulsory exclusive arrangements for health exams, training, seminars, or schooling from designated entities unless cost borne by principal/employer or agency.\n11. Imposing compulsory exclusive loan arrangements from designated institutions/entities/persons.\n12. Granting loans with interest exceeding 8% per annum requiring post-dated checks.\n\nPenalties for less serious offenses escalate from suspension (2 months to 2 years) to cancellation upon repeated offenses, with accessory penalties such as release of salaries or refund of expenses where applicable.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "2016 Rules Seabased.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

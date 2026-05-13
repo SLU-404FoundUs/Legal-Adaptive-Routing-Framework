@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "SECTION 144",
+  "title": "Grounds for Disciplinary Action Against Principals/Employers and Penalties",
+  "content": "This section enumerates the grounds for disciplinary action against principals/employers who commit offenses against Overseas Filipino Workers (OFWs). It categorizes offenses into Serious and Less Serious Offenses, each with corresponding penalties. Serious offenses include unauthorized fee collection, illegal salary deductions, gross negligence causing serious harm or death, grave misconduct, conviction of offenses against OFWs, compelling workers to work elsewhere or in different jobs, unreasonable delay in securing exit visas, non-payment or underpayment of wages and benefits, contract substitution or alteration to the worker's prejudice, and violation of the Anti-Human Trafficking Law. Penalty for serious offenses is permanent disqualification and delisting from the roster of accredited principals/employers. Less serious offenses include default on other contractual obligations, withholding or denying worker's travel documents, non-acceptance of valid health exam results, failure to monitor/report worker status, negligence causing injury or illness, and simple misconduct. Penalties for less serious offenses are suspension from participation in the overseas employment program for the first offense (six months to one year) and permanent disqualification and delisting for the second offense.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "Revised POEA Rules And Regulations.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

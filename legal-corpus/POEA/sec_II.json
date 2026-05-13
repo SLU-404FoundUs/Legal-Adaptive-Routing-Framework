@@ -1,0 +1,15 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "II",
+  "title": "Less Serious Offenses and Penalties under the Revised POEA Rules and Regulations",
+  "content": "This section enumerates less serious offenses for overseas Filipino workers under the Revised POEA Rules and Regulations. The offenses include:\n- Unjustified breach of employment contract.\n- Embezzlement of company funds or monies and/or properties of a fellow worker entrusted for delivery to kin or relatives in the Philippines.\n- Violation of the religious and cultural practices of the host country.\n- Violation of company policies and regulations.\n- Insubordination or refusal to obey a lawful order of the employer or the duly authorized representative.\n- Failure to refund the cost of repatriation advanced by the principal or recruitment agency, where termination of employment was due to the worker's own fault as determined by final judgment.\n- Violation of the Code of Discipline for Overseas Filipino Workers.\n\nPenalties for these offenses are progressive based on the number of offenses committed:\n- 1st Offense: Suspension from participation in the overseas employment program for two months to six months.\n- 2nd Offense: Suspension from participation in the overseas employment program for six months and one day to one year.\n- 3rd Offense: Permanent disqualification from participation in the overseas employment program.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "Revised POEA Rules And Regulations.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "general"
+    ]
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "Sections 13-15, C, 124-126",
+  "title": "Penalties for Offenses by Manning Agencies and Related Provisions",
+  "content": "This text outlines penalties for various offenses committed by licensed manning agencies and related parties under the Philippine labor code for seafarers. Offenses include refusal to condone or renegotiate loans after premature contract termination, default on contractual obligations, failure to submit reports on serious incidents, and other violations related to recruitment and placement of seafarers. Penalties escalate by offense number, ranging from suspension of license (two months to six months for first offense, increasing up to cancellation of license for fourth offense) for serious offenses. Light offenses include becoming an officer of a travel agency, inducing seafarers to transfer employment improperly, influencing employment decisions against seafarers, failure to deploy contracted seafarers timely, coercion of seafarers, disregard of legal orders, failure to submit required reports, and other violations. Penalties for light offenses start with reprimand, then fines (PhP20,000), then suspension of license (one to six months). Additional provisions include imposition of fines in lieu of suspension (PhP50,000 per month), cancellation of license for offenses involving five or more workers, and that motions for reconsideration are treated as appeals. Money claims from recruitment violations may be awarded in addition to administrative penalties.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "2016 Rules Seabased.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}

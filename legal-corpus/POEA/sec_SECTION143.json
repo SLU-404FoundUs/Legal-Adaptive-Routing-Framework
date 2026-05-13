@@ -1,0 +1,17 @@
+{
+  "jurisdiction": "PH",
+  "section_id": "SECTION 143",
+  "title": "Grounds for Imposition of Administrative Sanctions Against a Licensed Recruitment Agency",
+  "content": "This section enumerates offenses committed by licensed recruitment agencies that warrant administrative sanctions. Offenses are classified into Serious Offenses, Less Serious Offenses, and Light Offenses, each with corresponding penalties ranging from reprimand, suspension, to cancellation of license. Serious offenses include deploying minors, gross misrepresentation, reprocessing workers through false job orders, recruitment in harmful jobs, unauthorized transfer of ownership, improper management, illegal fee charging, and deployment without proper documentation, among others. Less serious offenses cover deploying underage workers, charging fees before employment, failure to issue official receipts, misrepresentation, obstructing inspections, contract alterations without approval, withholding documents, unauthorized recruitment activities, failure to reimburse expenses, and other violations. Light offenses include influencing employment decisions against union members, failure to deploy contracted workers timely, and violations of other labor laws and regulations. Penalties escalate with repeated offenses and may include refunding fees with interest, immediate refund of expenses, and cancellation of license. No indication of repeal is mentioned in this section.",
+  "is_repealed": false,
+  "metadata": {
+    "source_file": "Revised POEA Rules And Regulations.pdf",
+    "jurisdiction": "PH",
+    "corpus_categories": [
+      "contracts",
+      "wages",
+      "benefits",
+      "general"
+    ]
+  }
+}
