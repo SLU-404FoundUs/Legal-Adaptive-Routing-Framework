@@ -581,18 +581,19 @@ STRICT CONSTRAINTS
 
     ## @const_ _VERIFICATION : Response Adherence Audit Layer settings.
     _VERIFICATION_ENABLED = os.getenv("VERIFICATION_ENABLED", "True").lower() == "true"
-    _VERIFICATION_STRICTNESS_CASUAL = float(os.getenv("VERIFICATION_STRICTNESS_CASUAL", "0.30"))
-    _VERIFICATION_STRICTNESS_GENERAL = float(os.getenv("VERIFICATION_STRICTNESS_GENERAL", "0.50"))
-    _VERIFICATION_STRICTNESS_REASONING = float(os.getenv("VERIFICATION_STRICTNESS_REASONING", "0.65"))
+    _VERIFICATION_STRICTNESS_CASUAL = float(os.getenv("VERIFICATION_STRICTNESS_CASUAL", "0.25"))
+    _VERIFICATION_STRICTNESS_GENERAL = float(os.getenv("VERIFICATION_STRICTNESS_GENERAL", "0.65"))
+    _VERIFICATION_STRICTNESS_REASONING = float(os.getenv("VERIFICATION_STRICTNESS_REASONING", "0.85"))
     _VERIFICATION_PERSISTENCE = int(os.getenv("VERIFICATION_PERSISTENCE", "3"))
-    _VERIFICATION_DEEP_AUDIT_MODEL = os.getenv("VERIFICATION_DEEP_AUDIT_MODEL", "google/gemma-3-12b-it")
+    _VERIFICATION_DEEP_AUDIT_MODEL = os.getenv("VERIFICATION_DEEP_AUDIT_MODEL", "google/gemma-3-27b-it")
     _VERIFICATION_DEEP_AUDIT_TEMP = float(os.getenv("VERIFICATION_DEEP_AUDIT_TEMP", "0.1"))
     _VERIFICATION_DEEP_AUDIT_MAX_TOKENS = int(os.getenv("VERIFICATION_DEEP_AUDIT_MAX_TOKENS", "300"))
-    _VERIFICATION_REASONING = os.getenv("VERIFICATION_REASONING", "False").lower() == "false"
+    _VERIFICATION_REASONING = os.getenv("VERIFICATION_REASONING", "False").lower() == "true"
     _VERIFICATION_REASONING_EFFORT = os.getenv("VERIFICATION_REASONING_EFFORT", "low")
     _VERIFICATION_INSTRUCTIONS = os.getenv("VERIFICATION_INSTRUCTIONS", (
         "ROLE: Response Adherence Auditor\n"
-        "TASK: Determine whether the AI RESPONSE directly and contextually addresses the USER QUERY.\n\n"
+        "TASK: Determine whether the AI RESPONSE directly and contextually addresses the USER QUERY.\n"
+        "STRICTNESS LEVEL: {strictness_level}\n"
         "EVALUATION CRITERIA:\n"
         "1. RELEVANCE: Does the response answer the specific question or concern raised by the user?\n"
         "2. SCOPE: Does the response stay within Philippine/Hong Kong labor law and migrant worker concerns?\n"

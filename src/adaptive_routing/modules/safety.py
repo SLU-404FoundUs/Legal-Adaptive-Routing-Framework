@@ -91,6 +91,14 @@ class SafetyAuditModule:
         ## @logic_ Resolve dynamic strictness for this route
         strictness = strictness_override if strictness_override is not None else self._get_strictness_for_route_(route)
 
+        ## @logic_ Resolve strictness label for the prompt
+        if strictness < 0.40:
+            strictness_label = "LOW (Casual/Conversational)"
+        elif strictness >= 0.60:
+            strictness_label = "HIGH (Legal Reasoning/Critical)"
+        else:
+            strictness_label = "MEDIUM (General Information)"
+
         ## @logic_ Guard: empty or whitespace-only response
         if not response_text or not response_text.strip():
             logger.warning("[SafetyAudit] Empty response — NON_COMPLIANT.")
@@ -101,25 +109,41 @@ class SafetyAuditModule:
             }
 
         ## @logic_ Delegate to internal auditor for the LLM evaluation
+        # Inject the strictness label into the instructions if placeholder exists
+        active_instructions = system_instructions or FrameworkConfig._VERIFICATION_INSTRUCTIONS
+        if "{strictness_level}" in active_instructions:
+            active_instructions = active_instructions.replace("{strictness_level}", strictness_label)
+
         audit_result = self._auditor._evaluate_(
             normalized_query, 
             response_text, 
             history=history, 
-            system_instructions=system_instructions
+            system_instructions=active_instructions
         )
 
-        ## @logic_ Map raw verdict (PASS/FAIL) to framework verdict (COMPLIANT/NON_COMPLIANT)
+        ## @logic_ Map raw verdict (PASS/FAIL) and confidence to framework verdict (COMPLIANT/NON_COMPLIANT)
         raw_verdict = audit_result.get("verdict", "FAIL")
-        framework_verdict = "COMPLIANT" if raw_verdict == "PASS" else "NON_COMPLIANT"
+        confidence = audit_result.get("confidence", 0.0)
+        
+        ## @logic_ THE THRESHOLD GATE: PASS only if confidence >= strictness
+        if raw_verdict == "PASS" and confidence >= strictness:
+            framework_verdict = "COMPLIANT"
+        else:
+            framework_verdict = "NON_COMPLIANT"
+            if raw_verdict == "PASS":
+                logger.warning(
+                    f"[SafetyAudit] Response PASS but confidence {confidence:.2f} < strictness {strictness:.2f}. "
+                    "Rejecting for safety."
+                )
 
         logger.info(
             f"[SafetyAudit] Verdict={framework_verdict} (raw={raw_verdict}), "
-            f"Confidence={audit_result.get('confidence')}, Route={route}, Strictness={strictness}"
+            f"Confidence={confidence}, Route={route}, Strictness={strictness}"
         )
 
         return {
             "verdict": framework_verdict,
-            "confidence": audit_result.get("confidence", 0.0),
+            "confidence": confidence,
             "explanation": audit_result.get("explanation"),
             "strictness": strictness,
             "route": route

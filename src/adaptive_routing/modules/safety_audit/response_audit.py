@@ -70,12 +70,14 @@ class ResponseAuditor:
             audit_prompt = (
                 f"{history_text}\n"
                 f"[CURRENT USER QUERY]:\n{query}\n\n"
-                f"[AI RESPONSE TO AUDIT]:\n{response}"
+                f"[AI RESPONSE TO AUDIT]:\n{response}\n\n"
+                "Output JSON only."
             )
         else:
             audit_prompt = (
                 f"USER QUERY:\n{query}\n\n"
-                f"AI RESPONSE:\n{response}"
+                f"AI RESPONSE:\n{response}\n\n"
+                "Output JSON only."
             )
 
         try:

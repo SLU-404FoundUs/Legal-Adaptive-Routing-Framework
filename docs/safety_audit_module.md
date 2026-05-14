@@ -164,11 +164,22 @@ The audit strictness dynamically scales based on the active route, defined in `F
 
 | Route Name | Config Suffix | Default Threshold | Audit Behavior |
 | :--- | :--- | :--- | :--- |
-| `Casual-LLM` | `_CASUAL_STRICTNESS` | `0.0` | Skipped entirely (Auto-Compliant) |
-| `General-LLM` | `_GENERAL_STRICTNESS` | `0.70` | Evaluated using standard parameters |
-| `Reasoning-LLM` | `_REASONING_STRICTNESS`| `0.85` | Evaluated using strict parameters |
+| `Casual-LLM` | `_CASUAL_STRICTNESS` | `0.25` | Auto-Passed (Low Strictness Label Injected) |
+| `General-LLM` | `_GENERAL_STRICTNESS` | `0.65` | Evaluated (Medium Strictness Label Injected) |
+| `Reasoning-LLM` | `_REASONING_STRICTNESS`| `0.85` | Evaluated (High Strictness Label Injected) |
 
-If the auditor's `confidence` is `>=` the route's threshold, the response is `COMPLIANT`. Otherwise, it is `NON_COMPLIANT`.
+### The Hybrid Confidence Threshold Gate
+
+The framework uses a **two-stage verification logic** to determine if a response is `COMPLIANT`:
+
+1. **Instructional Injection**: The `SafetyAuditModule` resolves a human-readable label (Low, Medium, or High) based on the route's strictness float. This label is injected into the `{strictness_level}` placeholder in the auditor's system instructions. This tells the LLM how critically it should evaluate the response.
+2. **Mathematical Threshold Gate**: Even if the Auditor LLM returns a `PASS` verdict, the framework checks the `confidence` score. The response is only marked as `COMPLIANT` if:
+   ```python
+   raw_verdict == "PASS" AND confidence >= strictness_threshold
+   ```
+
+If either condition fails, the system triggers the **Generation Persistence** loop to regenerate a more compliant response.
+
 
 ---
 

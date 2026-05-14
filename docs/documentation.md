@@ -13,6 +13,7 @@ The **Legal Adaptive Routing Framework** is a modular system that processes lega
 1. **Linguistic Normalization** — Converts multilingual input (Tagalog, Taglish, Cantonese, etc.) into standardized legal English.
 2. **Semantic Routing** — Classifies queries by intent and generates **Search Signals** (keywords) to guide retrieval.
 3. **Legal Retrieval (RAG)** — Performs **Signal-Guided Retrieval** using a Hybrid Search Engine (FAISS + BM25). For follow-up queries, the system intelligently reuses previous legal context.
+4. **Safety Audit** — A final verification layer that uses a **Hybrid Confidence Threshold Gate** to ensure generated responses are contextually compliant and safe before delivery.
 
 The framework communicates with LLMs through the **OpenRouter API** and supports scalable multi-step query processing.
 
@@ -55,6 +56,12 @@ flowchart LR
         REAS["Reasoning LLM"]
     end
 
+    %% ===== SAFETY =====
+    subgraph Safety
+        SA["Safety Auditor"]
+        SG["Safeguard Message"]
+    end
+
     %% ===== CORE =====
     subgraph Core Engine
         ENGINE["LLM Engine"]
@@ -69,15 +76,20 @@ flowchart LR
     LR --> GEN
     LR --> REAS
 
-    CASUAL --> Response["Final Response"]
-    GEN --> Response
-    REAS --> Response
+    CASUAL --> SA
+    GEN --> SA
+    REAS --> SA
+
+    SA -- "FAIL (Retry)" --> Generation
+    SA -- "SUCCESS" --> Response["Final Response"]
+    SA -- "EXHAUSTED" --> SG --> Response
 
     %% ===== CONTROL FLOW =====
     ENGINE -.-> LN
     ENGINE -.-> RC
     ENGINE -.-> GEN
     ENGINE -.-> REAS
+    ENGINE -.-> SA
     CONFIG -.-> ENGINE
 ```
 
@@ -120,6 +132,15 @@ User Input (any language)
 │  • Reasoning-LLM → ALAC format           │
 │  Output: Grounded legal response         │
 │  (Persona: Atty. Veritas AI)             │
+└──────────────┬───────────────────────────┘
+               │
+               ▼
+┌──────────────────────────────────────────┐
+│  Stage 5: SAFETY AUDIT LAYER             │
+│  • LLM-based Adherence Verification      │
+│  • Confidence Threshold Gate              │
+│  • Dynamic Regeneration (Persistence)    │
+│  Output: Validated COMPLIANT Response    │
 └──────────────────────────────────────────┘
 ```
 
@@ -156,7 +177,7 @@ from src.adaptive_routing import TriageModule, SemanticRouterModule, LegalRetrie
 
 # Optional: Customize the framework configuration at runtime
 FrameworkConfig._update_settings_(
-    general_strictness=0.75,
+    general_strictness=0.65,
     router_temp=0.1
 )
 
