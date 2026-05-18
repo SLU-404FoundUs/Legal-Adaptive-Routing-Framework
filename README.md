@@ -10,7 +10,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Agentic AI](https://img.shields.io/badge/Agentic-AI-purple.svg)](#-ai-disclaimer)
 
-*Saint Louis University | Team 404FoundUs*
+*Saint Louis University Baguio | Team 404FoundUs*
 
 [Documentation](docs/documentation.md) • [Report Bug](issues) • [Request Feature](issues)
 
